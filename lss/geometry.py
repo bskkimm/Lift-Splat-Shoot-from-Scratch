@@ -11,4 +11,4 @@ def camera_to_ego(points, intrinsics, extrinsics):
     b, c, d, h, w, _ = points.shape
     pix = points.reshape(b, c, -1, 3)
     xyz = torch.linalg.solve(intrinsics, torch.cat((pix[..., :2] * pix[..., 2:3], pix[..., 2:3]), -1).transpose(-1, -2)).transpose(-1, -2)
-    return (extrinsics[..., :3, :3].unsqueeze(2) @ xyz.unsqueeze(-1)).squeeze(-1) + extrinsics[..., :3, 3].unsqueeze(2)
+    return ((extrinsics[..., :3, :3].unsqueeze(2) @ xyz.unsqueeze(-1)).squeeze(-1) + extrinsics[..., :3, 3].unsqueeze(2)).reshape(b, c, d, h, w, 3)
