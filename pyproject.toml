@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lift-splat-shoot"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["torch", "torchvision", "numpy", "Pillow"]
+
+[tool.setuptools.packages.find]
+include = ["lss*"]
