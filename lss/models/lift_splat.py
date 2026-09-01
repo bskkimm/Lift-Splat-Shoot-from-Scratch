@@ -16,12 +16,12 @@ class LiftSplat(nn.Module):
         y = ((xyz[..., 1] - self.bounds[1, 0]) / self.bounds[1, 2]).long()
         nx = int((self.bounds[0, 1] - self.bounds[0, 0]) / self.bounds[0, 2])
         ny = int((self.bounds[1, 1] - self.bounds[1, 0]) / self.bounds[1, 2])
-        result = depth.new_zeros(b, out.shape[2], ny, nx)
+        result = depth.new_zeros(b, out.shape[2], ny * nx)
         valid = (x >= 0) & (x < nx) & (y >= 0) & (y < ny)
-        for bi in range(b):
-            for ci in range(c):
-                for di in range(d):
-                    mask = valid[bi, ci, di]
-                    for fi in range(out.shape[2]):
-                        result[bi, fi].index_put_((y[bi, ci, di][mask], x[bi, ci, di][mask]), out[bi, ci, fi, di][mask], accumulate=True)
-        return result
+        linear = (y * nx + x).reshape(b, c, 1, -1).expand(b, c, out.shape[2], -1)
+        weights = out.reshape(b, c, out.shape[2], -1)
+        valid = valid.reshape(b, c, 1, -1).expand_as(weights)
+        for fi in range(out.shape[2]):
+            idx = linear[:, :, fi].reshape(b, -1).masked_fill(~valid[:, :, fi].reshape(b, -1), 0)
+            result[:, fi].scatter_add_(1, idx, weights[:, :, fi].reshape(b, -1) * valid[:, :, fi].reshape(b, -1))
+        return result.reshape(b, out.shape[2], ny, nx)
