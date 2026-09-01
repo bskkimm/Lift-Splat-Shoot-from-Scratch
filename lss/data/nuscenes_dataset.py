@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 from PIL import Image
 import torch
 from torch.utils.data import Dataset
@@ -6,8 +7,19 @@ from torch.utils.data import Dataset
 
 class NuScenesCameraDataset(Dataset):
     """Small JSON-indexed camera dataset; the index contains image paths and calibration."""
-    def __init__(self, records, image_size=None):
-        self.records, self.image_size = records, image_size
+    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval"):
+        self.image_size = image_size
+        if dataroot is not None:
+            root = Path(dataroot).expanduser() / "v1.0-trainval"
+            with open(root / "sample.json") as handle: samples = {x["token"]: x for x in json.load(handle)}
+            with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
+            self.records = []
+            for sample in samples.values():
+                paths = []
+                for token in sample["data"].values(): paths.append(str(Path(dataroot).expanduser() / sample_data[token]["filename"]))
+                self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": [], "extrinsics": [], "boxes": [], "labels": []})
+        else:
+            self.records = records or []
 
     def __len__(self): return len(self.records)
 
