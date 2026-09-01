@@ -1,4 +1,5 @@
 import torch
+from pathlib import Path
 
 
 def train_step(model, optimizer, batch, target):
@@ -7,3 +8,18 @@ def train_step(model, optimizer, batch, target):
 
 @torch.no_grad()
 def evaluate(model, batch): return model(*batch)
+
+
+def save_checkpoint(model, optimizer, path, epoch):
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    torch.save({"epoch": epoch, "state_dict": model.state_dict(), "optimizer": optimizer.state_dict()}, path)
+
+
+def fit(model, loader, optimizer, loss_fn, epochs, checkpoint_dir=None):
+    history = []
+    for epoch in range(epochs):
+        total = 0.0
+        for batch, target in loader: total += train_step(model, optimizer, batch, lambda output: loss_fn(output, target))
+        history.append(total / max(1, len(loader)))
+        if checkpoint_dir: save_checkpoint(model, optimizer, Path(checkpoint_dir) / f"epoch_{epoch + 1:04d}.pt", epoch + 1)
+    return history
