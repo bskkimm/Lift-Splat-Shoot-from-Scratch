@@ -8,6 +8,8 @@ def make_frustum(height, width, depths, device=None):
 
 
 def camera_to_ego(points, intrinsics, extrinsics):
+    if points.ndim != 6 or intrinsics.shape[:2] != points.shape[:2] or extrinsics.shape[:2] != points.shape[:2]:
+        raise ValueError("points, intrinsics, and extrinsics must share batch and camera axes")
     b, c, d, h, w, _ = points.shape
     pix = points.reshape(b, c, -1, 3)
     xyz = torch.linalg.solve(intrinsics, torch.cat((pix[..., :2] * pix[..., 2:3], pix[..., 2:3]), -1).transpose(-1, -2)).transpose(-1, -2)
