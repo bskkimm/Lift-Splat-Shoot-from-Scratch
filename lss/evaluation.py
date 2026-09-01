@@ -10,4 +10,10 @@ def evaluate_nuscenes(result_path, output_dir=None):
         from nuscenes.eval.detection.evaluate import NuScenesEval
     except ImportError as exc:
         raise ImportError("install nuscenes-devkit for official evaluation") from exc
-    return NuScenesEval
+    from nuscenes import NuScenes
+    from pathlib import Path
+    output_dir = output_dir or str(Path(result_path).parent / "nuscenes_eval")
+    nusc = NuScenes(version="v1.0-trainval", dataroot=str(Path(result_path).parents[1]), verbose=False)
+    evaluator = NuScenesEval(nusc, config="detection_cvpr_2019", result_path=result_path, eval_set="val", output_dir=output_dir, verbose=False)
+    evaluator.main(render_curves=False)
+    return evaluator.summary
