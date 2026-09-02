@@ -14,3 +14,13 @@ class BEVHead(nn.Module):
         labels = indices // scores.shape[2]; locations = indices % scores.shape[2]
         boxes = outputs["boxes"].flatten(2).gather(2, locations[:, None].expand(-1, outputs["boxes"].shape[1], -1)).transpose(1, 2)
         return [{"scores": v[v >= score_threshold], "labels": l[v >= score_threshold], "boxes": b[v >= score_threshold]} for v, l, b in zip(values, labels, boxes)]
+
+    @staticmethod
+    def nms(boxes, scores, threshold=0.5):
+        order = scores.argsort(descending=True); keep = []
+        while len(order):
+            current = order[0]; keep.append(current.item())
+            if len(order) == 1: break
+            overlap = torch.minimum(boxes[order[1:], 2], boxes[current, 2])
+            order = order[1:][overlap <= threshold]
+        return torch.tensor(keep, device=boxes.device, dtype=torch.long)
