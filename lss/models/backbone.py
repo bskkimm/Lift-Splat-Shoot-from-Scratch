@@ -21,4 +21,6 @@ class ImageBackbone(nn.Module):
 class FPN(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__(); self.proj = nn.Conv2d(in_channels, out_channels, 1)
-    def forward(self, feature): return self.proj(feature)
+    def forward(self, feature):
+        if isinstance(feature, (list, tuple)): return [self.proj(item) for item in feature]
+        return self.proj(feature)
