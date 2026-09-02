@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 from PIL import Image
 import torch
+from .categories import category_id
 from torch.utils.data import Dataset
 
 
@@ -13,6 +14,11 @@ class NuScenesCameraDataset(Dataset):
             root = Path(dataroot).expanduser() / "v1.0-trainval"
             with open(root / "sample.json") as handle: samples = {x["token"]: x for x in json.load(handle)}
             with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
+            annotation_path = root / "sample_annotation.json"
+            annotations = {}
+            if annotation_path.exists():
+                with open(annotation_path) as handle:
+                    for item in json.load(handle): annotations.setdefault(item["sample_token"], []).append(item)
             calib_path = root / "calibrated_sensor.json"
             calibrations = {}
             if calib_path.exists():
@@ -26,7 +32,10 @@ class NuScenesCameraDataset(Dataset):
                     calib = calibrations.get(item.get("calibrated_sensor_token"), {})
                     intrinsics.append(calib.get("camera_intrinsic", [[1,0,0],[0,1,0],[0,0,1]]))
                     extrinsics.append([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
-                self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": intrinsics, "extrinsics": extrinsics, "boxes": [], "labels": []})
+                anns = annotations.get(sample["token"], [])
+                boxes = [a.get("translation", []) + a.get("size", []) for a in anns]
+                labels = [category_id(a.get("category_name", "")) for a in anns]
+                self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": intrinsics, "extrinsics": extrinsics, "boxes": boxes, "labels": labels})
         else:
             self.records = records or []
 
