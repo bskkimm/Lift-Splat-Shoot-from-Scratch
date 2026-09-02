@@ -1,6 +1,11 @@
 import torch
 
 
+def quaternion_to_matrix(q):
+    q = torch.as_tensor(q, dtype=torch.float32); w, x, y, z = q
+    return torch.tensor([[1-2*(y*y+z*z),2*(x*y-z*w),2*(x*z+y*w)],[2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w)],[2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)]])
+
+
 def make_frustum(height, width, depths, device=None):
     d = torch.as_tensor(depths, dtype=torch.float32, device=device)
     y, x = torch.meshgrid(torch.arange(height, device=device), torch.arange(width, device=device))

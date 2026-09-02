@@ -3,6 +3,7 @@ import json
 from PIL import Image
 import torch
 from .categories import category_id
+from lss.geometry import quaternion_to_matrix
 from torch.utils.data import Dataset
 
 
@@ -31,7 +32,8 @@ class NuScenesCameraDataset(Dataset):
                     item = sample_data[token]; paths.append(str(Path(dataroot).expanduser() / item["filename"]))
                     calib = calibrations.get(item.get("calibrated_sensor_token"), {})
                     intrinsics.append(calib.get("camera_intrinsic", [[1,0,0],[0,1,0],[0,0,1]]))
-                    extrinsics.append([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+                    rotation = quaternion_to_matrix(calib.get("rotation", [1, 0, 0, 0])).tolist(); translation = calib.get("translation", [0, 0, 0])
+                    extrinsics.append([rotation[0] + [translation[0]], rotation[1] + [translation[1]], rotation[2] + [translation[2]], [0,0,0,1]])
                 anns = annotations.get(sample["token"], [])
                 boxes = [a.get("translation", []) + a.get("size", []) for a in anns]
                 labels = [category_id(a.get("category_name", "")) for a in anns]
