@@ -18,6 +18,7 @@ class LiftSplat(nn.Module):
         ny = int((self.bounds[1, 1] - self.bounds[1, 0]) / self.bounds[1, 2])
         result = depth.new_zeros(b, out.shape[2], ny * nx)
         valid = (x >= 0) & (x < nx) & (y >= 0) & (y < ny)
+        valid = valid & (xyz[..., 2] >= self.bounds[2, 0]) & (xyz[..., 2] < self.bounds[2, 1])
         linear = (y * nx + x).reshape(b, c, 1, -1).expand(b, c, out.shape[2], -1)
         weights = out.reshape(b, c, out.shape[2], -1)
         valid = valid.reshape(b, c, 1, -1).expand_as(weights)
