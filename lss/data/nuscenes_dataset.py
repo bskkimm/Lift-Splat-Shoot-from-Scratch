@@ -13,11 +13,20 @@ class NuScenesCameraDataset(Dataset):
             root = Path(dataroot).expanduser() / "v1.0-trainval"
             with open(root / "sample.json") as handle: samples = {x["token"]: x for x in json.load(handle)}
             with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
+            calib_path = root / "calibrated_sensor.json"
+            calibrations = {}
+            if calib_path.exists():
+                with open(calib_path) as handle: calibrations = {x["token"]: x for x in json.load(handle)}
             self.records = []
             for sample in samples.values():
                 paths = []
-                for token in sample["data"].values(): paths.append(str(Path(dataroot).expanduser() / sample_data[token]["filename"]))
-                self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": [], "extrinsics": [], "boxes": [], "labels": []})
+                intrinsics, extrinsics = [], []
+                for token in sample["data"].values():
+                    item = sample_data[token]; paths.append(str(Path(dataroot).expanduser() / item["filename"]))
+                    calib = calibrations.get(item.get("calibrated_sensor_token"), {})
+                    intrinsics.append(calib.get("camera_intrinsic", [[1,0,0],[0,1,0],[0,0,1]]))
+                    extrinsics.append([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+                self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": intrinsics, "extrinsics": extrinsics, "boxes": [], "labels": []})
         else:
             self.records = records or []
 
