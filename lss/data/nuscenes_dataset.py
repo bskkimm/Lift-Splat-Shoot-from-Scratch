@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 from PIL import Image
 import torch
-from .categories import category_id
+from .categories import category_id, yaw_from_quaternion
 from lss.geometry import quaternion_to_matrix
 from torch.utils.data import Dataset
 
@@ -40,7 +40,7 @@ class NuScenesCameraDataset(Dataset):
                     rotation = (torch.tensor(pose_rotation, dtype=torch.float32) @ torch.tensor(rotation, dtype=torch.float32)).tolist(); translation = (torch.tensor(pose_rotation, dtype=torch.float32) @ torch.tensor(translation, dtype=torch.float32) + torch.tensor(pose_translation, dtype=torch.float32)).tolist()
                     extrinsics.append([rotation[0] + [translation[0]], rotation[1] + [translation[1]], rotation[2] + [translation[2]], [0,0,0,1]])
                 anns = annotations.get(sample["token"], [])
-                boxes = [a.get("translation", []) + a.get("size", []) + [a.get("rotation", [1,0,0,0])[0]] + list(a.get("velocity", [0, 0])[:2]) for a in anns]
+                boxes = [a.get("translation", []) + a.get("size", []) + [yaw_from_quaternion(a.get("rotation", [1,0,0,0]))] + list(a.get("velocity", [0, 0])[:2]) for a in anns]
                 labels = [category_id(a.get("category_name", "")) for a in anns]
                 self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": intrinsics, "extrinsics": extrinsics, "boxes": boxes, "labels": labels})
         else:
