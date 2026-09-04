@@ -15,6 +15,9 @@ class NuScenesCameraDataset(Dataset):
             root = Path(dataroot).expanduser() / "v1.0-trainval"
             with open(root / "sample.json") as handle: samples = {x["token"]: x for x in json.load(handle)}
             with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
+            pose_path = root / "ego_pose.json"; poses = {}
+            if pose_path.exists():
+                with open(pose_path) as handle: poses = {x["token"]: x for x in json.load(handle)}
             annotation_path = root / "sample_annotation.json"
             annotations = {}
             if annotation_path.exists():
@@ -33,6 +36,8 @@ class NuScenesCameraDataset(Dataset):
                     calib = calibrations.get(item.get("calibrated_sensor_token"), {})
                     intrinsics.append(calib.get("camera_intrinsic", [[1,0,0],[0,1,0],[0,0,1]]))
                     rotation = quaternion_to_matrix(calib.get("rotation", [1, 0, 0, 0])).tolist(); translation = calib.get("translation", [0, 0, 0])
+                    pose = poses.get(item.get("ego_pose_token"), {}); pose_rotation = quaternion_to_matrix(pose.get("rotation", [1,0,0,0])).tolist(); pose_translation = pose.get("translation", [0,0,0])
+                    rotation = (torch.tensor(pose_rotation, dtype=torch.float32) @ torch.tensor(rotation, dtype=torch.float32)).tolist(); translation = (torch.tensor(pose_rotation, dtype=torch.float32) @ torch.tensor(translation, dtype=torch.float32) + torch.tensor(pose_translation, dtype=torch.float32)).tolist()
                     extrinsics.append([rotation[0] + [translation[0]], rotation[1] + [translation[1]], rotation[2] + [translation[2]], [0,0,0,1]])
                 anns = annotations.get(sample["token"], [])
                 boxes = [a.get("translation", []) + a.get("size", []) + [a.get("rotation", [1,0,0,0])[0]] + list(a.get("velocity", [0, 0])[:2]) for a in anns]
