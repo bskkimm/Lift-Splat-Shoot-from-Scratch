@@ -7,7 +7,8 @@ def main():
     parser = argparse.ArgumentParser(description="Evaluate pure PyTorch LSS")
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--dataroot", default="~/dataset/nuscenes")
-    args = parser.parse_args(); model = LSS(); load_checkpoint(model, args.checkpoint); model.eval(); print(f"evaluating {args.checkpoint} on {args.dataroot}")
+    parser.add_argument("--depth-bins", type=int, default=8)
+    args = parser.parse_args(); model = LSS(depth_bins=args.depth_bins); load_checkpoint(model, args.checkpoint); model.eval(); print(f"evaluating {args.checkpoint} on {args.dataroot}")
 
 
 if __name__ == "__main__": main()
