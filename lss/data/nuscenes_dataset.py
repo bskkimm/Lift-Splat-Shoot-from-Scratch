@@ -51,8 +51,10 @@ class NuScenesCameraDataset(Dataset):
     def __getitem__(self, index):
         record = self.records[index]
         images = []
+        intrinsics = torch.tensor(record["intrinsics"], dtype=torch.float32)
         for path in record["image_paths"]:
             image = Image.open(Path(path)).convert("RGB")
-            if self.image_size: image = image.resize(self.image_size[::-1])
+            if self.image_size:
+                old_w, old_h = image.size; image = image.resize(self.image_size[::-1]); intrinsics[len(images), 0] *= self.image_size[1] / old_w; intrinsics[len(images), 1] *= self.image_size[0] / old_h
             images.append(torch.from_numpy(__import__("numpy").array(image)).permute(2, 0, 1).float() / 255)
-        return {"images": torch.stack(images), "intrinsics": torch.tensor(record["intrinsics"], dtype=torch.float32), "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": torch.tensor(record.get("boxes", []), dtype=torch.float32), "labels": torch.tensor(record.get("labels", []), dtype=torch.long)}
+        return {"images": torch.stack(images), "intrinsics": intrinsics, "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": torch.tensor(record.get("boxes", []), dtype=torch.float32), "labels": torch.tensor(record.get("labels", []), dtype=torch.long)}
