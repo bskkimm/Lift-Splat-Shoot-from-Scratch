@@ -24,3 +24,8 @@ class BEVHead(nn.Module):
             overlap = torch.minimum(boxes[order[1:], 2], boxes[current, 2])
             order = order[1:][overlap <= threshold]
         return torch.tensor(keep, device=boxes.device, dtype=torch.long)
+
+    @staticmethod
+    def class_aware_nms(boxes, scores, labels, threshold=0.5):
+        keep = [BEVHead.nms(boxes[labels == label], scores[labels == label], threshold) for label in labels.unique()]
+        return torch.cat([item for item in keep if item.numel()]) if keep else labels.new_empty(0)
