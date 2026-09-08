@@ -9,6 +9,7 @@ from torch.utils.data import Dataset
 
 class NuScenesCameraDataset(Dataset):
     """Small JSON-indexed camera dataset; the index contains image paths and calibration."""
+    CAMERA_ORDER = ("CAM_FRONT", "CAM_FRONT_RIGHT", "CAM_BACK_RIGHT", "CAM_BACK", "CAM_BACK_LEFT", "CAM_FRONT_LEFT")
     def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval"):
         self.image_size = image_size
         if dataroot is not None:
@@ -31,7 +32,10 @@ class NuScenesCameraDataset(Dataset):
             for sample in samples.values():
                 paths = []
                 intrinsics, extrinsics = [], []
-                for token in sample["data"].values():
+                camera_names = self.CAMERA_ORDER
+                tokens = [sample["data"][name] for name in camera_names if name in sample["data"]]
+                tokens += [token for name, token in sample["data"].items() if name not in camera_names]
+                for token in tokens:
                     item = sample_data[token]; paths.append(str(Path(dataroot).expanduser() / item["filename"]))
                     calib = calibrations.get(item.get("calibrated_sensor_token"), {})
                     intrinsics.append(calib.get("camera_intrinsic", [[1,0,0],[0,1,0],[0,0,1]]))
