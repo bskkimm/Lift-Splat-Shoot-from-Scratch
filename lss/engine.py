@@ -12,7 +12,9 @@ def evaluate(model, batch): return model(*batch)
 
 def save_checkpoint(model, optimizer, path, epoch):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    torch.save({"epoch": epoch, "state_dict": model.state_dict(), "optimizer": optimizer.state_dict()}, path)
+    temporary = str(path) + ".tmp"
+    torch.save({"epoch": epoch, "state_dict": model.state_dict(), "optimizer": optimizer.state_dict()}, temporary)
+    Path(temporary).replace(path)
 
 
 def fit(model, loader, optimizer, loss_fn, epochs, checkpoint_dir=None, use_amp=False, scaler=None, start_epoch=0):
