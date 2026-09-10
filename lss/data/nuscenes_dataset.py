@@ -13,7 +13,7 @@ class NuScenesCameraDataset(Dataset):
     def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval"):
         self.image_size = image_size
         if dataroot is not None:
-            root = Path(dataroot).expanduser() / "v1.0-trainval"
+            root = Path(dataroot).expanduser() / version
             with open(root / "sample.json") as handle: samples = {x["token"]: x for x in json.load(handle)}
             with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
             pose_path = root / "ego_pose.json"; poses = {}
