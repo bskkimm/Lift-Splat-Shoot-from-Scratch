@@ -19,12 +19,13 @@ def save_checkpoint(model, optimizer, path, epoch):
     Path(temporary).replace(path)
 
 
-def fit(model, loader, optimizer, loss_fn, epochs, checkpoint_dir=None, use_amp=False, scaler=None, start_epoch=0):
+def fit(model, loader, optimizer, loss_fn, epochs, checkpoint_dir=None, use_amp=False, scaler=None, start_epoch=0, scheduler=None):
     scaler = scaler or torch.cuda.amp.GradScaler(enabled=use_amp)
     history = []
     for epoch in range(start_epoch, epochs):
         total = 0.0
         for batch, target in loader: total += train_step(model, optimizer, batch, lambda output: loss_fn(output, target))
         history.append(total / max(1, len(loader)))
+        if scheduler is not None: scheduler.step()
         if checkpoint_dir: save_checkpoint(model, optimizer, Path(checkpoint_dir) / f"epoch_{epoch + 1:04d}.pt", epoch + 1)
     return history
