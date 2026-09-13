@@ -2,8 +2,10 @@ import torch
 from pathlib import Path
 
 
-def train_step(model, optimizer, batch, target):
-    optimizer.zero_grad(); prediction = model(*batch); loss = target(prediction); loss.backward(); optimizer.step(); return float(loss.detach())
+def train_step(model, optimizer, batch, target, grad_clip_norm=None):
+    optimizer.zero_grad(); prediction = model(*batch); loss = target(prediction); loss.backward()
+    if grad_clip_norm is not None: torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_norm)
+    optimizer.step(); return float(loss.detach())
 
 
 @torch.no_grad()
