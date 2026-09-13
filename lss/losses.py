@@ -3,7 +3,9 @@ import torch
 
 
 def depth_loss(pred, target): return F.cross_entropy(pred, target)
-def detection_loss(pred, target): return F.smooth_l1_loss(pred, target)
+def detection_loss(pred, target):
+    if target.numel() == 0: return pred.sum() * 0
+    return F.smooth_l1_loss(pred, target)
 
 
 def focal_loss(logits, targets, alpha=0.25, gamma=2.0):
