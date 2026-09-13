@@ -46,6 +46,8 @@ class NuScenesCameraDataset(Dataset):
                 anns = annotations.get(sample["token"], [])
                 boxes = [a.get("translation", []) + a.get("size", []) + [yaw_from_quaternion(a.get("rotation", [1,0,0,0]))] + list(a.get("velocity", [0, 0])[:2]) for a in anns]
                 labels = [category_id(a.get("category_name", "")) for a in anns]
+                filtered = [(box, label) for box, label in zip(boxes, labels) if label >= 0]
+                boxes, labels = [item[0] for item in filtered], [item[1] for item in filtered]
                 self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": intrinsics, "extrinsics": extrinsics, "boxes": boxes, "labels": labels})
         else:
             self.records = records or []
