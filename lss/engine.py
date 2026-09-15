@@ -12,10 +12,12 @@ def train_step(model, optimizer, batch, target, grad_clip_norm=None):
 def evaluate(model, batch): return model(*batch)
 
 
-def save_checkpoint(model, optimizer, path, epoch):
+def save_checkpoint(model, optimizer, path, epoch, scheduler=None):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     temporary = str(path) + ".tmp"
-    torch.save({"epoch": epoch, "state_dict": model.state_dict(), "optimizer": optimizer.state_dict()}, temporary)
+    state = {"epoch": epoch, "state_dict": model.state_dict(), "optimizer": optimizer.state_dict()}
+    if scheduler is not None: state["scheduler"] = scheduler.state_dict()
+    torch.save(state, temporary)
     Path(temporary).replace(path)
 
 
