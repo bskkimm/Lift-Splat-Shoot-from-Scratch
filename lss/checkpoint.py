@@ -15,8 +15,9 @@ def checkpoint_metadata(path, map_location="cpu"):
     return {key: value for key, value in state.items() if key != "state_dict" and not torch.is_tensor(value)}
 
 
-def resume_checkpoint(model, optimizer, path, map_location="cpu"):
+def resume_checkpoint(model, optimizer, path, map_location="cpu", scheduler=None):
     state = torch.load(path, map_location=map_location)
     load_checkpoint(model, path, map_location=map_location)
     if "optimizer" in state: optimizer.load_state_dict(state["optimizer"])
+    if scheduler is not None and "scheduler" in state: scheduler.load_state_dict(state["scheduler"])
     return int(state.get("epoch", 0))
