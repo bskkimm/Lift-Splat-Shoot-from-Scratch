@@ -1,4 +1,5 @@
 import torch
+import json
 from pathlib import Path
 
 
@@ -31,4 +32,6 @@ def fit(model, loader, optimizer, loss_fn, epochs, checkpoint_dir=None, use_amp=
         history.append(total / max(1, len(loader)))
         if scheduler is not None: scheduler.step()
         if checkpoint_dir: save_checkpoint(model, optimizer, Path(checkpoint_dir) / f"epoch_{epoch + 1:04d}.pt", epoch + 1)
+    if checkpoint_dir:
+        with open(Path(checkpoint_dir) / "history.json", "w") as handle: json.dump(history, handle)
     return history
