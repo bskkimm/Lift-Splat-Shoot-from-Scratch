@@ -33,5 +33,7 @@ def fit(model, loader, optimizer, loss_fn, epochs, checkpoint_dir=None, use_amp=
         if scheduler is not None: scheduler.step()
         if checkpoint_dir: save_checkpoint(model, optimizer, Path(checkpoint_dir) / f"epoch_{epoch + 1:04d}.pt", epoch + 1)
     if checkpoint_dir:
-        with open(Path(checkpoint_dir) / "history.json", "w") as handle: json.dump(history, handle)
+        history_path = Path(checkpoint_dir) / "history.json"; temporary = str(history_path) + ".tmp"
+        with open(temporary, "w") as handle: json.dump(history, handle)
+        Path(temporary).replace(history_path)
     return history
