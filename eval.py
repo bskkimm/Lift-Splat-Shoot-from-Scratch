@@ -15,7 +15,9 @@ def main():
     args = parser.parse_args()
     if args.seed is not None: seed_everything(args.seed)
     model = LSS(depth_bins=args.depth_bins); load_checkpoint(model, args.checkpoint); model.eval(); print(f"evaluating {args.checkpoint} on {args.dataroot}")
-    if args.output: export_predictions({"results": [], "meta": {}}, args.output)
+    if args.output:
+        if not args.output.endswith(".json"): raise ValueError("--output must be a .json file")
+        export_predictions({"results": [], "meta": {}}, args.output)
 
 
 if __name__ == "__main__": main()
