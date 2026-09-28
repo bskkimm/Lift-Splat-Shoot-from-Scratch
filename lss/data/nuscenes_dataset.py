@@ -15,6 +15,7 @@ class NuScenesCameraDataset(Dataset):
         self.image_size = image_size
         if dataroot is not None:
             root = Path(dataroot).expanduser() / version
+            if not root.is_dir(): raise FileNotFoundError(f"nuScenes version directory not found: {root}")
             with open(root / "sample.json") as handle: samples = {x["token"]: x for x in json.load(handle)}
             with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
             pose_path = root / "ego_pose.json"; poses = {}
