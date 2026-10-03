@@ -13,6 +13,13 @@ def train_step(model, optimizer, batch, target, grad_clip_norm=None):
 def evaluate(model, batch): return model(*batch)
 
 
+@torch.no_grad()
+def evaluate_loss(model, loader, loss_fn):
+    total = 0.0
+    for batch, target in loader: total += float(loss_fn(model(*batch), target))
+    return total / max(1, len(loader))
+
+
 def save_checkpoint(model, optimizer, path, epoch, scheduler=None, metadata=None):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     temporary = str(path) + ".tmp"
