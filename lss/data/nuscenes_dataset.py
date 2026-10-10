@@ -11,6 +11,10 @@ from torch.utils.data import Dataset
 class NuScenesCameraDataset(Dataset):
     """Small JSON-indexed camera dataset; the index contains image paths and calibration."""
     CAMERA_ORDER = ("CAM_FRONT", "CAM_FRONT_RIGHT", "CAM_BACK_RIGHT", "CAM_BACK", "CAM_BACK_LEFT", "CAM_FRONT_LEFT")
+
+    @classmethod
+    def has_camera_data(cls, record):
+        return bool(record.get("image_paths"))
     def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval"):
         self.image_size = image_size
         if dataroot is not None:
