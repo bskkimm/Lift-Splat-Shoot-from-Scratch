@@ -60,6 +60,9 @@ class NuScenesCameraDataset(Dataset):
 
     def __len__(self): return len(self.records)
 
+    @property
+    def record_count(self): return len(self.records)
+
     def __getitem__(self, index):
         record = self.records[index]
         images = []
