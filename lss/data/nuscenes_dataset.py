@@ -68,6 +68,7 @@ class NuScenesCameraDataset(Dataset):
         images = []
         intrinsics = torch.tensor(record["intrinsics"], dtype=torch.float32)
         for path in record["image_paths"]:
+            if not Path(path).is_file(): raise FileNotFoundError(f"camera image not found: {path}")
             image = Image.open(Path(path)).convert("RGB")
             if self.image_size:
                 old_w, old_h = image.size; image = image.resize(self.image_size[::-1]); intrinsics[len(images), 0] *= self.image_size[1] / old_w; intrinsics[len(images), 1] *= self.image_size[0] / old_h
