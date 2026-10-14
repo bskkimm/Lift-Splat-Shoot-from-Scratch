@@ -72,7 +72,7 @@ class NuScenesCameraDataset(Dataset):
             image = Image.open(Path(path)).convert("RGB")
             if self.image_size:
                 old_w, old_h = image.size; image = image.resize(self.image_size[::-1]); intrinsics[len(images), 0] *= self.image_size[1] / old_w; intrinsics[len(images), 1] *= self.image_size[0] / old_h
-            images.append(torch.from_numpy(__import__("numpy").array(image)).permute(2, 0, 1).float() / 255)
+            images.append(torch.from_numpy(__import__("numpy").array(image)).permute(2, 0, 1).contiguous().float() / 255)
         boxes = torch.tensor(record.get("boxes", []), dtype=torch.float32).reshape(-1, 9)
         labels = torch.tensor(record.get("labels", []), dtype=torch.long).reshape(-1)
         return {"images": normalize_images(torch.stack(images)), "intrinsics": intrinsics, "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": boxes, "labels": labels}
