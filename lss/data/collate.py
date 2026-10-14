@@ -2,6 +2,7 @@ import torch
 
 
 def collate_camera_samples(samples):
+    if not samples: raise ValueError("cannot collate an empty sample list")
     max_boxes = max((sample["boxes"].shape[0] for sample in samples), default=0)
     boxes = torch.zeros(len(samples), max_boxes, 9)
     labels = torch.full((len(samples), max_boxes), -1, dtype=torch.long)
