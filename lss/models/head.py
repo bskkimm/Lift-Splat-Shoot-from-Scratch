@@ -9,6 +9,7 @@ class BEVHead(nn.Module):
 
     @staticmethod
     def decode(outputs, score_threshold=0.05, max_boxes=100):
+        if max_boxes <= 0: return [{"scores": outputs["logits"].new_empty(0), "labels": outputs["logits"].new_empty(0, dtype=torch.long), "boxes": outputs["boxes"].new_empty(0, outputs["boxes"].shape[1])} for _ in range(outputs["logits"].shape[0])]
         scores = outputs["logits"].sigmoid().flatten(2)
         values, indices = scores.flatten(1).topk(min(max_boxes, scores.shape[1] * scores.shape[2]), dim=1)
         labels = indices // scores.shape[2]; locations = indices % scores.shape[2]
