@@ -5,6 +5,7 @@ from pathlib import Path
 def export_predictions(predictions, output_path):
     predictions.setdefault("meta", {})
     predictions.setdefault("results", [])
+    predictions["meta"].setdefault("version", "v1.0-trainval")
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as handle: json.dump(predictions, handle)
 
