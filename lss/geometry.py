@@ -7,6 +7,7 @@ def quaternion_to_matrix(q):
 
 
 def make_frustum(height, width, depths, device=None):
+    if height <= 0 or width <= 0: raise ValueError("frustum dimensions must be positive")
     d = torch.as_tensor(depths, dtype=torch.float32, device=device)
     y, x = torch.meshgrid(torch.arange(height, device=device), torch.arange(width, device=device))
     return torch.stack((x[None].expand(len(d), -1, -1), y[None].expand(len(d), -1, -1), d[:, None, None].expand(-1, height, width)), -1)
