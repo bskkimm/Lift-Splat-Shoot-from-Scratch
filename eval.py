@@ -12,9 +12,11 @@ def main():
     parser.add_argument("--depth-bins", type=int, default=8)
     parser.add_argument("--output", default=None)
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--output-dir", default=None)
     args = parser.parse_args()
     if args.seed is not None: seed_everything(args.seed)
     model = LSS(depth_bins=args.depth_bins); load_checkpoint(model, args.checkpoint); model.eval(); print(f"evaluating {args.checkpoint} on {args.dataroot}")
+    if args.output and args.output_dir: args.output = str(__import__("pathlib").Path(args.output_dir) / args.output)
     if args.output:
         if not args.output.endswith(".json"): raise ValueError("--output must be a .json file")
         export_predictions({"results": [], "meta": {}}, args.output)
