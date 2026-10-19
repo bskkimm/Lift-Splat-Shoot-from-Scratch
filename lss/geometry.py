@@ -4,8 +4,8 @@ __all__ = ["make_frustum", "camera_to_ego", "quaternion_to_matrix"]
 
 
 def quaternion_to_matrix(q):
-    q = torch.as_tensor(q, dtype=torch.float32); w, x, y, z = q
-    return torch.tensor([[1-2*(y*y+z*z),2*(x*y-z*w),2*(x*z+y*w)],[2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w)],[2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)]])
+    q = torch.as_tensor(q); dtype = q.dtype if q.is_floating_point() else torch.float32; q = q.to(dtype); w, x, y, z = q
+    return torch.stack((torch.stack((1-2*(y*y+z*z),2*(x*y-z*w),2*(x*z+y*w))), torch.stack((2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w))), torch.stack((2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)))))
 
 
 def make_frustum(height, width, depths, device=None):
