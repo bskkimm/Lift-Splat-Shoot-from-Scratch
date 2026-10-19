@@ -20,6 +20,11 @@ def checkpoint_epoch(path, map_location="cpu"):
     return int(torch.load(path, map_location=map_location).get("epoch", 0))
 
 
+def checkpoint_metadata_json(path, map_location="cpu"):
+    import json
+    return json.dumps(checkpoint_metadata(path, map_location))
+
+
 def resume_checkpoint(model, optimizer, path, map_location="cpu", scheduler=None):
     state = torch.load(path, map_location=map_location)
     load_checkpoint(model, path, map_location=map_location)
