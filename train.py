@@ -17,7 +17,7 @@ def main():
     args = parser.parse_args()
     if args.seed is not None: seed_everything(args.seed)
     model = LSS(depth_bins=args.depth_bins)
-    print(f"training LSS for {args.epochs} epochs from {args.dataroot}; parameters={sum(p.numel() for p in model.parameters())}")
+    print(f"training LSS for {args.epochs} epochs from {args.dataroot}; parameters={sum(p.numel() for p in model.parameters())}; dry_run={args.dry_run}")
     if not args.dry_run:
         output_dir = Path(args.output_dir); output_dir.mkdir(parents=True, exist_ok=True); torch.save(model.state_dict(), output_dir / args.checkpoint_name)
 
