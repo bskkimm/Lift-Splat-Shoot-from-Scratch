@@ -9,3 +9,10 @@ editable mode with `pip install -e .`.
 
 Use `python train.py --dry-run --seed 0` to validate model construction, and
 `python eval.py --help` to inspect checkpoint evaluation and JSON export.
+
+Example checkpoint flow:
+
+```bash
+python train.py --dry-run --output-dir outputs/smoke
+python eval.py --help
+```
