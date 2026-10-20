@@ -19,7 +19,7 @@ def main():
     if args.output and args.output_dir: args.output = str(__import__("pathlib").Path(args.output_dir) / args.output)
     if args.output:
         if not args.output.endswith(".json"): raise ValueError("--output must be a .json file")
-        export_predictions({"results": [], "meta": {}}, args.output)
+        export_predictions({"results": [], "meta": {}}, args.output); print(f"wrote predictions to {args.output}")
 
 
 if __name__ == "__main__": main()
