@@ -16,6 +16,7 @@ class NuScenesCameraDataset(Dataset):
     def has_camera_data(cls, record):
         return bool(record.get("image_paths"))
     def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval"):
+        if image_size is not None and (len(image_size) != 2 or min(image_size) <= 0): raise ValueError("image_size must be (height, width) with positive values")
         self.image_size = image_size
         if dataroot is not None:
             root = Path(dataroot).expanduser() / version
