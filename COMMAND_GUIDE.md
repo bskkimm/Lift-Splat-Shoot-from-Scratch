@@ -16,3 +16,6 @@ Example checkpoint flow:
 python train.py --dry-run --output-dir outputs/smoke
 python eval.py --help
 ```
+
+Prediction exports use the nuScenes-compatible structure `{\"results\": [],
+\"meta\": {\"version\": \"v1.0-trainval\"}}`.
