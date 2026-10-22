@@ -19,3 +19,5 @@ python eval.py --help
 
 Prediction exports use the nuScenes-compatible structure `{\"results\": [],
 \"meta\": {\"version\": \"v1.0-trainval\"}}`.
+
+Use `lss.models.diagnostics.parameter_count(model)` to inspect model size.
