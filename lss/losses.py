@@ -16,4 +16,5 @@ def focal_loss(logits, targets, alpha=0.25, gamma=2.0):
 
 
 def lss_loss(predictions, targets, depth_weight=1.0, detection_weight=1.0):
+    if depth_weight < 0 or detection_weight < 0: raise ValueError("loss weights must be non-negative")
     return depth_weight * depth_loss(predictions["depth"], targets["depth"]) + detection_weight * detection_loss(predictions["boxes"], targets["boxes"])
