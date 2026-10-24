@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--checkpoint-name", default="lss_model.pt")
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--weight-decay", type=float, default=0.01)
+    parser.add_argument("--scheduler", choices=("cosine", "none"), default="cosine")
     args = parser.parse_args()
     if args.seed is not None: seed_everything(args.seed)
     model = LSS(depth_bins=args.depth_bins)
