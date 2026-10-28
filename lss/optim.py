@@ -9,4 +9,5 @@ def build_optimizer(model, lr=2e-4, weight_decay=0.01):
 
 
 def build_scheduler(optimizer, epochs):
+    if epochs <= 0: raise ValueError("epochs must be positive")
     return torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, epochs))
