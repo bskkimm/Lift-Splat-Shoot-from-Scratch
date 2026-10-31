@@ -5,6 +5,7 @@ import torch.nn as nn
 class LiftSplat(nn.Module):
     def __init__(self, x_bounds=(-50., 50., 1.), y_bounds=(-50., 50., 1.), z_bounds=(-5., 3., 1.)):
         super().__init__()
+        if any(stop <= start or step <= 0 for start, stop, step in (x_bounds, y_bounds, z_bounds)): raise ValueError("BEV bounds must be increasing with positive step")
         self.register_buffer("bounds", torch.tensor([x_bounds, y_bounds, z_bounds]))
 
     def forward(self, depth, context, points):
