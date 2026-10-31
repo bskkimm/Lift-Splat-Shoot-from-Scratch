@@ -4,6 +4,7 @@ import torch.nn as nn
 class ImageBackbone(nn.Module):
     def __init__(self, in_channels=3, channels=64, name="tiny", pretrained=False):
         super().__init__()
+        if channels <= 0: raise ValueError("channels must be positive")
         if name == "tiny":
             self.net = nn.Sequential(nn.Conv2d(in_channels, channels, 3, 2, 1), nn.BatchNorm2d(channels), nn.ReLU(), nn.Conv2d(channels, channels, 3, 2, 1), nn.ReLU())
         else:
