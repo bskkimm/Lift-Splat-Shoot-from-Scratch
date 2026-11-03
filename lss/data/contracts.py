@@ -23,3 +23,6 @@ class Sample:
     cameras: CameraBatch
     boxes: torch.Tensor
     labels: torch.Tensor
+
+    def __post_init__(self):
+        if self.boxes.ndim != 2 or self.boxes.shape[0] != self.labels.shape[0]: raise ValueError("boxes and labels must have matching leading dimensions")
