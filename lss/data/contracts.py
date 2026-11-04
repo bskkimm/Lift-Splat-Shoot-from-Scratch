@@ -9,6 +9,7 @@ class CameraBatch:
     extrinsics: torch.Tensor
 
     def __post_init__(self):
+        if not self.images.is_floating_point() or not self.intrinsics.is_floating_point() or not self.extrinsics.is_floating_point(): raise TypeError("camera tensors must use floating point dtype")
         if self.images.ndim != 5:
             raise ValueError("images must be [B, C, 3, H, W]")
         b, c = self.images.shape[:2]
