@@ -1,12 +1,48 @@
 name: tests
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  unit:
+    name: unit (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          python-version: "3.11"
-      - run: pip install -e . pytest
-      - run: pytest -q
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e . pytest
+      - run: python -m pytest -q
+
+  current-ci-gate:
+    name: current CI gate
+    if: ${{ always() }}
+    needs: [unit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require all current matrix jobs to pass
+        env:
+          UNIT_RESULT: ${{ needs.unit.result }}
+        run: |
+          if [ "$UNIT_RESULT" != "success" ]; then
+            printf 'Unit matrix result: %s\n' "$UNIT_RESULT"
+            exit 1
+          fi

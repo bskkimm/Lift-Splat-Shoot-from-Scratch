@@ -40,6 +40,15 @@ The synthetic tests need no nuScenes dataset or network. The nuScenes dataset,
 pretrained weights, and checkpoints are not included. Dependencies and supported
 environments still need to be pinned and verified as part of the rebuild.
 
+## Continuous integration
+
+The current GitHub Actions workflow runs the synthetic pytest suite on Python
+3.10 and 3.11 and aggregates those results in a `current CI gate` job. This is
+an **incomplete** CI foundation: the playbook's lint/format, typing, notebook
+execution and parity, package, dependency audit, integration, and documentation
+checks still need to be implemented. Branch protection is not yet configured,
+so this workflow alone does not enforce those checks before merging.
+
 For commands and their current limitations, see [COMMAND_GUIDE.md](COMMAND_GUIDE.md).
 Specs and implementation plans are local-only; public research and verification
 evidence will be maintained in the repository.
