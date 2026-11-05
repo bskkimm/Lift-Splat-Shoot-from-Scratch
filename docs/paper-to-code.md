@@ -20,7 +20,7 @@ parity, or full training have been verified here.
 | §3.1, eq. 1; §4.1 | ImageNet-pretrained EfficientNet-B0 image features; predict context and latent depth distribution, then take their outer product. | `lss/models/backbone.py`, `lss/models/depth.py`, `lss/models/lift_splat.py`: simplified image path and depth/context, not the reference encoder. | Encoder initialization, feature shapes, numerical and gradient tests. |
 | §3.2; §4.2 | Project frustum points to the ego frame and sum-pool the cameras into BEV pillars. | `lss/geometry.py`, `lss/models/lift_splat.py`: preliminary geometry and pooling; fractional bounds and XY cell assignment are tested, but the output layout and z-bin handling still differ from the reference. | Analytical projection and camera-permutation tests, z-bin handling, and reference-layout parity. |
 | §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `lss/models/lss.py` returns pooled features and has no paper BEV decoder; `lss/models/head.py` is a detection scaffold. | Segmentation logits and end-to-end tests. |
-| §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, and transforms raw camera/box coordinates to the LiDAR keyframe ego frame. Enriched records still use the legacy global-frame path, missing velocity defaults to zero, and official splits and segmentation masks are absent. `lss/evaluation.py` lacks segmentation evaluation. | Real-data frame parity, enriched-record semantics, derived velocity if required, official split, rasterized targets, and validation IoU. |
+| §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, and transforms raw camera/box coordinates to the LiDAR keyframe ego frame. Enriched records still use the legacy global-frame path, missing velocity defaults to zero, and official splits and segmentation masks are absent. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame parity, enriched-record semantics, derived velocity if required, official split, rasterized targets, and validation IoU. |
 | §3.3, eq. 2; §5.6 | Score trajectory templates against a cost map and evaluate template rankings. | Not implemented. | Analytical scoring, training and planning-protocol tests. |
 | §5 | Train on the paper recipe and report the correct benchmark and split. | `train.py` supports model-construction dry runs only; real training and `eval.py` fail explicitly rather than writing placeholder results. | Real optimizer steps, reproducible resume, data-backed evaluation and measured results. |
 | Teaching resource | Standalone architecture definitions and probes consistent with production. | `notebooks/lss_e2e_walkthrough.ipynb` imports the production model. | Independent definitions, fresh-process execution and parity. |
@@ -40,6 +40,13 @@ batch size 4, and selects five cameras for training by default. These
 paper/reference differences must be preserved as explicit recipe choices, not
 silently conflated. Pretrained weight provenance and checkpoint compatibility
 remain unverified.
+
+The standalone segmentation loss defaults to positive weight 1.0 as in the
+paper's object-segmentation description; 2.13 must be supplied explicitly for
+the reference training-script setting. IoU thresholds logits at zero; sum
+intersection and union counts across validation batches before division. The
+empty-union score of 1.0 matches the reference batch metric; full-validation
+empty-union handling remains to be defined when that evaluation is implemented.
 
 The reference `get_image_data` passes calibrated camera-to-ego transforms
 directly, while its segmentation targets use the LiDAR keyframe's ego pose.

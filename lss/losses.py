@@ -2,6 +2,14 @@ import torch.nn.functional as F
 import torch
 
 
+def binary_segmentation_loss(logits, targets, pos_weight=1.0):
+    """Mean BCE on BEV occupancy logits and matching binary targets."""
+    if logits.shape != targets.shape or logits.numel() == 0:
+        raise ValueError("segmentation logits and targets must have matching, nonempty shapes")
+    weight = logits.new_tensor(pos_weight)
+    return F.binary_cross_entropy_with_logits(logits, targets.to(dtype=logits.dtype), pos_weight=weight)
+
+
 def depth_loss(pred, target): return F.cross_entropy(pred, target)
 def detection_loss(pred, target):
     if target.numel() == 0: return pred.sum() * 0
