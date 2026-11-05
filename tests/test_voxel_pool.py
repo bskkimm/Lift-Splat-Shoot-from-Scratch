@@ -97,3 +97,28 @@ def test_voxel_pool_rejects_integer_coordinates():
     pool = VoxelPool((0, 1, 0.5), (0, 1, 1), (0, 1, 1))
     with pytest.raises(TypeError, match="floating"):
         pool(torch.zeros(1, 1, 1, 1, 1, 3, dtype=torch.int64), torch.ones(1, 1, 1, 1, 1, 1))
+
+
+def test_module_dtype_cast_does_not_change_configured_grid_boundaries():
+    from lss.models.voxel_pool import VoxelPool
+
+    pool = VoxelPool((0, 1, 0.1), (0, 1, 1), (0, 1, 1)).half()
+    points = torch.tensor([[[[[[0.09999, 0.5, 0.5]]]]]], dtype=torch.float32)
+    features = torch.ones(1, 1, 1, 1, 1, 1)
+
+    output = pool(points, features)
+
+    assert output[0, 0, 0, 0] == 1
+    assert output[0, 0, 1, 0] == 0
+
+
+def test_checkpoint_rejects_mismatched_voxel_bounds():
+    from lss.models.voxel_pool import VoxelPool
+
+    saved = VoxelPool((0, 1, 0.5), (0, 1, 1), (0, 1, 1)).state_dict()
+    matching = VoxelPool((0, 1, 0.5), (0, 1, 1), (0, 1, 1))
+    different = VoxelPool((0, 2, 0.5), (0, 1, 1), (0, 1, 1))
+
+    matching.load_state_dict(saved)
+    with pytest.raises(RuntimeError, match="bounds"):
+        different.load_state_dict(saved)

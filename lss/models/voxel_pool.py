@@ -26,9 +26,15 @@ class VoxelPool(nn.Module):
                 raise ValueError("voxel bounds must define an integral number of bins")
             sizes.append(int(round(count)))
         self.grid_size = tuple(sizes)
-        self.register_buffer("lower", torch.tensor([bound[0] for bound in bounds], dtype=torch.float64))
-        self.register_buffer("upper", torch.tensor([bound[1] for bound in bounds], dtype=torch.float64))
-        self.register_buffer("step", torch.tensor([bound[2] for bound in bounds], dtype=torch.float64))
+        # Keep the configured values independent of module device/dtype casts.
+        self.bounds = tuple(tuple(float(value) for value in bound) for bound in bounds)
+
+    def get_extra_state(self):
+        return {"bounds": self.bounds}
+
+    def set_extra_state(self, state):
+        if state.get("bounds") != self.bounds:
+            raise RuntimeError("checkpoint voxel bounds do not match the configured bounds")
 
     def forward(self, points, features):
         if points.ndim != 6 or points.shape[-1] != 3 or features.ndim != 6:
@@ -40,9 +46,9 @@ class VoxelPool(nn.Module):
         batch = points.shape[0]
         channels = features.shape[-1]
         nx, ny, nz = self.grid_size
-        lower = self.lower.to(device=points.device, dtype=points.dtype)
-        upper = self.upper.to(device=points.device, dtype=points.dtype)
-        step = self.step.to(device=points.device, dtype=points.dtype)
+        lower = points.new_tensor([bound[0] for bound in self.bounds])
+        upper = points.new_tensor([bound[1] for bound in self.bounds])
+        step = points.new_tensor([bound[2] for bound in self.bounds])
         valid = ((points >= lower) & (points < upper)).all(dim=-1)
         selected_points = points[valid]
         xyz = torch.floor((selected_points - lower) / step).long()
