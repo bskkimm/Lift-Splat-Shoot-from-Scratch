@@ -17,9 +17,9 @@ parity, or full training have been verified here.
 
 | Paper | Required behavior | Current location and status | Verification still needed |
 | --- | --- | --- | --- |
-| §3.1, eq. 1; §4.1 | ImageNet-pretrained EfficientNet-B0 image features; predict context and latent depth distribution, then take their outer product. | `lss/models/camera_encoder.py` provides a standalone TorchVision EfficientNet-B0 camera encoder with synthetic shape, depth normalization, permutation and input-gradient tests. It is not yet used by `LSS.forward`, which still uses the simplified backbone and depth modules. | End-to-end integration, pretrained weight provenance and reference checkpoint/numerical parity. |
-| §3.2; §4.2 | Project frustum points to the ego frame and sum-pool the cameras into BEV pillars. | `lss/geometry.py` supports frustum sampling and optional post-augmentation inversion. `lss/models/voxel_pool.py` provides a standalone z-aware, z-major pooling primitive with analytical tests; existing `LSS.forward` still uses the older `lift_splat.py` pooling layout. | Model integration, dataset augmentation, reference numerical parity and performance verification. |
-| §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `lss/models/bev_encoder.py` provides a standalone ResNet-block BEV segmentation decoder with shape and gradient tests. `lss/models/lss.py` still returns pooled features; `lss/models/head.py` is a detection scaffold. | End-to-end integration, reference checkpoint parity, and training/evaluation tests. |
+| §3.1, eq. 1; §4.1 | ImageNet-pretrained EfficientNet-B0 image features; predict context and latent depth distribution, then take their outer product. | `lss/models/segmentation.py` connects the TorchVision camera encoder and latent depth/context lift; its small synthetic forward/backward path is tested. Existing `LSS.forward` remains a separate scaffold. | Pretrained weight provenance, reference checkpoint/numerical parity and real-data testing. |
+| §3.2; §4.2 | Project frustum points to the ego frame and sum-pool the cameras into BEV pillars. | `lss/models/segmentation.py` connects image-coordinate geometry and z-aware pooling; fractional bounds, augmentation inversion and small synthetic camera permutation are tested. Existing `LSS.forward` still uses `lift_splat.py`. | Dataset augmentation integration, reference numerical parity and performance verification. |
+| §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `LSSSegmentation` uses `lss/models/bev_encoder.py` for raw BEV logits; a small synthetic BCE backward pass is tested. `lss/models/head.py` remains a separate detection scaffold. | Reference checkpoint parity and real training/evaluation tests. |
 | §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, and transforms raw camera/box coordinates to the LiDAR keyframe ego frame. Enriched records still use the legacy global-frame path, missing velocity defaults to zero, and official splits and segmentation masks are absent. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame parity, enriched-record semantics, derived velocity if required, official split, rasterized targets, and validation IoU. |
 | §3.3, eq. 2; §5.6 | Score trajectory templates against a cost map and evaluate template rankings. | Not implemented. | Analytical scoring, training and planning-protocol tests. |
 | §5 | Train on the paper recipe and report the correct benchmark and split. | `train.py` supports model-construction dry runs only; real training and `eval.py` fail explicitly rather than writing placeholder results. | Real optimizer steps, reproducible resume, data-backed evaluation and measured results. |
@@ -45,8 +45,8 @@ The standalone `CameraEncoder` defaults to random initialization and does not
 download weights. Its opt-in `pretrained=True` uses TorchVision's ImageNet-1K
 V1 EfficientNet-B0 weights, not the original repository's
 `efficientnet_pytorch` weights. Their equivalence, checkpoint key mapping and
-impact on LSS output have not been verified. The existing `LSS` model does not
-yet use this encoder.
+impact on LSS output have not been verified. `LSSSegmentation` uses this encoder;
+the older `LSS` scaffold does not.
 
 The standalone segmentation loss defaults to positive weight 1.0 as in the
 paper's object-segmentation description; 2.13 must be supplied explicitly for

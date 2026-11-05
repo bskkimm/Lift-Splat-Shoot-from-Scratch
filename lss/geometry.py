@@ -18,7 +18,9 @@ def make_frustum(height, width, depths, device=None, image_size=None):
     if height <= 0 or width <= 0: raise ValueError("frustum dimensions must be positive")
     image_height, image_width = image_size if image_size is not None else (height, width)
     if image_height <= 0 or image_width <= 0: raise ValueError("image dimensions must be positive")
-    d = torch.as_tensor(depths, dtype=torch.float32, device=device)
+    d = torch.as_tensor(depths, device=device)
+    if not d.is_floating_point():
+        d = d.to(dtype=torch.float32)
     y, x = torch.meshgrid(
         torch.linspace(0, image_height - 1, height, dtype=d.dtype, device=d.device),
         torch.linspace(0, image_width - 1, width, dtype=d.dtype, device=d.device),
