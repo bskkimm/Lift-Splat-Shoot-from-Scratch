@@ -8,10 +8,21 @@ def quaternion_to_matrix(q):
     return torch.stack((torch.stack((1-2*(y*y+z*z),2*(x*y-z*w),2*(x*z+y*w))), torch.stack((2*(x*y+z*w),1-2*(x*x+z*z),2*(y*z-x*w))), torch.stack((2*(x*z-y*w),2*(y*z+x*w),1-2*(x*x+y*y)))))
 
 
-def make_frustum(height, width, depths, device=None):
+def make_frustum(height, width, depths, device=None, image_size=None):
+    """Return [D,H,W,3] frustum points in input-image pixel coordinates.
+
+    ``height`` and ``width`` are feature-map dimensions; ``image_size`` is
+    the input image (height, width) corresponding to the camera intrinsics.
+    When omitted, feature-map coordinates are used for compatibility.
+    """
     if height <= 0 or width <= 0: raise ValueError("frustum dimensions must be positive")
+    image_height, image_width = image_size if image_size is not None else (height, width)
+    if image_height <= 0 or image_width <= 0: raise ValueError("image dimensions must be positive")
     d = torch.as_tensor(depths, dtype=torch.float32, device=device)
-    y, x = torch.meshgrid(torch.arange(height, device=device), torch.arange(width, device=device))
+    y, x = torch.meshgrid(
+        torch.linspace(0, image_height - 1, height, dtype=d.dtype, device=d.device),
+        torch.linspace(0, image_width - 1, width, dtype=d.dtype, device=d.device),
+    )
     return torch.stack((x[None].expand(len(d), -1, -1), y[None].expand(len(d), -1, -1), d[:, None, None].expand(-1, height, width)), -1)
 
 

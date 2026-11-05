@@ -3,6 +3,7 @@ import torch.nn as nn
 from .backbone import ImageBackbone
 from .depth import DepthContextNet
 from .lift_splat import LiftSplat
+from lss.geometry import camera_to_ego, make_frustum
 
 
 class LSS(nn.Module):
@@ -16,5 +17,8 @@ class LSS(nn.Module):
     def forward(self, images, intrinsics, extrinsics, depths):
         features = self.backbone(images)
         depth, context = self.depth(features)
-        points = __import__("lss.geometry", fromlist=["camera_to_ego"]).camera_to_ego(__import__("lss.geometry", fromlist=["make_frustum"]).make_frustum(features.shape[-2], features.shape[-1], depths, images.device)[None, None].expand(images.shape[0], images.shape[1], -1, -1, -1, -1), intrinsics, extrinsics)
+        frustum = make_frustum(features.shape[-2], features.shape[-1], depths,
+                               images.device, image_size=images.shape[-2:])
+        points = camera_to_ego(frustum[None, None].expand(images.shape[0], images.shape[1], -1, -1, -1, -1),
+                               intrinsics, extrinsics)
         return self.lift_splat(depth, context, points), depth
