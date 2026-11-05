@@ -16,9 +16,9 @@ In particular:
   fail explicitly because training and nuScenes data loading are not wired up.
 - `eval.py` fails explicitly because inference and evaluation are not wired up;
   it does not generate predictions or official nuScenes results.
-- The data loader only partially handles the raw nuScenes table schema and does
-  not implement official splits. An opt-in vehicle-mask generator has synthetic
-  tests but no real-data parity evidence. An experimental
+- The data loader only partially handles the raw nuScenes table schema. Named
+  train/validation scene splits and vehicle-mask generation have synthetic tests
+  but no real-data parity evidence. An experimental
   `LSSSegmentation` forward path and BCE/IoU primitives exist, but they are not
   wired into the training/evaluation CLIs or validated against a reference model.
 - Existing synthetic tests exercise parts of the scaffold; passing them does not

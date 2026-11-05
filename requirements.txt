@@ -3,4 +3,5 @@ torchvision
 numpy
 Pillow
 opencv-python-headless>=4.8,<5
+nuscenes-devkit>=1.1.11,<2
 pytest
