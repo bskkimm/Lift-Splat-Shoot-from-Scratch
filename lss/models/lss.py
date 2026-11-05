@@ -14,11 +14,11 @@ class LSS(nn.Module):
         self.depth = DepthContextNet(feature_channels, depth_bins, feature_channels)
         self.lift_splat = LiftSplat(*bev_bounds)
 
-    def forward(self, images, intrinsics, extrinsics, depths):
+    def forward(self, images, intrinsics, extrinsics, depths, post_rots=None, post_trans=None):
         features = self.backbone(images)
         depth, context = self.depth(features)
         frustum = make_frustum(features.shape[-2], features.shape[-1], depths,
                                images.device, image_size=images.shape[-2:])
         points = camera_to_ego(frustum[None, None].expand(images.shape[0], images.shape[1], -1, -1, -1, -1),
-                               intrinsics, extrinsics)
+                               intrinsics, extrinsics, post_rots=post_rots, post_trans=post_trans)
         return self.lift_splat(depth, context, points), depth

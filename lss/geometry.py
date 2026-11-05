@@ -26,10 +26,22 @@ def make_frustum(height, width, depths, device=None, image_size=None):
     return torch.stack((x[None].expand(len(d), -1, -1), y[None].expand(len(d), -1, -1), d[:, None, None].expand(-1, height, width)), -1)
 
 
-def camera_to_ego(points, intrinsics, extrinsics):
+def camera_to_ego(points, intrinsics, extrinsics, post_rots=None, post_trans=None):
+    """Unproject frustum points; optionally undo paired image post-transforms.
+
+    Post-transforms map pre-augmentation pixel/depth coordinates to the
+    coordinates in ``points``. Intrinsics must describe pre-augmentation pixels
+    when the post-transform pair is supplied.
+    """
     if points.ndim != 6 or intrinsics.shape[:2] != points.shape[:2] or extrinsics.shape[:2] != points.shape[:2]:
         raise ValueError("points, intrinsics, and extrinsics must share batch and camera axes")
     b, c, d, h, w, _ = points.shape
     pix = points.reshape(b, c, -1, 3)
+    if (post_rots is None) != (post_trans is None):
+        raise ValueError("post_rots and post_trans must be provided together")
+    if post_rots is not None:
+        if post_rots.shape != (b, c, 3, 3) or post_trans.shape != (b, c, 3):
+            raise ValueError("post-transform shape must be [B,N,3,3] and [B,N,3]")
+        pix = torch.linalg.solve(post_rots, (pix - post_trans.unsqueeze(2)).transpose(-1, -2)).transpose(-1, -2)
     xyz = torch.linalg.solve(intrinsics, torch.cat((pix[..., :2] * pix[..., 2:3], pix[..., 2:3]), -1).transpose(-1, -2)).transpose(-1, -2)
     return ((extrinsics[..., :3, :3].unsqueeze(2) @ xyz.unsqueeze(-1)).squeeze(-1) + extrinsics[..., :3, 3].unsqueeze(2)).reshape(b, c, d, h, w, 3)
