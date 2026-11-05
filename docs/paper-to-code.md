@@ -67,6 +67,9 @@ grid coordinates and OpenCV polygon filling. Its grid order is `[1,X,Y]`. It
 has analytical and synthetic-fixture tests but has not been compared against
 reference masks on real nuScenes samples. OpenCV is a data preprocessing
 dependency; it is not used by the learnable PyTorch model.
+The reference target rasterizer rounds polygon vertices while voxel pooling
+assigns points by integer binning; these conventions can differ near cell
+boundaries and must not be treated as interchangeable.
 
 The reference `get_image_data` passes calibrated camera-to-ego transforms
 directly, while its segmentation targets use the LiDAR keyframe's ego pose.
