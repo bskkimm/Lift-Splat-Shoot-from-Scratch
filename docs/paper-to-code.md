@@ -17,7 +17,7 @@ parity, or full training have been verified here.
 
 | Paper | Required behavior | Current location and status | Verification still needed |
 | --- | --- | --- | --- |
-| §3.1, eq. 1; §4.1 | ImageNet-pretrained EfficientNet-B0 image features; predict context and latent depth distribution, then take their outer product. | `lss/models/backbone.py`, `lss/models/depth.py`, `lss/models/lift_splat.py`: simplified image path and depth/context, not the reference encoder. | Encoder initialization, feature shapes, numerical and gradient tests. |
+| §3.1, eq. 1; §4.1 | ImageNet-pretrained EfficientNet-B0 image features; predict context and latent depth distribution, then take their outer product. | `lss/models/camera_encoder.py` provides a standalone TorchVision EfficientNet-B0 camera encoder with synthetic shape, depth normalization, permutation and input-gradient tests. It is not yet used by `LSS.forward`, which still uses the simplified backbone and depth modules. | End-to-end integration, pretrained weight provenance and reference checkpoint/numerical parity. |
 | §3.2; §4.2 | Project frustum points to the ego frame and sum-pool the cameras into BEV pillars. | `lss/geometry.py`, `lss/models/lift_splat.py`: frustum sampling, optional post-augmentation inversion, fractional bounds and XY cell assignment are tested; dataset-generated augmentation, output layout and z-bin handling are incomplete. | Dataset augmentation integration, camera-permutation tests, z-bin handling, and reference-layout parity. |
 | §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `lss/models/lss.py` returns pooled features and has no paper BEV decoder; `lss/models/head.py` is a detection scaffold. | Segmentation logits and end-to-end tests. |
 | §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, and transforms raw camera/box coordinates to the LiDAR keyframe ego frame. Enriched records still use the legacy global-frame path, missing velocity defaults to zero, and official splits and segmentation masks are absent. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame parity, enriched-record semantics, derived velocity if required, official split, rasterized targets, and validation IoU. |
@@ -40,6 +40,13 @@ batch size 4, and selects five cameras for training by default. These
 paper/reference differences must be preserved as explicit recipe choices, not
 silently conflated. Pretrained weight provenance and checkpoint compatibility
 remain unverified.
+
+The standalone `CameraEncoder` defaults to random initialization and does not
+download weights. Its opt-in `pretrained=True` uses TorchVision's ImageNet-1K
+V1 EfficientNet-B0 weights, not the original repository's
+`efficientnet_pytorch` weights. Their equivalence, checkpoint key mapping and
+impact on LSS output have not been verified. The existing `LSS` model does not
+yet use this encoder.
 
 The standalone segmentation loss defaults to positive weight 1.0 as in the
 paper's object-segmentation description; 2.13 must be supplied explicitly for
