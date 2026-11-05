@@ -31,7 +31,19 @@ class NuScenesCameraDataset(Dataset):
             annotations = {}
             if annotation_path.exists():
                 with open(annotation_path) as handle:
-                    for item in json.load(handle): annotations.setdefault(item["sample_token"], []).append(item)
+                    annotation_records = json.load(handle)
+                raw_annotations = [item for item in annotation_records
+                                   if "category_name" not in item and "instance_token" in item]
+                if raw_annotations:
+                    with open(root / "instance.json") as handle:
+                        instances = {item["token"]: item for item in json.load(handle)}
+                    with open(root / "category.json") as handle:
+                        categories = {item["token"]: item for item in json.load(handle)}
+                    for item in raw_annotations:
+                        instance = instances[item["instance_token"]]
+                        item["category_name"] = categories[instance["category_token"]]["name"]
+                for item in annotation_records:
+                    annotations.setdefault(item["sample_token"], []).append(item)
             calib_path = root / "calibrated_sensor.json"
             calibrations = {}
             if calib_path.exists():
