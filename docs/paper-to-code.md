@@ -18,7 +18,7 @@ parity, or full training have been verified here.
 | Paper | Required behavior | Current location and status | Verification still needed |
 | --- | --- | --- | --- |
 | §3.1, eq. 1; §4.1 | ImageNet-pretrained EfficientNet-B0 image features; predict context and latent depth distribution, then take their outer product. | `lss/models/camera_encoder.py` provides a standalone TorchVision EfficientNet-B0 camera encoder with synthetic shape, depth normalization, permutation and input-gradient tests. It is not yet used by `LSS.forward`, which still uses the simplified backbone and depth modules. | End-to-end integration, pretrained weight provenance and reference checkpoint/numerical parity. |
-| §3.2; §4.2 | Project frustum points to the ego frame and sum-pool the cameras into BEV pillars. | `lss/geometry.py`, `lss/models/lift_splat.py`: frustum sampling, optional post-augmentation inversion, fractional bounds and XY cell assignment are tested; dataset-generated augmentation, output layout and z-bin handling are incomplete. | Dataset augmentation integration, camera-permutation tests, z-bin handling, and reference-layout parity. |
+| §3.2; §4.2 | Project frustum points to the ego frame and sum-pool the cameras into BEV pillars. | `lss/geometry.py` supports frustum sampling and optional post-augmentation inversion. `lss/models/voxel_pool.py` provides a standalone z-aware, z-major pooling primitive with analytical tests; existing `LSS.forward` still uses the older `lift_splat.py` pooling layout. | Model integration, dataset augmentation, reference numerical parity and performance verification. |
 | §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `lss/models/bev_encoder.py` provides a standalone ResNet-block BEV segmentation decoder with shape and gradient tests. `lss/models/lss.py` still returns pooled features; `lss/models/head.py` is a detection scaffold. | End-to-end integration, reference checkpoint parity, and training/evaluation tests. |
 | §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, and transforms raw camera/box coordinates to the LiDAR keyframe ego frame. Enriched records still use the legacy global-frame path, missing velocity defaults to zero, and official splits and segmentation masks are absent. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame parity, enriched-record semantics, derived velocity if required, official split, rasterized targets, and validation IoU. |
 | §3.3, eq. 2; §5.6 | Score trajectory templates against a cost map and evaluate template rankings. | Not implemented. | Analytical scoring, training and planning-protocol tests. |
@@ -54,6 +54,12 @@ the reference training-script setting. IoU thresholds logits at zero; sum
 intersection and union counts across validation batches before division. The
 empty-union score of 1.0 matches the reference batch metric; full-validation
 empty-union handling remains to be defined when that evaluation is implemented.
+
+The standalone voxel pool uses half-open bounds, floor-based binning and a
+z-major `[B,Z*C,X,Y]` output. It rejects grid extents that are not an integral
+number of bins, rather than silently truncating the bin count as in the pinned
+reference. Its output and gradient parity against a reference checkpoint and
+its runtime/memory behavior remain unverified.
 
 The reference `get_image_data` passes calibrated camera-to-ego transforms
 directly, while its segmentation targets use the LiDAR keyframe's ego pose.
