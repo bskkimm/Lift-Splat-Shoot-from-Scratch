@@ -17,10 +17,10 @@ The tests use synthetic inputs and do not establish nuScenes or paper parity.
 python3 train.py --dry-run --seed 0
 ```
 
-This constructs a model without saving it. Despite the training-oriented output,
-it performs no optimization. Without `--dry-run`, the script saves **untrained**
-initial weights; options such as `--epochs`, `--lr`, and `--scheduler` do not
-currently control a training loop.
+This constructs a model without saving it or performing optimization. Without
+`--dry-run`, the command exits with an error because the training loop is not
+wired up. Options such as `--epochs`, `--lr`, and `--scheduler` do not currently
+control a training loop.
 
 ## CLI help
 
@@ -29,6 +29,5 @@ python3 train.py --help
 python3 eval.py --help
 ```
 
-The evaluation command currently only loads a checkpoint. When `--output` is
-specified, it writes an empty placeholder rather than running inference or the
-nuScenes evaluation protocol. Do not submit that file as a prediction result.
+Evaluation exits with an error until inference and the evaluation protocol are
+wired up. It does not load checkpoints or write prediction files.

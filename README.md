@@ -12,10 +12,10 @@ references, planned components, and known deviations.
 **The current code is an experimental scaffold, not a faithful LSS reproduction.**
 In particular:
 
-- `train.py` constructs a model and, unless `--dry-run` is set, saves its initial
-  weights. It does not train or load nuScenes data.
-- `eval.py` loads weights but does not run inference; its optional JSON output
-  contains no predictions and is not an official nuScenes submission.
+- `train.py --dry-run` constructs a model without training. Other invocations
+  fail explicitly because training and nuScenes data loading are not wired up.
+- `eval.py` fails explicitly because inference and evaluation are not wired up;
+  it does not generate predictions or official nuScenes results.
 - The data loader only partially handles the raw nuScenes table schema and does
   not implement official splits or segmentation targets; the model lacks the
   paper's image and BEV encoders and segmentation objective.
