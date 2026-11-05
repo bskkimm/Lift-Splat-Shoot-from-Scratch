@@ -6,6 +6,7 @@ from .categories import category_id, yaw_from_quaternion
 from lss.geometry import quaternion_to_matrix
 from .transforms import normalize_images
 from .nuscenes_index import index_camera_keyframes, index_lidar_reference_poses
+from .bev_targets import rasterize_polygons, vehicle_bottom_polygon
 from torch.utils.data import Dataset
 
 
@@ -16,9 +17,10 @@ class NuScenesCameraDataset(Dataset):
     @classmethod
     def has_camera_data(cls, record):
         return bool(record.get("image_paths"))
-    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval"):
+    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval", bev_bounds=None):
         if image_size is not None and (len(image_size) != 2 or min(image_size) <= 0): raise ValueError("image_size must be (height, width) with positive values")
         self.image_size = image_size
+        self.bev_bounds = bev_bounds
         if dataroot is not None:
             root = Path(dataroot).expanduser() / version
             if not root.is_dir(): raise FileNotFoundError(f"nuScenes version directory not found: {root}")
@@ -101,7 +103,15 @@ class NuScenesCameraDataset(Dataset):
                 labels = [category_id(a.get("category_name", "")) for a in anns]
                 filtered = [(box, label) for box, label in zip(boxes, labels) if label >= 0]
                 boxes, labels = [item[0] for item in filtered], [item[1] for item in filtered]
-                self.records.append({"token": sample["token"], "image_paths": paths, "intrinsics": intrinsics, "extrinsics": extrinsics, "boxes": boxes, "labels": labels})
+                record = {"token": sample["token"], "image_paths": paths, "intrinsics": intrinsics, "extrinsics": extrinsics, "boxes": boxes, "labels": labels}
+                if bev_bounds is not None:
+                    if reference is None:
+                        raise ValueError(f"BEV targets require a reference ego pose for sample {sample['token']}")
+                    target_rotation = quaternion_to_matrix(torch.tensor(reference["rotation"], dtype=torch.float64))
+                    target_translation = torch.tensor(reference["translation"], dtype=torch.float64)
+                    record["vehicle_polygons"] = [vehicle_bottom_polygon(a, target_rotation, target_translation)
+                                                  for a in anns if a.get("category_name", "").split(".")[0] == "vehicle"]
+                self.records.append(record)
         else:
             self.records = records or []
 
@@ -112,6 +122,8 @@ class NuScenesCameraDataset(Dataset):
 
     def __getitem__(self, index):
         record = self.records[index]
+        if self.bev_bounds is not None and "vehicle_polygons" not in record:
+            raise ValueError("BEV targets require vehicle polygons in a reference ego frame")
         images = []
         intrinsics = torch.tensor(record["intrinsics"], dtype=torch.float32)
         for path in record["image_paths"]:
@@ -122,4 +134,7 @@ class NuScenesCameraDataset(Dataset):
             images.append(torch.from_numpy(__import__("numpy").array(image)).permute(2, 0, 1).contiguous().float() / 255)
         boxes = torch.tensor(record.get("boxes", []), dtype=torch.float32).reshape(-1, 9)
         labels = torch.tensor(record.get("labels", []), dtype=torch.long).reshape(-1)
-        return {"images": normalize_images(torch.stack(images)), "intrinsics": intrinsics, "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": boxes, "labels": labels}
+        result = {"images": normalize_images(torch.stack(images)), "intrinsics": intrinsics, "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": boxes, "labels": labels}
+        if self.bev_bounds is not None:
+            result["bev_target"] = rasterize_polygons(record["vehicle_polygons"], *self.bev_bounds)
+        return result

@@ -2,4 +2,5 @@ torch
 torchvision
 numpy
 Pillow
+opencv-python-headless>=4.8,<5
 pytest
