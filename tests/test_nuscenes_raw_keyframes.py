@@ -17,11 +17,13 @@ def make_raw_dataset(tmp_path, duplicate=False):
     write_table(root, "sample", [{"token": "sample", "scene_token": "scene", "timestamp": 1}])
     records = [
         {"token": "camera", "sample_token": "sample", "is_key_frame": True,
-         "calibrated_sensor_token": "cam-cal", "filename": "camera.png"},
+         "calibrated_sensor_token": "cam-cal", "ego_pose_token": "pose", "filename": "camera.png"},
         {"token": "sweep", "sample_token": "sample", "is_key_frame": False,
          "calibrated_sensor_token": "cam-cal", "filename": "sweep.png"},
         {"token": "radar", "sample_token": "sample", "is_key_frame": True,
          "calibrated_sensor_token": "radar-cal", "filename": "radar.pcd"},
+        {"token": "lidar", "sample_token": "sample", "is_key_frame": True,
+         "calibrated_sensor_token": "lidar-cal", "ego_pose_token": "pose", "filename": "lidar.bin"},
     ]
     if duplicate:
         records.append({**records[0], "token": "duplicate"})
@@ -29,13 +31,16 @@ def make_raw_dataset(tmp_path, duplicate=False):
     write_table(root, "sensor", [
         {"token": "cam-sensor", "channel": "CAM_FRONT", "modality": "camera"},
         {"token": "radar-sensor", "channel": "RADAR_FRONT", "modality": "radar"},
+        {"token": "lidar-sensor", "channel": "LIDAR_TOP", "modality": "lidar"},
     ])
     write_table(root, "calibrated_sensor", [
         {"token": "cam-cal", "sensor_token": "cam-sensor",
          "camera_intrinsic": [[2, 0, 0], [0, 2, 0], [0, 0, 1]],
          "rotation": [1, 0, 0, 0], "translation": [1, 0, 0]},
         {"token": "radar-cal", "sensor_token": "radar-sensor"},
+        {"token": "lidar-cal", "sensor_token": "lidar-sensor"},
     ])
+    write_table(root, "ego_pose", [{"token": "pose", "rotation": [1, 0, 0, 0], "translation": [0, 0, 0]}])
 
 
 def test_raw_nuscenes_uses_keyframe_camera_not_sweep_or_radar(tmp_path):
