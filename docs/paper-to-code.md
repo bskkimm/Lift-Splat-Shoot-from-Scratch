@@ -20,7 +20,7 @@ parity, or full training have been verified here.
 | §3.1, eq. 1; §4.1 | ImageNet-pretrained EfficientNet-B0 image features; predict context and latent depth distribution, then take their outer product. | `lss/models/segmentation.py` connects the TorchVision camera encoder and latent depth/context lift; its small synthetic forward/backward path is tested. Existing `LSS.forward` remains a separate scaffold. | Pretrained weight provenance, reference checkpoint/numerical parity and real-data testing. |
 | §3.2; §4.2 | Project frustum points to the ego frame and sum-pool the cameras into BEV pillars. | `lss/models/segmentation.py` connects image-coordinate geometry and z-aware pooling; fractional bounds, augmentation inversion and small synthetic camera permutation are tested. Existing `LSS.forward` still uses `lift_splat.py`. | Dataset augmentation integration, reference numerical parity and performance verification. |
 | §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `LSSSegmentation` uses `lss/models/bev_encoder.py` for raw BEV logits; a small synthetic BCE backward pass is tested. `lss/models/head.py` remains a separate detection scaffold. | Reference checkpoint parity and real training/evaluation tests. |
-| §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, and transforms raw camera/box coordinates to the LiDAR keyframe ego frame. Enriched records still use the legacy global-frame path, missing velocity defaults to zero, and official splits and segmentation masks are absent. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame parity, enriched-record semantics, derived velocity if required, official split, rasterized targets, and validation IoU. |
+| §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, transforms raw camera/box coordinates to the LiDAR keyframe ego frame, and can optionally emit OpenCV-rasterized vehicle masks from oriented bottom corners. Enriched records still use the legacy global-frame path, missing velocity defaults to zero, and official splits are absent. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame and raster parity, enriched-record semantics, derived velocity if required, official split, and validation IoU. |
 | §3.3, eq. 2; §5.6 | Score trajectory templates against a cost map and evaluate template rankings. | Not implemented. | Analytical scoring, training and planning-protocol tests. |
 | §5 | Train on the paper recipe and report the correct benchmark and split. | `train.py` supports model-construction dry runs only; real training and `eval.py` fail explicitly rather than writing placeholder results. | Real optimizer steps, reproducible resume, data-backed evaluation and measured results. |
 | Teaching resource | Standalone architecture definitions and probes consistent with production. | `notebooks/lss_e2e_walkthrough.ipynb` imports the production model. | Independent definitions, fresh-process execution and parity. |
@@ -60,6 +60,13 @@ z-major `[B,Z*C,X,Y]` output. It rejects grid extents that are not an integral
 number of bins, rather than silently truncating the bin count as in the pinned
 reference. Its output and gradient parity against a reference checkpoint and
 its runtime/memory behavior remain unverified.
+
+The opt-in vehicle target rasterizer uses full three-dimensional annotation
+orientation, category prefix `vehicle`, the LiDAR reference ego pose, rounded
+grid coordinates and OpenCV polygon filling. Its grid order is `[1,X,Y]`. It
+has analytical and synthetic-fixture tests but has not been compared against
+reference masks on real nuScenes samples. OpenCV is a data preprocessing
+dependency; it is not used by the learnable PyTorch model.
 
 The reference `get_image_data` passes calibrated camera-to-ego transforms
 directly, while its segmentation targets use the LiDAR keyframe's ego pose.
