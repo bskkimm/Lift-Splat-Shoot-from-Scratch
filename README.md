@@ -16,8 +16,9 @@ In particular:
   weights. It does not train or load nuScenes data.
 - `eval.py` loads weights but does not run inference; its optional JSON output
   contains no predictions and is not an official nuScenes submission.
-- The data loader does not implement the raw nuScenes table schema and splits;
-  the model lacks the paper's image and BEV encoders and segmentation objective.
+- The data loader only partially handles the raw nuScenes table schema and does
+  not implement official splits or segmentation targets; the model lacks the
+  paper's image and BEV encoders and segmentation objective.
 - Existing synthetic tests exercise parts of the scaffold; passing them does not
   demonstrate paper fidelity, checkpoint compatibility, or model performance.
 

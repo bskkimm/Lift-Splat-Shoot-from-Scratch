@@ -5,6 +5,7 @@ import torch
 from .categories import category_id, yaw_from_quaternion
 from lss.geometry import quaternion_to_matrix
 from .transforms import normalize_images
+from .nuscenes_index import index_camera_keyframes
 from torch.utils.data import Dataset
 
 
@@ -35,13 +36,19 @@ class NuScenesCameraDataset(Dataset):
             calibrations = {}
             if calib_path.exists():
                 with open(calib_path) as handle: calibrations = {x["token"]: x for x in json.load(handle)}
+            camera_index = {}
+            if any("data" not in sample for sample in samples.values()):
+                with open(root / "sensor.json") as handle:
+                    sensors = {item["token"]: item for item in json.load(handle)}
+                camera_index = index_camera_keyframes(sample_data, calibrations, sensors)
             self.records = []
             for sample in samples.values():
                 paths = []
                 intrinsics, extrinsics = [], []
                 camera_names = self.CAMERA_ORDER
-                tokens = [sample["data"][name] for name in camera_names if name in sample["data"]]
-                tokens += [token for name, token in sample["data"].items() if name not in camera_names]
+                data = sample.get("data", camera_index.get(sample["token"], {}))
+                tokens = [data[name] for name in camera_names if name in data]
+                tokens += [token for name, token in data.items() if name not in camera_names]
                 for token in tokens:
                     item = sample_data[token]; paths.append(str(Path(dataroot).expanduser() / item["filename"]))
                     calib = calibrations.get(item.get("calibrated_sensor_token"), {})
