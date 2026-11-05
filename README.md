@@ -1,24 +1,44 @@
-# Lift-Splat-Shoot
+# Lift-Splat-Shoot in PyTorch
 
-Pure PyTorch implementation of Lift-Splat-Shoot (LSS), built incrementally
-with small synthetic tests and configurable model defaults.
+This repository is being rebuilt as an educational, from-scratch PyTorch
+implementation of [Lift, Splat, Shoot](https://arxiv.org/abs/2008.05711).
+The goal is a transparent implementation of multi-camera bird's-eye-view (BEV)
+segmentation and trajectory scoring, without OpenMMLab model or training
+frameworks. See [the paper-to-code audit](docs/paper-to-code.md) for the source
+references, planned components, and known deviations.
 
-## Setup
+## Current status
+
+**The current code is an experimental scaffold, not a faithful LSS reproduction.**
+In particular:
+
+- `train.py` constructs a model and, unless `--dry-run` is set, saves its initial
+  weights. It does not train or load nuScenes data.
+- `eval.py` loads weights but does not run inference; its optional JSON output
+  contains no predictions and is not an official nuScenes submission.
+- The data loader does not implement the raw nuScenes table schema and splits;
+  the model lacks the paper's image and BEV encoders and segmentation objective.
+- Existing synthetic tests exercise parts of the scaffold; passing them does not
+  demonstrate paper fidelity, checkpoint compatibility, or model performance.
+
+Do not use the `OfficialConfig` name as evidence of the paper's settings: its
+current values are not the paper baseline. There are no measured reproduction
+results in this repository.
+
+## Development setup
+
+Create a Python environment and install the package and test dependencies:
 
 ```bash
+pip install -r requirements.txt
 pip install -e .
-pytest -q
+python -m pytest -q
 ```
 
-The implementation uses camera images, calibration matrices, a learned depth
-distribution, geometric lifting, and BEV voxel pooling. The original-style
-defaults are available through `lss.config.OfficialConfig`.
+The synthetic tests need no nuScenes dataset or network. The nuScenes dataset,
+pretrained weights, and checkpoints are not included. Dependencies and supported
+environments still need to be pinned and verified as part of the rebuild.
 
-## Commands
-
-```bash
-python train.py --help
-python eval.py --help
-```
-
-Real nuScenes evaluation additionally requires `nuscenes-devkit`.
+For commands and their current limitations, see [COMMAND_GUIDE.md](COMMAND_GUIDE.md).
+Specs and implementation plans are local-only; public research and verification
+evidence will be maintained in the repository.
