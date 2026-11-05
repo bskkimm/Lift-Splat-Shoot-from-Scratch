@@ -15,6 +15,11 @@ def test_frustum_uses_image_pixel_coordinates_for_low_resolution_features():
     torch.testing.assert_allclose(points[0, 0, 0, 1, 2], torch.tensor([11.0, 7.0, 2.0]))
 
 
+def test_frustum_preserves_floating_depth_dtype():
+    depth = torch.tensor([1.0, 2.0], dtype=torch.float64)
+    assert make_frustum(2, 2, depth).dtype == torch.float64
+
+
 def test_lss_passes_original_image_coordinates_to_pooling():
     model = LSS(depth_bins=1)
     captured = []

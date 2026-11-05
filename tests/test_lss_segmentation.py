@@ -73,6 +73,15 @@ def test_default_grid_and_depth_bins_match_declared_reference_bounds():
     assert model.depth_values[0] == 4 and model.depth_values[-1] == 44
 
 
+def test_segmentation_supports_consistent_float64_inputs():
+    model = make_model().double().eval()
+    images, intrinsics, extrinsics = synthetic_inputs()
+    with torch.no_grad():
+        logits = model(images.double(), intrinsics.double(), extrinsics.double())
+    assert logits.dtype == torch.float64
+    assert torch.isfinite(logits).all()
+
+
 @pytest.mark.parametrize("bounds", [(1, 1, 1), (1, 3, 0), (3, 1, 1)])
 def test_invalid_depth_bounds_fail(bounds):
     from lss.models.segmentation import LSSSegmentation
