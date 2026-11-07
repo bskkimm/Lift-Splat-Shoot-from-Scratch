@@ -16,6 +16,7 @@ import torchvision
 
 from lss.data.loader import build_loader
 from lss.data.nuscenes_dataset import NuScenesCameraDataset
+from lss.data.recipes import dataset_options
 from lss.models.segmentation import LSSSegmentation
 from lss.reproducibility import configure_cuda_workspace, seed_everything
 from lss.segmentation_engine import run_segmentation_epoch
@@ -47,12 +48,18 @@ def build_parser():
     parser.add_argument("--pos-weight", type=float, default=1.0)
     parser.add_argument("--grad-clip-norm", type=float, default=5.0)
     parser.add_argument("--scheduler", choices=("none",), default="none")
+    parser.add_argument("--recipe", choices=("practical", "reference-data"), default="practical")
+    parser.add_argument("--camera-count", type=int, default=5)
+    parser.add_argument("--resize-limits", type=float, nargs=2, default=(0.193, 0.225))
+    parser.add_argument("--bottom-limits", type=float, nargs=2, default=(0.0, 0.22))
+    parser.add_argument("--rotation-limits", type=float, nargs=2, default=(-5.4, 5.4))
+    parser.add_argument("--no-random-flip", action="store_true")
     return parser
 
 
 def resolved_config(args, depth_bounds):
-    return {
-        "recipe": "practical-resize-fp32-v1",
+    config = {
+        "recipe": "reference-data-fp32-v1" if args.recipe == "reference-data" else "practical-resize-fp32-v1",
         "dataroot": str(Path(args.dataroot).expanduser().resolve()),
         "version": args.version,
         "train_split": "train", "validation_split": "val",
@@ -72,6 +79,13 @@ def resolved_config(args, depth_bounds):
                         "opencv": cv2.__version__, "nuscenes_devkit": version("nuscenes-devkit"),
                         "cuda_runtime": torch.version.cuda, "cudnn": torch.backends.cudnn.version()},
     }
+    if args.recipe == "reference-data":
+        config["camera_count"] = args.camera_count
+        config["augmentation"] = {"resize_limits": list(args.resize_limits),
+                                  "bottom_limits": list(args.bottom_limits),
+                                  "rotation_limits": list(args.rotation_limits),
+                                  "random_flip": not args.no_random_flip}
+    return config
 
 
 def main():
@@ -79,6 +93,8 @@ def main():
     args = parser.parse_args()
     if args.epochs <= 0 or args.batch_size <= 0 or args.context_channels <= 0 or args.cpu_threads <= 0:
         parser.error("epochs, batch-size, context-channels and cpu-threads must be positive")
+    if args.recipe == "reference-data" and args.camera_count <= 0:
+        parser.error("camera-count must be positive")
     if args.seed < 0 or args.seed >= 2**32:
         parser.error("seed must be between 0 and 2**32 - 1")
     if not all(math.isfinite(value) for value in (args.lr, args.weight_decay, args.pos_weight, args.grad_clip_norm)):
@@ -116,10 +132,10 @@ def main():
     device = torch.device(args.device)
     model.to(device)
     config = resolved_config(args, depth_bounds)
-    dataset_args = {"dataroot": args.dataroot, "version": args.version, "image_size": tuple(args.image_size),
+    dataset_args = {"dataroot": args.dataroot, "version": args.version,
                     "bev_bounds": (args.x_bound, args.y_bound)}
-    train_data = NuScenesCameraDataset(**dataset_args, split="train")
-    validation_data = NuScenesCameraDataset(**dataset_args, split="val")
+    train_data = NuScenesCameraDataset(**dataset_args, split="train", **dataset_options(config, training=True))
+    validation_data = NuScenesCameraDataset(**dataset_args, split="val", **dataset_options(config, training=False))
     if len(train_data) == 0:
         parser.error("training split contains no samples")
     if len(validation_data) == 0:

@@ -57,6 +57,14 @@ The command has synthetic fixture coverage but has not been run on full nuScenes
 The current loader reads full metadata tables separately for train and validation,
 which can require substantial host memory; full-dataset sizing is unmeasured.
 
+`--recipe reference-data` enables reference-oriented image augmentation and
+five randomly selected training cameras by default; validation uses every
+available camera and a deterministic crop. It retains random TorchVision
+initialization and the current ego-motion compensation, so it is **not** a
+faithful reference reproduction. The policy has only synthetic fixture coverage.
+Use `--camera-count`, `--resize-limits`, `--bottom-limits`, `--rotation-limits`,
+and `--no-random-flip` to change the recorded recipe configuration.
+
 Resume at a completed epoch boundary with the **same configuration** and a
 larger total target epoch count, for example:
 

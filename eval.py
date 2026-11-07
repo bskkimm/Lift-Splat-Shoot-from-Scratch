@@ -14,6 +14,7 @@ from torch.utils.data import Subset
 
 from lss.data.loader import build_loader
 from lss.data.nuscenes_dataset import NuScenesCameraDataset
+from lss.data.recipes import dataset_options
 from lss.models.segmentation import LSSSegmentation
 from lss.reproducibility import configure_cuda_workspace, seed_everything
 from lss.segmentation_engine import run_segmentation_epoch
@@ -80,7 +81,7 @@ def main():
                 or state.get("types", {}).get("model") != "lss.models.segmentation.LSSSegmentation"):
             raise ValueError("unsupported model or checkpoint format")
         config = json.loads(state["config_json"])
-        if not isinstance(config, dict) or config.get("recipe") != "practical-resize-fp32-v1":
+        if not isinstance(config, dict) or config.get("recipe") not in ("practical-resize-fp32-v1", "reference-data-fp32-v1"):
             raise ValueError("unsupported training recipe")
         required = ("version", "seed", "x_bounds", "y_bounds", "z_bounds", "depth_bounds",
                     "context_channels", "out_channels", "dataroot", "image_size", "batch_size", "pos_weight")
@@ -119,8 +120,8 @@ def main():
     model.to(device).eval()
     dataroot = Path(args.dataroot or config["dataroot"]).expanduser().resolve()
     dataset = NuScenesCameraDataset(dataroot=dataroot, version=config["version"], split="val",
-                                   image_size=tuple(config["image_size"]),
-                                   bev_bounds=(config["x_bounds"], config["y_bounds"]))
+                                   bev_bounds=(config["x_bounds"], config["y_bounds"]),
+                                   **dataset_options(config, training=False))
     total_samples = len(dataset)
     if total_samples == 0:
         parser.error("validation split contains no samples")
