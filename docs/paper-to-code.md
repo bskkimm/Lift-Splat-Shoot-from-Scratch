@@ -22,7 +22,7 @@ parity, or full training have been verified here.
 | §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `LSSSegmentation` uses `lss/models/bev_encoder.py` for raw BEV logits; a small synthetic BCE backward pass is tested. `lss/models/head.py` remains a separate detection scaffold. | Reference checkpoint parity and real training/evaluation tests. |
 | §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, optionally filters official SDK scene splits, transforms raw coordinates to the LiDAR keyframe ego frame, and can emit OpenCV-rasterized vehicle masks. `split=None` is unfiltered. Enriched records still use the legacy global-frame path and missing velocity defaults to zero. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame, split and raster parity, enriched-record semantics, derived velocity if required, and validation IoU. |
 | §3.3, eq. 2; §5.6 | Score trajectory templates against a cost map and evaluate template rankings. | Not implemented. | Analytical scoring, training and planning-protocol tests. |
-| §5 | Train on the paper recipe and report the correct benchmark and split. | `lss/segmentation_engine.py` provides batch and epoch optimization/validation with sample-weighted BCE and additive IoU counts, verified on synthetic data. `train.py` supports model-construction dry runs only; real CLI training and `eval.py` fail explicitly rather than writing placeholder results. | Multi-epoch CLI training, reproducible resume, data-backed evaluation and measured results. |
+| §5 | Train on the paper recipe and report the correct benchmark and split. | `lss/segmentation_engine.py` provides batch and epoch optimization/validation with sample-weighted BCE and additive IoU counts. `lss/training_checkpoint.py` has atomic epoch-boundary state save/load tested with a synthetic single-worker uninterrupted/resume fixture. `train.py` supports model-construction dry runs only; real CLI training and `eval.py` fail explicitly. | Multi-epoch CLI integration, full-model resume, multiworker/distributed/GPU recovery, data-backed evaluation and measured results. |
 | Teaching resource | Standalone architecture definitions and probes consistent with production. | `notebooks/lss_e2e_walkthrough.ipynb` imports the production model. | Independent definitions, fresh-process execution and parity. |
 
 ## Paper settings and reference implementation differences
@@ -79,6 +79,15 @@ appropriate `mini_train`/`mini_val` names for `v1.0-mini`. The default
 `split=None` is an unfiltered diagnostic path and must not be used as a claimed
 train/validation reproduction recipe. This selection has synthetic tests only;
 full-dataset split counts and real-data behavior remain unverified.
+
+The epoch checkpoint helper stores the model, optimizer, optional scheduler,
+completed epoch, canonical caller-supplied config, Python/NumPy/PyTorch RNG and
+an explicit loader generator; CUDA RNG is opt-in. A synthetic CPU test verifies
+an uninterrupted run against an epoch-boundary resume with zero loader workers.
+An assembled LSS model also has a synthetic checkpoint save/load output test.
+Callers must supply a complete matching config and the generator actually used by
+their sampler. Mid-epoch recovery, multiple workers, distributed sampling,
+GPU/CUDA restoration and assembled-LSS training continuation remain unverified.
 
 The reference `get_image_data` passes calibrated camera-to-ego transforms
 directly, while its segmentation targets use the LiDAR keyframe's ego pose.
