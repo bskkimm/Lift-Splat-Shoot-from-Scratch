@@ -1,4 +1,8 @@
 import json
+import os
+import subprocess
+import sys
+from pathlib import Path
 
 import torch
 
@@ -12,6 +16,29 @@ REFERENCE_ARGS = (
     "--resize-limits", "32", "32", "--bottom-limits", "0", "0",
     "--rotation-limits", "0", "0", "--no-random-flip",
 )
+
+
+def test_practical_recipe_rejects_reference_only_flags():
+    root = Path(__file__).resolve().parents[1]
+    env = os.environ.copy()
+    env.update(OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
+    result = subprocess.run([sys.executable, str(root / "train.py"), "--dry-run",
+                             "--recipe", "practical", "--camera-count", "3"],
+                            capture_output=True, text=True, env=env, timeout=30)
+    assert result.returncode != 0
+    assert "reference-data" in result.stderr
+
+
+def test_reference_recipe_reports_invalid_limits_without_traceback():
+    root = Path(__file__).resolve().parents[1]
+    env = os.environ.copy()
+    env.update(OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
+    result = subprocess.run([sys.executable, str(root / "train.py"), "--dry-run",
+                             "--recipe", "reference-data", "--resize-limits", "2", "1"],
+                            capture_output=True, text=True, env=env, timeout=30)
+    assert result.returncode != 0
+    assert "resize" in result.stderr.lower()
+    assert "traceback" not in result.stderr.lower()
 
 
 def test_reference_data_recipe_trains_and_evaluates_matching_validation(tmp_path):

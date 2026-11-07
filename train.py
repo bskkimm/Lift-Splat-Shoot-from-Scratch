@@ -16,6 +16,7 @@ import torchvision
 
 from lss.data.loader import build_loader
 from lss.data.nuscenes_dataset import NuScenesCameraDataset
+from lss.data.image_augmentation import ImageAugmentation
 from lss.data.recipes import dataset_options
 from lss.models.segmentation import LSSSegmentation
 from lss.reproducibility import configure_cuda_workspace, seed_everything
@@ -49,10 +50,10 @@ def build_parser():
     parser.add_argument("--grad-clip-norm", type=float, default=5.0)
     parser.add_argument("--scheduler", choices=("none",), default="none")
     parser.add_argument("--recipe", choices=("practical", "reference-data"), default="practical")
-    parser.add_argument("--camera-count", type=int, default=5)
-    parser.add_argument("--resize-limits", type=float, nargs=2, default=(0.193, 0.225))
-    parser.add_argument("--bottom-limits", type=float, nargs=2, default=(0.0, 0.22))
-    parser.add_argument("--rotation-limits", type=float, nargs=2, default=(-5.4, 5.4))
+    parser.add_argument("--camera-count", type=int, default=None)
+    parser.add_argument("--resize-limits", type=float, nargs=2, default=None)
+    parser.add_argument("--bottom-limits", type=float, nargs=2, default=None)
+    parser.add_argument("--rotation-limits", type=float, nargs=2, default=None)
     parser.add_argument("--no-random-flip", action="store_true")
     return parser
 
@@ -91,6 +92,19 @@ def resolved_config(args, depth_bounds):
 def main():
     parser = build_parser()
     args = parser.parse_args()
+    reference_options = (args.camera_count, args.resize_limits, args.bottom_limits, args.rotation_limits)
+    if args.recipe == "practical" and (any(value is not None for value in reference_options) or args.no_random_flip):
+        parser.error("camera augmentation options require --recipe reference-data")
+    if args.recipe == "reference-data":
+        args.camera_count = 5 if args.camera_count is None else args.camera_count
+        args.resize_limits = (0.193, 0.225) if args.resize_limits is None else args.resize_limits
+        args.bottom_limits = (0.0, 0.22) if args.bottom_limits is None else args.bottom_limits
+        args.rotation_limits = (-5.4, 5.4) if args.rotation_limits is None else args.rotation_limits
+        try:
+            ImageAugmentation(tuple(args.image_size), args.resize_limits, args.bottom_limits,
+                              args.rotation_limits, not args.no_random_flip, training=True)
+        except ValueError as exc:
+            parser.error(str(exc))
     if args.epochs <= 0 or args.batch_size <= 0 or args.context_channels <= 0 or args.cpu_threads <= 0:
         parser.error("epochs, batch-size, context-channels and cpu-threads must be positive")
     if args.recipe == "reference-data" and args.camera_count <= 0:
