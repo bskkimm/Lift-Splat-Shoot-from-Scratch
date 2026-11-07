@@ -22,7 +22,7 @@ parity, or full training have been verified here.
 | §4.1 | ResNet-block BEV encoder/decoder to BEV output. | `LSSSegmentation` uses `lss/models/bev_encoder.py` for raw BEV logits; a small synthetic BCE backward pass is tested. `lss/models/head.py` remains a separate detection scaffold. | Reference checkpoint parity and real training/evaluation tests. |
 | §5.2 | Generate vehicle segmentation masks; evaluate BEV intersection-over-union (IoU). | `lss/data/nuscenes_dataset.py` indexes raw camera keyframes and annotation categories, optionally filters official SDK scene splits, transforms raw coordinates to the LiDAR keyframe ego frame, and can emit OpenCV-rasterized vehicle masks. `split=None` is unfiltered. Enriched records still use the legacy global-frame path and missing velocity defaults to zero. `lss/losses.py` and `lss/metrics.py` contain standalone BCE and IoU primitives, not yet connected to training or evaluation. | Real-data frame, split and raster parity, enriched-record semantics, derived velocity if required, and validation IoU. |
 | §3.3, eq. 2; §5.6 | Score trajectory templates against a cost map and evaluate template rankings. | Not implemented. | Analytical scoring, training and planning-protocol tests. |
-| §5 | Train on the paper recipe and report the correct benchmark and split. | `lss/segmentation_engine.py` provides actual single-batch optimization and validation steps with BCE and additive IoU counts, verified on synthetic data. `train.py` supports model-construction dry runs only; real CLI training and `eval.py` fail explicitly rather than writing placeholder results. | Multi-epoch CLI training, reproducible resume, data-backed evaluation and measured results. |
+| §5 | Train on the paper recipe and report the correct benchmark and split. | `lss/segmentation_engine.py` provides batch and epoch optimization/validation with sample-weighted BCE and additive IoU counts, verified on synthetic data. `train.py` supports model-construction dry runs only; real CLI training and `eval.py` fail explicitly rather than writing placeholder results. | Multi-epoch CLI training, reproducible resume, data-backed evaluation and measured results. |
 | Teaching resource | Standalone architecture definitions and probes consistent with production. | `notebooks/lss_e2e_walkthrough.ipynb` imports the production model. | Independent definitions, fresh-process execution and parity. |
 
 ## Paper settings and reference implementation differences
@@ -52,8 +52,10 @@ The standalone segmentation loss defaults to positive weight 1.0 as in the
 paper's object-segmentation description; 2.13 must be supplied explicitly for
 the reference training-script setting. IoU thresholds logits at zero; sum
 intersection and union counts across validation batches before division. The
-empty-union score of 1.0 matches the reference batch metric; full-validation
-empty-union handling remains to be defined when that evaluation is implemented.
+empty-union score of 1.0 matches the reference batch metric. The epoch runner
+instead reports `iou=None` for an empty aggregate union, because the reference
+full-validation ratio is undefined in that case. Training IoU aggregates
+predictions measured before each optimizer update and is not an official metric.
 
 The standalone voxel pool uses half-open bounds, floor-based binning and a
 z-major `[B,Z*C,X,Y]` output. It rejects grid extents that are not an integral
