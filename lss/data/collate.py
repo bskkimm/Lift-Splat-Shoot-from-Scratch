@@ -21,4 +21,10 @@ def collate_camera_samples(samples):
         raise ValueError("bev_target must be present in every sample or none")
     if all(has_target):
         result["bev_target"] = torch.stack([sample["bev_target"] for sample in samples])
+    has_post = [("post_rots" in sample, "post_trans" in sample) for sample in samples]
+    if any(first != second for first, second in has_post) or len(set(has_post)) != 1:
+        raise ValueError("post transforms must be paired and present in every sample or none")
+    if has_post[0][0]:
+        result["post_rots"] = torch.stack([sample["post_rots"] for sample in samples])
+        result["post_trans"] = torch.stack([sample["post_trans"] for sample in samples])
     return result
