@@ -115,8 +115,11 @@ comparison before a faithful-configuration claim.
 resize/crop/flip/rotate post-transform. The dataset and collator can propagate
 explicit per-camera augmentation parameters and post-transforms while keeping
 original intrinsics; the practical training recipe does not yet sample these
-parameters. Its continuous flip offset follows the reference convention and is
-not a claim of exact PIL pixel-center or real-data parity.
+parameters. An opt-in `ImageAugmentation` dataset policy samples training
+transforms from NumPy's RNG and uses a deterministic validation crop; the policy
+is tested with synthetic raw-table fixtures but is not wired into the CLI. Its
+continuous flip offset follows the reference convention and is not a claim of
+exact PIL pixel-center or real-data parity.
 
 The paper reports BEV segmentation IoU and trajectory-ranking results, not
 nuScenes 3D detection mAP/NDS as the LSS baseline. Any detection extension
