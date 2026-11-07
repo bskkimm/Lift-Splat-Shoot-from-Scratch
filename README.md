@@ -47,9 +47,10 @@ environments still need to be pinned and verified as part of the rebuild.
 ## Continuous integration
 
 The current GitHub Actions workflow runs the synthetic pytest suite on Python
-3.10 and 3.11 and aggregates those results in a `current CI gate` job. This is
+3.10 and 3.11, including a fresh-process offline smoke execution of the current
+notebook, and aggregates those results in a `current CI gate` job. This is
 an **incomplete** CI foundation: the playbook's lint/format, typing, notebook
-execution and parity, package, dependency audit, integration, and documentation
+architecture inventory and notebook/package parity, package, dependency audit, integration, and documentation
 checks still need to be implemented. Branch protection is not yet configured,
 so this workflow alone does not enforce those checks before merging.
 

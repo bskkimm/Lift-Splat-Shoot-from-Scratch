@@ -10,6 +10,17 @@ python3 -m pytest -q
 ```
 
 The tests use synthetic inputs and do not establish nuScenes or paper parity.
+The current notebook's cells also run in a fresh subprocess as part of the
+suite. For a standalone smoke check, run:
+
+```bash
+python3 scripts/execute_notebook.py notebooks/lss_e2e_walkthrough.ipynb
+```
+
+The runner disables Python socket connections and hides CUDA devices, but is
+not an operating-system sandbox. Run only trusted notebooks. The current
+notebook still imports the scaffold model and is not the required standalone
+architecture walkthrough.
 
 ## Model construction smoke check
 
