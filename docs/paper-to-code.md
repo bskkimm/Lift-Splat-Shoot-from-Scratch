@@ -112,10 +112,11 @@ not a demonstrated parity improvement; it needs a named recipe and numerical
 comparison before a faithful-configuration claim.
 
 `lss/data/image_augmentation.py` implements the reference-style deterministic
-resize/crop/flip/rotate post-transform as a standalone primitive. It has not yet
-been wired into the nuScenes dataset's stochastic training recipe. Its continuous
-flip offset follows the reference convention and is not a claim of exact PIL
-pixel-center or real-data parity.
+resize/crop/flip/rotate post-transform. The dataset and collator can propagate
+explicit per-camera augmentation parameters and post-transforms while keeping
+original intrinsics; the practical training recipe does not yet sample these
+parameters. Its continuous flip offset follows the reference convention and is
+not a claim of exact PIL pixel-center or real-data parity.
 
 The paper reports BEV segmentation IoU and trajectory-ranking results, not
 nuScenes 3D detection mAP/NDS as the LSS baseline. Any detection extension

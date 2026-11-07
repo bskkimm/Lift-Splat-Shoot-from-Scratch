@@ -7,6 +7,7 @@ from lss.geometry import quaternion_to_matrix
 from .transforms import normalize_images
 from .nuscenes_index import index_camera_keyframes, index_lidar_reference_poses
 from .bev_targets import rasterize_polygons, vehicle_bottom_polygon
+from .image_augmentation import augment_image
 from torch.utils.data import Dataset
 
 
@@ -140,15 +141,26 @@ class NuScenesCameraDataset(Dataset):
             raise ValueError("BEV targets require vehicle polygons in a reference ego frame")
         images = []
         intrinsics = torch.tensor(record["intrinsics"], dtype=torch.float32)
+        augmentations = record.get("augmentations")
+        if augmentations is not None and (self.image_size is not None or len(augmentations) != len(record["image_paths"])):
+            raise ValueError("per-camera augmentations must match image count and cannot be combined with image_size")
+        post_rots, post_trans = [], []
         for path in record["image_paths"]:
             if not Path(path).is_file(): raise FileNotFoundError(f"camera image not found: {path}")
             image = Image.open(Path(path)).convert("RGB")
-            if self.image_size:
+            if augmentations is not None:
+                image, rotation, translation = augment_image(image, **augmentations[len(images)])
+                post_rots.append(rotation)
+                post_trans.append(translation)
+            elif self.image_size:
                 old_w, old_h = image.size; image = image.resize(self.image_size[::-1]); intrinsics[len(images), 0] *= self.image_size[1] / old_w; intrinsics[len(images), 1] *= self.image_size[0] / old_h
             images.append(torch.from_numpy(__import__("numpy").array(image)).permute(2, 0, 1).contiguous().float() / 255)
         boxes = torch.tensor(record.get("boxes", []), dtype=torch.float32).reshape(-1, 9)
         labels = torch.tensor(record.get("labels", []), dtype=torch.long).reshape(-1)
         result = {"images": normalize_images(torch.stack(images)), "intrinsics": intrinsics, "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": boxes, "labels": labels}
+        if augmentations is not None:
+            result["post_rots"] = torch.stack(post_rots)
+            result["post_trans"] = torch.stack(post_trans)
         if self.bev_bounds is not None:
             result["bev_target"] = rasterize_polygons(record["vehicle_polygons"], *self.bev_bounds)
         return result
