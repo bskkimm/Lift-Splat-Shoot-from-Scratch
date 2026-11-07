@@ -2,8 +2,57 @@
 
 import math
 
+import numpy as np
 import torch
 from PIL import Image
+
+
+class ImageAugmentation:
+    """Sample reference-style per-camera image augmentations.
+
+    Training draws from NumPy's global RNG. Validation is deterministic.
+    ``final_dim`` is (height, width); image sizes use PIL's (width, height).
+    """
+
+    def __init__(self, final_dim, resize_limits, bottom_limits, rotation_limits,
+                 random_flip, training):
+        if len(final_dim) != 2 or any(not isinstance(value, int) or value <= 0 for value in final_dim):
+            raise ValueError("final_dim must contain positive integer height and width")
+        for name, limits in (("resize", resize_limits), ("bottom", bottom_limits),
+                             ("rotation", rotation_limits)):
+            if len(limits) != 2 or not all(math.isfinite(v) for v in limits) or limits[0] > limits[1]:
+                raise ValueError(f"invalid {name} limits")
+        if resize_limits[0] <= 0 or bottom_limits[0] < 0 or bottom_limits[1] > 1:
+            raise ValueError("resize must be positive and bottom limits must be within [0,1]")
+        self.final_dim = tuple(final_dim)
+        self.resize_limits = tuple(resize_limits)
+        self.bottom_limits = tuple(bottom_limits)
+        self.rotation_limits = tuple(rotation_limits)
+        self.random_flip = random_flip
+        self.training = training
+
+    def __call__(self, image):
+        width, height = image.size
+        final_height, final_width = self.final_dim
+        if self.training:
+            resize = float(np.random.uniform(*self.resize_limits))
+        else:
+            resize = max(final_height / height, final_width / width)
+        new_width, new_height = int(width * resize), int(height * resize)
+        if self.training:
+            bottom = float(np.random.uniform(*self.bottom_limits))
+            left = int(np.random.uniform(0, max(0, new_width - final_width)))
+            flip = bool(self.random_flip and np.random.choice([0, 1]))
+            rotate = float(np.random.uniform(*self.rotation_limits))
+        else:
+            bottom = sum(self.bottom_limits) / 2
+            left = int(max(0, new_width - final_width) / 2)
+            flip = False
+            rotate = 0.0
+        top = int((1 - bottom) * new_height) - final_height
+        return augment_image(image, resize, (new_width, new_height),
+                             (left, top, left + final_width, top + final_height),
+                             flip, rotate)
 
 
 def augment_image(image, resize, resize_dims, crop, flip, rotate):

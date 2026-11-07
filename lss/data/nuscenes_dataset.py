@@ -18,13 +18,16 @@ class NuScenesCameraDataset(Dataset):
     @classmethod
     def has_camera_data(cls, record):
         return bool(record.get("image_paths"))
-    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval", bev_bounds=None, split=None):
+    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval", bev_bounds=None, split=None, augmentation=None):
         if image_size is not None and (len(image_size) != 2 or min(image_size) <= 0): raise ValueError("image_size must be (height, width) with positive values")
+        if image_size is not None and augmentation is not None:
+            raise ValueError("augmentation cannot be combined with image_size")
         if split is not None and dataroot is None:
             raise ValueError("a named split requires a nuScenes dataroot")
         if split is not None and (version not in ("v1.0-mini", "v1.0-trainval") or split not in ("train", "val")):
             raise ValueError("supported version/split pairs are mini or trainval with train or val")
         self.image_size = image_size
+        self.augmentation = augmentation
         self.bev_bounds = bev_bounds
         self.split = split
         if dataroot is not None:
@@ -142,13 +145,19 @@ class NuScenesCameraDataset(Dataset):
         images = []
         intrinsics = torch.tensor(record["intrinsics"], dtype=torch.float32)
         augmentations = record.get("augmentations")
+        if augmentations is not None and self.augmentation is not None:
+            raise ValueError("record augmentations cannot be combined with an augmentation policy")
         if augmentations is not None and (self.image_size is not None or len(augmentations) != len(record["image_paths"])):
             raise ValueError("per-camera augmentations must match image count and cannot be combined with image_size")
         post_rots, post_trans = [], []
         for path in record["image_paths"]:
             if not Path(path).is_file(): raise FileNotFoundError(f"camera image not found: {path}")
             image = Image.open(Path(path)).convert("RGB")
-            if augmentations is not None:
+            if self.augmentation is not None:
+                image, rotation, translation = self.augmentation(image)
+                post_rots.append(rotation)
+                post_trans.append(translation)
+            elif augmentations is not None:
                 image, rotation, translation = augment_image(image, **augmentations[len(images)])
                 post_rots.append(rotation)
                 post_trans.append(translation)
@@ -158,7 +167,7 @@ class NuScenesCameraDataset(Dataset):
         boxes = torch.tensor(record.get("boxes", []), dtype=torch.float32).reshape(-1, 9)
         labels = torch.tensor(record.get("labels", []), dtype=torch.long).reshape(-1)
         result = {"images": normalize_images(torch.stack(images)), "intrinsics": intrinsics, "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": boxes, "labels": labels}
-        if augmentations is not None:
+        if augmentations is not None or self.augmentation is not None:
             result["post_rots"] = torch.stack(post_rots)
             result["post_trans"] = torch.stack(post_trans)
         if self.bev_bounds is not None:
