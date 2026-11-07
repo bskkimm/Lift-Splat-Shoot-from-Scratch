@@ -19,8 +19,10 @@ python3 scripts/execute_notebook.py notebooks/lss_e2e_walkthrough.ipynb
 
 The runner disables Python socket connections and hides CUDA devices, but is
 not an operating-system sandbox. Run only trusted notebooks. The current
-notebook still imports the scaffold model and is not the required standalone
-architecture walkthrough.
+notebook locally defines the practical segmentation model and runs a synthetic
+optimizer step. Its package parity test compares evaluation outputs, input
+gradients and parameter gradients with matched weights. Real-data and pretrained
+checkpoint demonstrations remain future work.
 
 ## Model construction smoke check
 
