@@ -22,7 +22,7 @@ def test_training_without_dataroot_fails_without_saving_weights(tmp_path):
     assert not output_dir.exists()
 
 
-def test_evaluation_fails_without_writing_empty_predictions(tmp_path):
+def test_evaluation_rejects_scaffold_weights_without_writing_predictions(tmp_path):
     checkpoint = tmp_path / "checkpoint.pt"
     output = tmp_path / "predictions.json"
     torch.save(LSS().state_dict(), checkpoint)
@@ -33,5 +33,5 @@ def test_evaluation_fails_without_writing_empty_predictions(tmp_path):
     )
 
     assert result.returncode != 0
-    assert "not implemented" in result.stderr.lower()
+    assert "checkpoint" in result.stderr.lower()
     assert not output.exists()

@@ -15,8 +15,9 @@ In particular:
 - `train.py` provides an experimental **practical** single-process FP32
   nuScenes segmentation recipe, with explicit train/validation splits and
   epoch-boundary checkpoints. `--dry-run` constructs the model only.
-- `eval.py` fails explicitly because inference and evaluation are not wired up;
-  it does not generate predictions or official nuScenes results.
+- `eval.py` evaluates compatible practical checkpoints on the named validation
+  split and reports a clearly labeled practical BEV vehicle IoU. It does not
+  establish official nuScenes or paper-result parity.
 - The data loader only partially handles the raw nuScenes table schema. Named
   train/validation scene splits and vehicle-mask generation have synthetic tests
   but no real-data parity evidence. The training recipe uses direct resizing,

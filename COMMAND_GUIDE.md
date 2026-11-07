@@ -75,5 +75,18 @@ python3 train.py --help
 python3 eval.py --help
 ```
 
-The standalone evaluation CLI exits with an error until checkpoint inference and
-the evaluation protocol are wired up. It does not write prediction files.
+## Practical checkpoint evaluation
+
+Evaluate a checkpoint on its configured validation split:
+
+```bash
+python3 eval.py --checkpoint outputs/practical-mini/last_checkpoint.pt \
+  --output outputs/practical-mini/validation.json
+```
+
+The result is labeled `practical_bev_vehicle_iou`, includes raw intersection and
+union counts, and does not claim paper or official metric parity. To limit the
+number of validation samples, add `--max-samples N`; results are then labeled as
+subset diagnostics. The data root defaults to the checkpoint's configured path
+and may be replaced with `--dataroot`. Existing output files are not overwritten.
+The CLI has synthetic fixture coverage but has not been validated on full nuScenes.
