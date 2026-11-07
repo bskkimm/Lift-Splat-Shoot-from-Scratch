@@ -12,15 +12,16 @@ references, planned components, and known deviations.
 **The current code is an experimental scaffold, not a faithful LSS reproduction.**
 In particular:
 
-- `train.py --dry-run` constructs a model without training. Other invocations
-  fail explicitly because training and nuScenes data loading are not wired up.
+- `train.py` provides an experimental **practical** single-process FP32
+  nuScenes segmentation recipe, with explicit train/validation splits and
+  epoch-boundary checkpoints. `--dry-run` constructs the model only.
 - `eval.py` fails explicitly because inference and evaluation are not wired up;
   it does not generate predictions or official nuScenes results.
 - The data loader only partially handles the raw nuScenes table schema. Named
   train/validation scene splits and vehicle-mask generation have synthetic tests
-  but no real-data parity evidence. An experimental
-  `LSSSegmentation` forward path and BCE/IoU primitives exist, but they are not
-  wired into the training/evaluation CLIs or validated against a reference model.
+  but no real-data parity evidence. The training recipe uses direct resizing,
+  random image-encoder initialization, no paper augmentation or camera dropout,
+  and has not been validated against a reference model or real dataset run.
 - Existing synthetic tests exercise parts of the scaffold; passing them does not
   demonstrate paper fidelity, checkpoint compatibility, or model performance.
 
