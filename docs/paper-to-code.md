@@ -93,6 +93,13 @@ rollback after a later failure using CPU snapshots; this requires additional
 host memory. Rollback of arbitrary custom state-loading hooks and GPU behavior
 has not been verified.
 
+Before deterministic algorithms and a one-thread default were added to the
+practical CLI, its synthetic resume comparison failed once on Python 3.10 CI
+and passed on an unchanged rerun; the precise cause was not established. The
+mitigated configuration has passed repeated CI runs, but determinism across
+other hardware, thread counts, precision modes and data-loader workers is not
+established.
+
 The practical CLI constructs train and validation datasets independently; each
 currently loads complete metadata tables before filtering samples. Full-dataset
 memory use and throughput have not been measured.
