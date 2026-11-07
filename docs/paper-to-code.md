@@ -117,7 +117,10 @@ explicit per-camera augmentation parameters and post-transforms while keeping
 original intrinsics; the practical training recipe does not yet sample these
 parameters. An opt-in `ImageAugmentation` dataset policy samples training
 transforms from NumPy's RNG and uses a deterministic validation crop; the policy
-is tested with synthetic raw-table fixtures but is not wired into the CLI. Its
+is tested with synthetic raw-table fixtures but is not wired into the CLI. An
+opt-in dataset camera subset can sample without replacement during training;
+validation retains all cameras. Its NumPy RNG behavior is unverified with
+multiple workers and is not wired into the CLI. The augmentation's
 continuous flip offset follows the reference convention and is not a claim of
 exact PIL pixel-center or real-data parity.
 
