@@ -64,3 +64,58 @@ print('PARITY_COMPLETE')
                             capture_output=True, text=True, timeout=90)
     assert result.returncode == 0, result.stderr
     assert "PARITY_COMPLETE" in result.stdout
+
+
+def test_notebook_training_step_matches_package_parameters_and_buffers():
+    code = r'''
+import json
+from pathlib import Path
+import torch
+from lss.models.segmentation import LSSSegmentation as PackageModel
+notebook = json.loads(Path('notebooks/lss_e2e_walkthrough.ipynb').read_text())
+namespace = {'__name__': 'notebook_training_parity'}
+for cell in notebook['cells']:
+    if cell['cell_type'] == 'code':
+        exec(compile(''.join(cell['source']), '<notebook>', 'exec'), namespace)
+kwargs = dict(x_bounds=(-8,8,1), y_bounds=(-8,8,1), z_bounds=(0,3,3), depth_bounds=(1,3,1), context_channels=8, pretrained=False)
+torch.manual_seed(81)
+notebook_model = namespace['LSSSegmentation'](**kwargs).train()
+package_model = PackageModel(**kwargs).train()
+package_model.load_state_dict(notebook_model.state_dict(), strict=True)
+notebook_optimizer = torch.optim.Adam(notebook_model.parameters(), lr=1e-3)
+package_optimizer = torch.optim.Adam(package_model.parameters(), lr=1e-3)
+images = torch.randn(1,2,3,32,64)
+k = torch.tensor([[10.,0.,32.],[0.,10.,16.],[0.,0.,1.]])[None,None].expand(1,2,3,3).clone()
+extrinsics = torch.eye(4)[None,None].expand(1,2,4,4).clone()
+target = torch.ones(1,1,16,16)
+torch.manual_seed(123)
+notebook_logits = notebook_model(images, k, extrinsics)
+notebook_loss = torch.nn.functional.binary_cross_entropy_with_logits(notebook_logits, target)
+notebook_loss.backward()
+torch.manual_seed(123)
+package_logits = package_model(images, k, extrinsics)
+package_loss = torch.nn.functional.binary_cross_entropy_with_logits(package_logits, target)
+package_loss.backward()
+torch.testing.assert_close(notebook_logits, package_logits, rtol=1e-5, atol=1e-6)
+torch.testing.assert_close(notebook_loss, package_loss, rtol=1e-5, atol=1e-6)
+for (name, p), (other_name, q) in zip(notebook_model.named_parameters(), package_model.named_parameters()):
+    assert name == other_name
+    assert (p.grad is None) == (q.grad is None), name
+    if p.grad is not None:
+        torch.testing.assert_close(p.grad, q.grad, rtol=1e-5, atol=1e-6, msg=lambda msg: f'{name}: {msg}')
+notebook_optimizer.step()
+package_optimizer.step()
+for key, value in notebook_model.state_dict().items():
+    other = package_model.state_dict()[key]
+    if torch.is_tensor(value):
+        torch.testing.assert_close(value, other, rtol=1e-5, atol=1e-6, msg=lambda msg: f'{key}: {msg}')
+    else:
+        assert value == other
+print('TRAINING_PARITY_COMPLETE')
+'''
+    env = os.environ.copy()
+    env.update(OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", CUDA_VISIBLE_DEVICES="")
+    result = subprocess.run([sys.executable, "-c", code], cwd=NOTEBOOK.parents[1], env=env,
+                            capture_output=True, text=True, timeout=90)
+    assert result.returncode == 0, result.stderr
+    assert "TRAINING_PARITY_COMPLETE" in result.stdout
