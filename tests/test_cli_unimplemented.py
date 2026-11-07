@@ -10,7 +10,7 @@ from lss.models.lss import LSS
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_training_without_dry_run_fails_without_saving_untrained_weights(tmp_path):
+def test_training_without_dataroot_fails_without_saving_weights(tmp_path):
     output_dir = tmp_path / "checkpoints"
     result = subprocess.run(
         [sys.executable, str(ROOT / "train.py"), "--output-dir", str(output_dir)],
@@ -18,7 +18,7 @@ def test_training_without_dry_run_fails_without_saving_untrained_weights(tmp_pat
     )
 
     assert result.returncode != 0
-    assert "not implemented" in result.stderr.lower()
+    assert "dataroot" in result.stderr.lower()
     assert not output_dir.exists()
 
 
