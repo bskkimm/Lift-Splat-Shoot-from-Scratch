@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import numpy as np
 from PIL import Image
 import torch
 from .categories import category_id, yaw_from_quaternion
@@ -18,7 +19,7 @@ class NuScenesCameraDataset(Dataset):
     @classmethod
     def has_camera_data(cls, record):
         return bool(record.get("image_paths"))
-    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval", bev_bounds=None, split=None, augmentation=None):
+    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval", bev_bounds=None, split=None, augmentation=None, camera_count=None, training=False):
         if image_size is not None and (len(image_size) != 2 or min(image_size) <= 0): raise ValueError("image_size must be (height, width) with positive values")
         if image_size is not None and augmentation is not None:
             raise ValueError("augmentation cannot be combined with image_size")
@@ -28,6 +29,8 @@ class NuScenesCameraDataset(Dataset):
             raise ValueError("supported version/split pairs are mini or trainval with train or val")
         self.image_size = image_size
         self.augmentation = augmentation
+        self.camera_count = camera_count
+        self.training = training
         self.bev_bounds = bev_bounds
         self.split = split
         if dataroot is not None:
@@ -142,15 +145,26 @@ class NuScenesCameraDataset(Dataset):
         record = self.records[index]
         if self.bev_bounds is not None and "vehicle_polygons" not in record:
             raise ValueError("BEV targets require vehicle polygons in a reference ego frame")
+        count = len(record["image_paths"])
+        if len(record["intrinsics"]) != count or len(record["extrinsics"]) != count:
+            raise ValueError("camera image and calibration counts must match")
+        if self.camera_count is not None and (not isinstance(self.camera_count, int) or self.camera_count <= 0):
+            raise ValueError("camera_count must be a positive integer")
+        if self.training and self.camera_count is not None and self.camera_count > count:
+            raise ValueError("camera_count cannot exceed available cameras")
+        indices = (np.random.choice(count, self.camera_count, replace=False).tolist()
+                   if self.training and self.camera_count is not None and self.camera_count < count
+                   else list(range(count)))
         images = []
-        intrinsics = torch.tensor(record["intrinsics"], dtype=torch.float32)
+        intrinsics = torch.tensor([record["intrinsics"][i] for i in indices], dtype=torch.float32)
         augmentations = record.get("augmentations")
         if augmentations is not None and self.augmentation is not None:
             raise ValueError("record augmentations cannot be combined with an augmentation policy")
         if augmentations is not None and (self.image_size is not None or len(augmentations) != len(record["image_paths"])):
             raise ValueError("per-camera augmentations must match image count and cannot be combined with image_size")
         post_rots, post_trans = [], []
-        for path in record["image_paths"]:
+        for camera_index in indices:
+            path = record["image_paths"][camera_index]
             if not Path(path).is_file(): raise FileNotFoundError(f"camera image not found: {path}")
             image = Image.open(Path(path)).convert("RGB")
             if self.augmentation is not None:
@@ -158,15 +172,15 @@ class NuScenesCameraDataset(Dataset):
                 post_rots.append(rotation)
                 post_trans.append(translation)
             elif augmentations is not None:
-                image, rotation, translation = augment_image(image, **augmentations[len(images)])
+                image, rotation, translation = augment_image(image, **augmentations[camera_index])
                 post_rots.append(rotation)
                 post_trans.append(translation)
             elif self.image_size:
                 old_w, old_h = image.size; image = image.resize(self.image_size[::-1]); intrinsics[len(images), 0] *= self.image_size[1] / old_w; intrinsics[len(images), 1] *= self.image_size[0] / old_h
-            images.append(torch.from_numpy(__import__("numpy").array(image)).permute(2, 0, 1).contiguous().float() / 255)
+            images.append(torch.from_numpy(np.array(image)).permute(2, 0, 1).contiguous().float() / 255)
         boxes = torch.tensor(record.get("boxes", []), dtype=torch.float32).reshape(-1, 9)
         labels = torch.tensor(record.get("labels", []), dtype=torch.long).reshape(-1)
-        result = {"images": normalize_images(torch.stack(images)), "intrinsics": intrinsics, "extrinsics": torch.tensor(record["extrinsics"], dtype=torch.float32), "boxes": boxes, "labels": labels}
+        result = {"images": normalize_images(torch.stack(images)), "intrinsics": intrinsics, "extrinsics": torch.tensor([record["extrinsics"][i] for i in indices], dtype=torch.float32), "boxes": boxes, "labels": labels}
         if augmentations is not None or self.augmentation is not None:
             result["post_rots"] = torch.stack(post_rots)
             result["post_trans"] = torch.stack(post_trans)
