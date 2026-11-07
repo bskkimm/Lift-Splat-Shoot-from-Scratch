@@ -17,14 +17,28 @@ class NuScenesCameraDataset(Dataset):
     @classmethod
     def has_camera_data(cls, record):
         return bool(record.get("image_paths"))
-    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval", bev_bounds=None):
+    def __init__(self, records=None, image_size=None, dataroot=None, version="v1.0-trainval", bev_bounds=None, split=None):
         if image_size is not None and (len(image_size) != 2 or min(image_size) <= 0): raise ValueError("image_size must be (height, width) with positive values")
+        if split is not None and dataroot is None:
+            raise ValueError("a named split requires a nuScenes dataroot")
+        if split is not None and (version not in ("v1.0-mini", "v1.0-trainval") or split not in ("train", "val")):
+            raise ValueError("supported version/split pairs are mini or trainval with train or val")
         self.image_size = image_size
         self.bev_bounds = bev_bounds
+        self.split = split
         if dataroot is not None:
             root = Path(dataroot).expanduser() / version
             if not root.is_dir(): raise FileNotFoundError(f"nuScenes version directory not found: {root}")
             with open(root / "sample.json") as handle: samples = {x["token"]: x for x in json.load(handle)}
+            if split is not None:
+                from nuscenes.utils.splits import create_splits_scenes
+
+                with open(root / "scene.json") as handle:
+                    scenes = {item["token"]: item["name"] for item in json.load(handle)}
+                split_name = f"mini_{split}" if version == "v1.0-mini" else split
+                selected_names = set(create_splits_scenes()[split_name])
+                samples = {token: sample for token, sample in samples.items()
+                           if scenes[sample["scene_token"]] in selected_names}
             with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
             pose_path = root / "ego_pose.json"; poses = {}
             if pose_path.exists():
