@@ -6,6 +6,7 @@ whose sampler uses the supplied generator. Mid-epoch and worker/prefetch state
 are not captured.
 """
 
+import copy
 import json
 import os
 import random
@@ -27,6 +28,46 @@ def _type_name(value):
         return None
     cls = type(value)
     return f"{cls.__module__}.{cls.__qualname__}"
+
+
+def _snapshot_on_cpu(value):
+    """Clone checkpoint state onto CPU without creating a second GPU copy."""
+    if isinstance(value, torch.Tensor):
+        return value.detach().to(device="cpu", copy=True)
+    if isinstance(value, dict):
+        result = copy.copy(value)
+        for key, item in value.items():
+            result[key] = _snapshot_on_cpu(item)
+        if hasattr(value, "_metadata"):
+            result._metadata = copy.deepcopy(value._metadata)
+        return result
+    if isinstance(value, list):
+        return [_snapshot_on_cpu(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_snapshot_on_cpu(item) for item in value)
+    return copy.deepcopy(value)
+
+
+def _preflight_structure(model, optimizer, state):
+    """Reject common incompatible structures before loading any weights."""
+    current = model.state_dict()
+    saved = state["model"]
+    if current.keys() != saved.keys():
+        raise ValueError("checkpoint model state keys do not match")
+    for key, value in current.items():
+        other = saved[key]
+        if isinstance(value, torch.Tensor):
+            if not isinstance(other, torch.Tensor) or value.shape != other.shape or value.dtype != other.dtype:
+                raise ValueError(f"checkpoint model tensor shape or dtype mismatch: {key}")
+        elif isinstance(other, torch.Tensor):
+            raise ValueError(f"checkpoint model state type mismatch: {key}")
+    current_groups = optimizer.state_dict()["param_groups"]
+    saved_groups = state["optimizer"]["param_groups"]
+    if len(current_groups) != len(saved_groups) or any(
+        len(current_group["params"]) != len(saved_group["params"])
+        for current_group, saved_group in zip(current_groups, saved_groups)
+    ):
+        raise ValueError("checkpoint optimizer parameter groups do not match")
 
 
 def save_epoch_checkpoint(path, model, optimizer, epoch, config, loader_generator,
@@ -90,16 +131,38 @@ def load_epoch_checkpoint(path, model, optimizer, config, loader_generator,
     cuda_rng = state["cuda_rng"]
     if cuda_rng is not None and (not torch.cuda.is_available() or len(cuda_rng) != torch.cuda.device_count()):
         raise RuntimeError("checkpoint CUDA RNG state is incompatible with available CUDA devices")
-    model.load_state_dict(state["model"])
-    optimizer.load_state_dict(state["optimizer"])
-    if scheduler is not None:
-        scheduler.load_state_dict(state["scheduler"])
-    random.setstate(state["python_rng"])
-    numpy_state = state["numpy_rng"]
-    np.random.set_state((numpy_state[0], np.asarray(numpy_state[1], dtype=np.uint32),
-                         numpy_state[2], numpy_state[3], numpy_state[4]))
-    torch.set_rng_state(state["torch_rng"].cpu())
-    loader_generator.set_state(state["loader_rng"].cpu())
-    if cuda_rng is not None:
-        torch.cuda.set_rng_state_all(cuda_rng)
+    _preflight_structure(model, optimizer, state)
+    previous_model = _snapshot_on_cpu(model.state_dict())
+    previous_optimizer = _snapshot_on_cpu(optimizer.state_dict())
+    previous_scheduler = _snapshot_on_cpu(scheduler.state_dict()) if scheduler is not None else None
+    previous_python = random.getstate()
+    previous_numpy = np.random.get_state()
+    previous_torch = torch.get_rng_state()
+    previous_loader = loader_generator.get_state()
+    previous_cuda = torch.cuda.get_rng_state_all() if cuda_rng is not None else None
+    try:
+        model.load_state_dict(state["model"])
+        optimizer.load_state_dict(state["optimizer"])
+        if scheduler is not None:
+            scheduler.load_state_dict(state["scheduler"])
+        random.setstate(state["python_rng"])
+        numpy_state = state["numpy_rng"]
+        np.random.set_state((numpy_state[0], np.asarray(numpy_state[1], dtype=np.uint32),
+                             numpy_state[2], numpy_state[3], numpy_state[4]))
+        torch.set_rng_state(state["torch_rng"].cpu())
+        loader_generator.set_state(state["loader_rng"].cpu())
+        if cuda_rng is not None:
+            torch.cuda.set_rng_state_all([item.cpu() for item in cuda_rng])
+    except BaseException:
+        model.load_state_dict(previous_model)
+        optimizer.load_state_dict(previous_optimizer)
+        if scheduler is not None:
+            scheduler.load_state_dict(previous_scheduler)
+        random.setstate(previous_python)
+        np.random.set_state(previous_numpy)
+        torch.set_rng_state(previous_torch)
+        loader_generator.set_state(previous_loader)
+        if previous_cuda is not None:
+            torch.cuda.set_rng_state_all(previous_cuda)
+        raise
     return state["epoch"]

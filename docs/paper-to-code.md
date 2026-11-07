@@ -88,6 +88,10 @@ An assembled LSS model also has a synthetic checkpoint save/load output test.
 Callers must supply a complete matching config and the generator actually used by
 their sampler. Mid-epoch recovery, multiple workers, distributed sampling,
 GPU/CUDA restoration and assembled-LSS training continuation remain unverified.
+Loading checks common state/optimizer structure before mutation and attempts
+rollback after a later failure using CPU snapshots; this requires additional
+host memory. Rollback of arbitrary custom state-loading hooks and GPU behavior
+has not been verified.
 
 The reference `get_image_data` passes calibrated camera-to-ego transforms
 directly, while its segmentation targets use the LiDAR keyframe's ego pose.

@@ -109,6 +109,109 @@ def test_checkpoint_rejects_incompatible_optimizer_before_mutation(tmp_path):
     torch.testing.assert_close(model.weight, before)
 
 
+def test_checkpoint_rejects_model_shape_mismatch_before_any_weight_copy(tmp_path):
+    from lss.training_checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
+
+    source = torch.nn.Sequential(torch.nn.Linear(2, 2), torch.nn.Linear(2, 1))
+    source_optimizer = torch.optim.Adam(source.parameters())
+    checkpoint = tmp_path / "epoch.pt"
+    save_epoch_checkpoint(checkpoint, source, source_optimizer, 1, {}, torch.Generator())
+    target = torch.nn.Sequential(torch.nn.Linear(2, 2), torch.nn.Linear(2, 2))
+    target_optimizer = torch.optim.Adam(target.parameters())
+    before = copy.deepcopy(target.state_dict())
+
+    with pytest.raises(ValueError, match="model.*shape"):
+        load_epoch_checkpoint(checkpoint, target, target_optimizer, {}, torch.Generator())
+    for key, value in before.items():
+        torch.testing.assert_close(target.state_dict()[key], value, rtol=0, atol=0)
+
+
+def test_checkpoint_rejects_optimizer_group_mismatch_before_weight_copy(tmp_path):
+    from lss.training_checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
+
+    model = torch.nn.Linear(2, 1)
+    source_optimizer = torch.optim.Adam(model.parameters())
+    checkpoint = tmp_path / "epoch.pt"
+    save_epoch_checkpoint(checkpoint, model, source_optimizer, 1, {}, torch.Generator())
+    with torch.no_grad():
+        model.weight.add_(4)
+    before = model.weight.detach().clone()
+    target_optimizer = torch.optim.Adam([{"params": [model.weight]}, {"params": [model.bias]}])
+
+    with pytest.raises(ValueError, match="optimizer.*groups"):
+        load_epoch_checkpoint(checkpoint, model, target_optimizer, {}, torch.Generator())
+    torch.testing.assert_close(model.weight, before)
+
+
+class ModelWithVoxelPool(torch.nn.Module):
+    def __init__(self, x_bounds):
+        super().__init__()
+        from lss.models.voxel_pool import VoxelPool
+
+        self.linear = torch.nn.Linear(2, 1)
+        self.pool = VoxelPool(x_bounds, (0, 1, 1), (0, 1, 1))
+
+
+def test_failed_extra_state_restore_rolls_back_model_weights(tmp_path):
+    from lss.training_checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
+
+    source = ModelWithVoxelPool((0, 1, 0.5))
+    source_optimizer = torch.optim.Adam(source.parameters())
+    checkpoint = tmp_path / "epoch.pt"
+    save_epoch_checkpoint(checkpoint, source, source_optimizer, 1, {}, torch.Generator())
+    target = ModelWithVoxelPool((1, 2, 0.5))
+    target_optimizer = torch.optim.Adam(target.parameters())
+    before = target.linear.weight.detach().clone()
+
+    with pytest.raises((ValueError, RuntimeError), match="bounds"):
+        load_epoch_checkpoint(checkpoint, target, target_optimizer, {}, torch.Generator())
+    torch.testing.assert_close(target.linear.weight, before, rtol=0, atol=0)
+
+
+def test_late_rng_restore_failure_rolls_back_all_previous_state(tmp_path):
+    from lss.training_checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
+
+    model, optimizer, scheduler = trained_components()
+    generator = torch.Generator().manual_seed(1)
+    checkpoint = tmp_path / "epoch.pt"
+    save_epoch_checkpoint(checkpoint, model, optimizer, 1, {}, generator, scheduler)
+    state = torch.load(checkpoint, weights_only=True)
+    state["torch_rng"] = torch.zeros(1, dtype=torch.uint8)
+    torch.save(state, checkpoint)
+    with torch.no_grad():
+        model.weight.add_(4)
+    optimizer.param_groups[0]["lr"] = 0.25
+    scheduler.last_epoch = 19
+    random.seed(91)
+    np.random.seed(92)
+    torch.manual_seed(93)
+    generator.manual_seed(94)
+    before_model = copy.deepcopy(model.state_dict())
+    before_optimizer = copy.deepcopy(optimizer.state_dict())
+    before_scheduler = copy.deepcopy(scheduler.state_dict())
+    before_python = random.getstate()
+    before_numpy = np.random.get_state()
+    before_torch = torch.get_rng_state().clone()
+    before_loader = generator.get_state().clone()
+
+    with pytest.raises(RuntimeError):
+        load_epoch_checkpoint(checkpoint, model, optimizer, {}, generator, scheduler)
+
+    for key, value in before_model.items():
+        torch.testing.assert_close(model.state_dict()[key], value, rtol=0, atol=0)
+    assert optimizer.state_dict()["param_groups"] == before_optimizer["param_groups"]
+    for key in before_optimizer["state"]:
+        for name, value in before_optimizer["state"][key].items():
+            torch.testing.assert_close(optimizer.state_dict()["state"][key][name], value, rtol=0, atol=0)
+    assert scheduler.state_dict() == before_scheduler
+    assert random.getstate() == before_python
+    actual_numpy = np.random.get_state()
+    assert actual_numpy[0] == before_numpy[0] and actual_numpy[2:] == before_numpy[2:]
+    np.testing.assert_array_equal(actual_numpy[1], before_numpy[1])
+    torch.testing.assert_close(torch.get_rng_state(), before_torch, rtol=0, atol=0)
+    torch.testing.assert_close(generator.get_state(), before_loader, rtol=0, atol=0)
+
+
 def test_failed_checkpoint_write_preserves_existing_file(tmp_path, monkeypatch):
     from lss.training_checkpoint import save_epoch_checkpoint
 
