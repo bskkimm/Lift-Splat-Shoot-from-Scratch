@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import pickle
 import tempfile
 from dataclasses import asdict
 from pathlib import Path
@@ -86,7 +87,7 @@ def main():
         missing = [name for name in required if name not in config]
         if missing or "model" not in state or "epoch" not in state:
             raise ValueError(f"missing checkpoint fields: {missing}")
-    except (KeyError, TypeError, ValueError, RuntimeError) as exc:
+    except (KeyError, TypeError, ValueError, RuntimeError, AttributeError, EOFError, pickle.UnpicklingError) as exc:
         parser.error(f"incompatible checkpoint: {exc}")
     if args.version is not None and args.version != config["version"]:
         parser.error("--version must match the checkpoint configuration")
@@ -121,6 +122,8 @@ def main():
                                    image_size=tuple(config["image_size"]),
                                    bev_bounds=(config["x_bounds"], config["y_bounds"]))
     total_samples = len(dataset)
+    if total_samples == 0:
+        parser.error("validation split contains no samples")
     if args.max_samples is not None:
         dataset = Subset(dataset, range(min(args.max_samples, total_samples)))
     loader = build_loader(dataset, batch_size=args.batch_size or config["batch_size"],

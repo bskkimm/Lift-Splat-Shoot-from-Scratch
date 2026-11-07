@@ -93,3 +93,36 @@ def test_evaluation_rejects_nonpositive_subset_limit(trained_fixture):
     result = run_evaluation(checkpoint, "--max-samples", "0")
     assert result.returncode != 0
     assert "max-samples" in result.stderr.lower()
+
+
+@pytest.mark.parametrize("content", [b"not a checkpoint", b""])
+def test_corrupt_checkpoint_reports_clean_error(tmp_path, content):
+    checkpoint = tmp_path / "corrupt.pt"
+    checkpoint.write_bytes(content)
+    result = run_evaluation(checkpoint)
+    assert result.returncode != 0
+    assert "incompatible checkpoint" in result.stderr.lower()
+    assert "traceback" not in result.stderr.lower()
+
+
+def test_malformed_checkpoint_types_reports_clean_error(tmp_path):
+    checkpoint = tmp_path / "malformed.pt"
+    torch.save({"format_version": 1, "types": []}, checkpoint)
+    result = run_evaluation(checkpoint)
+    assert result.returncode != 0
+    assert "incompatible checkpoint" in result.stderr.lower()
+    assert "traceback" not in result.stderr.lower()
+
+
+def test_empty_validation_split_reports_clean_error(trained_fixture, tmp_path):
+    from tests.test_nuscenes_raw_keyframes import make_raw_dataset, write_table
+
+    _, checkpoint, _ = trained_fixture
+    data = tmp_path / "data"
+    data.mkdir()
+    make_raw_dataset(data)
+    write_table(data / "v1.0-mini", "scene", [{"token": "scene", "name": "scene-0061"}])
+    result = run_evaluation(checkpoint, "--dataroot", str(data))
+    assert result.returncode != 0
+    assert "validation split contains no samples" in result.stderr.lower()
+    assert "traceback" not in result.stderr.lower()
