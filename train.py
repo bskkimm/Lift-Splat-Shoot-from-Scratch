@@ -3,6 +3,7 @@
 import argparse
 import json
 import math
+import os
 import platform
 from dataclasses import asdict
 from importlib.metadata import version
@@ -16,7 +17,7 @@ import torchvision
 from lss.data.loader import build_loader
 from lss.data.nuscenes_dataset import NuScenesCameraDataset
 from lss.models.segmentation import LSSSegmentation
-from lss.reproducibility import seed_everything
+from lss.reproducibility import configure_cuda_workspace, seed_everything
 from lss.segmentation_engine import run_segmentation_epoch
 from lss.training_checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
 
@@ -62,6 +63,7 @@ def resolved_config(args, depth_bounds):
         "pretrained": False, "batch_size": args.batch_size,
         "workers": 0, "shuffle": True, "seed": args.seed, "device": args.device,
         "cpu_threads": args.cpu_threads, "deterministic_algorithms": True,
+        "cublas_workspace_config": os.environ.get("CUBLAS_WORKSPACE_CONFIG") if args.device == "cuda" else None,
         "optimizer": "Adam", "lr": args.lr, "weight_decay": args.weight_decay,
         "scheduler": args.scheduler, "pos_weight": args.pos_weight,
         "grad_clip_norm": args.grad_clip_norm, "precision": "float32",
@@ -89,8 +91,13 @@ def main():
     if not args.dry_run and checkpoint_path.exists():
         if args.resume is None or Path(args.resume).expanduser().resolve() != checkpoint_path.resolve():
             parser.error(f"checkpoint already exists: {checkpoint_path}; resume it or choose a different output")
-    if args.device == "cuda" and not torch.cuda.is_available():
-        parser.error("CUDA was requested but is unavailable")
+    if args.device == "cuda":
+        try:
+            configure_cuda_workspace()
+        except (ValueError, RuntimeError) as exc:
+            parser.error(str(exc))
+        if not torch.cuda.is_available():
+            parser.error("CUDA was requested but is unavailable")
     depth_bounds = tuple(args.depth_bound)
     if args.depth_bins is not None:
         if args.depth_bins <= 0:

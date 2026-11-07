@@ -35,7 +35,10 @@ This practical recipe uses FP32, direct image resize, random image-encoder
 initialization, no paper augmentation or camera dropout, and zero data-loader
 workers. It enables PyTorch deterministic algorithms and defaults to one CPU
 thread (`--cpu-threads 1`); unsupported deterministic operations fail rather
-than silently switching algorithms. It is not the paper training recipe. Training and validation emit JSON
+than silently switching algorithms. For CUDA, the CLI sets
+`CUBLAS_WORKSPACE_CONFIG=:4096:8` before CUDA initialization if unset; an
+existing `:16:8` or `:4096:8` is preserved. It is not the paper training recipe.
+Training and validation emit JSON
 statistics per epoch; training IoU is diagnostic, not an official metric.
 The command has synthetic fixture coverage but has not been run on full nuScenes.
 The current loader reads full metadata tables separately for train and validation,
@@ -55,6 +58,15 @@ real-data, GPU and multiworker recovery remain unverified. Configuration checks
 include the dataset path and version, not a hash of the dataset contents.
 Fresh runs refuse to overwrite an existing checkpoint; choose a new output path
 or resume that same checkpoint.
+
+To run the opt-in synthetic CUDA CLI smoke test on a CUDA-capable system:
+
+```bash
+LSS_TEST_CUDA=1 python3 -m pytest -q tests/test_practical_training_cuda.py
+```
+
+The test fails if explicitly enabled without CUDA. It checks one synthetic
+training/validation epoch and CUDA RNG checkpointing, not GPU resume parity.
 
 ## CLI help
 
