@@ -33,7 +33,9 @@ python3 train.py --dataroot /path/to/nuscenes --version v1.0-mini \
 
 This practical recipe uses FP32, direct image resize, random image-encoder
 initialization, no paper augmentation or camera dropout, and zero data-loader
-workers. It is not the paper training recipe. Training and validation emit JSON
+workers. It enables PyTorch deterministic algorithms and defaults to one CPU
+thread (`--cpu-threads 1`); unsupported deterministic operations fail rather
+than silently switching algorithms. It is not the paper training recipe. Training and validation emit JSON
 statistics per epoch; training IoU is diagnostic, not an official metric.
 The command has synthetic fixture coverage but has not been run on full nuScenes.
 The current loader reads full metadata tables separately for train and validation,
@@ -48,9 +50,11 @@ python3 train.py --dataroot /path/to/nuscenes --version v1.0-mini \
   --resume outputs/practical-mini/last_checkpoint.pt
 ```
 
-CPU, single-worker resume equivalence has synthetic test coverage; full-model
+CPU, one-thread/zero-worker resume equivalence has synthetic test coverage; full-model
 real-data, GPU and multiworker recovery remain unverified. Configuration checks
 include the dataset path and version, not a hash of the dataset contents.
+Fresh runs refuse to overwrite an existing checkpoint; choose a new output path
+or resume that same checkpoint.
 
 ## CLI help
 

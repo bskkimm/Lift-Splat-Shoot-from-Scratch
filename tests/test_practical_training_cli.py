@@ -43,6 +43,9 @@ def test_training_cli_runs_real_optimization_and_validation(tmp_path):
     checkpoint = torch.load(output / "last_checkpoint.pt", map_location="cpu", weights_only=True)
     assert checkpoint["epoch"] == 1
     assert checkpoint["optimizer"]["state"]
+    config = json.loads(checkpoint["config_json"])
+    assert config["cpu_threads"] == 1
+    assert config["deterministic_algorithms"] is True
     metrics = json.loads(result.stdout.strip().splitlines()[-1])
     assert metrics["epoch"] == 1
     assert metrics["train"]["samples"] == 1 and metrics["validation"]["samples"] == 1
@@ -76,6 +79,26 @@ def test_cli_epoch_boundary_resume_matches_uninterrupted_training(tmp_path):
     torch.testing.assert_close(actual["torch_rng"], expected["torch_rng"], rtol=0, atol=0)
     torch.testing.assert_close(actual["loader_rng"], expected["loader_rng"], rtol=0, atol=0)
     assert json.loads(full_result.stdout.strip().splitlines()[-1]) == json.loads(resume_result.stdout.strip().splitlines()[-1])
+
+
+def test_independent_seeded_runs_match_at_first_epoch(tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    make_two_scene_dataset(data)
+    first_dir, second_dir = tmp_path / "first", tmp_path / "second"
+    first = run_training(data, first_dir, epochs=1)
+    second = run_training(data, second_dir, epochs=1)
+    assert first.returncode == 0, first.stderr
+    assert second.returncode == 0, second.stderr
+    first_state = torch.load(first_dir / "last_checkpoint.pt", map_location="cpu", weights_only=True)
+    second_state = torch.load(second_dir / "last_checkpoint.pt", map_location="cpu", weights_only=True)
+    for key, value in first_state["model"].items():
+        if torch.is_tensor(value):
+            torch.testing.assert_close(second_state["model"][key], value, rtol=0, atol=0)
+        else:
+            assert second_state["model"][key] == value
+    torch.testing.assert_close(first_state["torch_rng"], second_state["torch_rng"], rtol=0, atol=0)
+    torch.testing.assert_close(first_state["loader_rng"], second_state["loader_rng"], rtol=0, atol=0)
 
 
 def test_cli_rejects_resume_with_changed_configuration(tmp_path):
@@ -116,3 +139,38 @@ def test_training_cli_rejects_empty_validation_split_before_writing(tmp_path):
     assert result.returncode != 0
     assert "validation split contains no samples" in result.stderr.lower()
     assert not output.exists()
+
+
+def test_fresh_run_does_not_overwrite_existing_checkpoint(tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    make_two_scene_dataset(data)
+    output = tmp_path / "run"
+    output.mkdir()
+    checkpoint = output / "last_checkpoint.pt"
+    checkpoint.write_bytes(b"existing checkpoint")
+
+    result = run_training(data, output, epochs=1)
+
+    assert result.returncode != 0
+    assert "checkpoint" in result.stderr.lower() and "exists" in result.stderr.lower()
+    assert checkpoint.read_bytes() == b"existing checkpoint"
+
+
+def test_resume_does_not_overwrite_a_different_existing_checkpoint(tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    make_two_scene_dataset(data)
+    source = tmp_path / "source"
+    first = run_training(data, source, epochs=1)
+    assert first.returncode == 0, first.stderr
+    output = tmp_path / "other"
+    output.mkdir()
+    checkpoint = output / "last_checkpoint.pt"
+    checkpoint.write_bytes(b"other checkpoint")
+
+    result = run_training(data, output, epochs=2, resume=source / "last_checkpoint.pt")
+
+    assert result.returncode != 0
+    assert "checkpoint" in result.stderr.lower() and "exists" in result.stderr.lower()
+    assert checkpoint.read_bytes() == b"other checkpoint"

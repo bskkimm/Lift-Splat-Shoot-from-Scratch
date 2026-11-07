@@ -34,6 +34,7 @@ def build_parser():
     parser.add_argument("--checkpoint-name", default="last_checkpoint.pt")
     parser.add_argument("--resume", default=None)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
+    parser.add_argument("--cpu-threads", type=int, default=1)
     parser.add_argument("--image-size", type=int, nargs=2, metavar=("HEIGHT", "WIDTH"), default=(128, 352))
     parser.add_argument("--x-bound", type=float, nargs=3, metavar=("MIN", "MAX", "STEP"), default=(-50, 50, 0.5))
     parser.add_argument("--y-bound", type=float, nargs=3, metavar=("MIN", "MAX", "STEP"), default=(-50, 50, 0.5))
@@ -60,6 +61,7 @@ def resolved_config(args, depth_bounds):
         "context_channels": args.context_channels, "out_channels": 1,
         "pretrained": False, "batch_size": args.batch_size,
         "workers": 0, "shuffle": True, "seed": args.seed, "device": args.device,
+        "cpu_threads": args.cpu_threads, "deterministic_algorithms": True,
         "optimizer": "Adam", "lr": args.lr, "weight_decay": args.weight_decay,
         "scheduler": args.scheduler, "pos_weight": args.pos_weight,
         "grad_clip_norm": args.grad_clip_norm, "precision": "float32",
@@ -73,8 +75,8 @@ def resolved_config(args, depth_bounds):
 def main():
     parser = build_parser()
     args = parser.parse_args()
-    if args.epochs <= 0 or args.batch_size <= 0 or args.context_channels <= 0:
-        parser.error("epochs, batch-size and context-channels must be positive")
+    if args.epochs <= 0 or args.batch_size <= 0 or args.context_channels <= 0 or args.cpu_threads <= 0:
+        parser.error("epochs, batch-size, context-channels and cpu-threads must be positive")
     if args.seed < 0 or args.seed >= 2**32:
         parser.error("seed must be between 0 and 2**32 - 1")
     if not all(math.isfinite(value) for value in (args.lr, args.weight_decay, args.pos_weight, args.grad_clip_norm)):
@@ -83,6 +85,10 @@ def main():
         parser.error("learning rate, positive weight and gradient clip must be positive; weight decay must be nonnegative")
     if not args.dry_run and args.dataroot is None:
         parser.error("--dataroot is required for training")
+    checkpoint_path = Path(args.output_dir).expanduser() / args.checkpoint_name
+    if not args.dry_run and checkpoint_path.exists():
+        if args.resume is None or Path(args.resume).expanduser().resolve() != checkpoint_path.resolve():
+            parser.error(f"checkpoint already exists: {checkpoint_path}; resume it or choose a different output")
     if args.device == "cuda" and not torch.cuda.is_available():
         parser.error("CUDA was requested but is unavailable")
     depth_bounds = tuple(args.depth_bound)
@@ -90,6 +96,8 @@ def main():
         if args.depth_bins <= 0:
             parser.error("depth-bins must be positive")
         depth_bounds = (depth_bounds[0], depth_bounds[0] + args.depth_bins * depth_bounds[2], depth_bounds[2])
+    torch.set_num_threads(args.cpu_threads)
+    torch.use_deterministic_algorithms(True)
     seed_everything(args.seed)
     np.random.seed(args.seed)
     model = LSSSegmentation(x_bounds=args.x_bound, y_bounds=args.y_bound, z_bounds=args.z_bound,
@@ -118,7 +126,6 @@ def main():
         completed_epoch = load_epoch_checkpoint(args.resume, model, optimizer, config, generator)
     if completed_epoch >= args.epochs:
         parser.error("--epochs must exceed the completed checkpoint epoch")
-    checkpoint_path = Path(args.output_dir).expanduser() / args.checkpoint_name
     for epoch in range(completed_epoch + 1, args.epochs + 1):
         train_result = run_segmentation_epoch(model, train_loader, device, optimizer=optimizer,
                                               pos_weight=args.pos_weight, grad_clip_norm=args.grad_clip_norm)
