@@ -48,9 +48,10 @@ environments still need to be pinned and verified as part of the rebuild.
 
 The current GitHub Actions workflow runs the synthetic pytest suite on Python
 3.10 and 3.11, including fresh-process notebook execution and a synthetic
-notebook/package output and gradient comparison, and aggregates those results in
-a `current CI gate` job. This is an **incomplete** CI foundation: the playbook's
-lint/format, typing, broader notebook parity, package, dependency audit, integration, and documentation
+notebook/package output and gradient comparison. A pinned Ruff Pyflakes check
+runs separately. A `current CI gate` aggregates both. This is an **incomplete**
+CI foundation: the playbook's full lint/format, typing, broader notebook parity,
+package, dependency audit, integration, and documentation
 checks still need to be implemented. Branch protection is not yet configured,
 so this workflow alone does not enforce those checks before merging.
 

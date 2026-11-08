@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from .backbone import ImageBackbone
 from .depth import DepthContextNet

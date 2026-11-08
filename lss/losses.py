@@ -1,5 +1,4 @@
 import torch.nn.functional as F
-import torch
 
 
 def binary_segmentation_loss(logits, targets, pos_weight=1.0):
