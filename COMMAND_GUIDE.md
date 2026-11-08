@@ -13,6 +13,10 @@ Run repository hygiene checks with `pre-commit run --all-files` after installing
 `pre-commit==4.3.0`; formatting hooks can modify files when a check fails.
 
 The tests use synthetic inputs and do not establish nuScenes or paper parity.
+An optional data-only validation-loader smoke test is documented in
+[`docs/analysis/real-nuscenes-loader-smoke.md`](docs/analysis/real-nuscenes-loader-smoke.md).
+It loads full metadata and has substantial memory requirements; it is not part
+of the default test run.
 The current notebook's cells also run in a fresh subprocess as part of the
 suite. For a standalone smoke check, run:
 

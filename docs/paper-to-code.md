@@ -90,7 +90,10 @@ scene names using the nuScenes devkit's official scene lists, including the
 appropriate `mini_train`/`mini_val` names for `v1.0-mini`. The default
 `split=None` is an unfiltered diagnostic path and must not be used as a claimed
 train/validation reproduction recipe. This selection has synthetic tests only;
-full-dataset split counts and real-data behavior remain unverified.
+the full train-split count and reference parity remain unverified. An opt-in
+local validation-loader smoke checked the 6,019-sample split count and one real
+sample; its limited scope and resources are recorded in
+[`docs/analysis/real-nuscenes-loader-smoke.md`](analysis/real-nuscenes-loader-smoke.md).
 
 The epoch checkpoint helper stores the model, optimizer, optional scheduler,
 completed epoch, canonical caller-supplied config, Python/NumPy/PyTorch RNG and
