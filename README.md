@@ -20,7 +20,8 @@ In particular:
   establish official nuScenes or paper-result parity.
 - The data loader only partially handles the raw nuScenes table schema. Named
   train/validation scene splits and vehicle-mask generation have synthetic tests
-  but no real-data parity evidence. The default training recipe uses direct resizing,
+  and a limited real-validation-loader smoke, but no reference parity evidence.
+  The default training recipe uses direct resizing,
   random image-encoder initialization, no paper augmentation or camera dropout,
   and has not been validated against a reference model or real dataset run.
 - Existing synthetic tests exercise parts of the scaffold; passing them does not
