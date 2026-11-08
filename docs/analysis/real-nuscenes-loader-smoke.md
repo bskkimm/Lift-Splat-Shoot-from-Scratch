@@ -41,3 +41,17 @@ train and validation datasets, whose combined memory use was not measured.
 
 The real-data test is skipped unless `LSS_REAL_NUSCENES_ROOT` is set; when set,
 missing files, wrong split counts or incompatible sample shapes fail the test.
+
+## Streaming sample-data follow-up
+
+On the same host and environment, the opt-in test passed after changing
+`sample_data.json` loading to stream and retain selected keyframes (base code
+commit `8c32bd59e35e4866687e432573713a0e6f0b5509`, plus the then-uncommitted
+streaming change). The timed
+invocation of the same command reported 47.24 seconds wall and 5,326,780 KiB
+maximum RSS. The test again checked only the validation split count and one
+sample's shape/finite/binary properties, not numerical parity with the earlier
+run. This single before/after observation is not a controlled throughput or
+memory benchmark: cache and other host load were not controlled. Remaining
+metadata tables are still loaded eagerly and separate train/validation dataset
+memory remains unmeasured.

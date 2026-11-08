@@ -61,8 +61,9 @@ existing `:16:8` or `:4096:8` is preserved. It is not the paper training recipe.
 Training and validation emit JSON
 statistics per epoch; training IoU is diagnostic, not an official metric.
 The command has synthetic fixture coverage but has not been run on full nuScenes.
-The current loader reads full metadata tables separately for train and validation,
-which can require substantial host memory; full-dataset sizing is unmeasured.
+The current loader streams the sample-data table but reads other metadata tables
+separately for train and validation, which can require substantial host memory;
+combined train/validation sizing is unmeasured.
 
 To initialize the image backbone from a **local** TorchVision EfficientNet-B0
 state dictionary, supply all three flags: `--backbone-weights PATH`,
