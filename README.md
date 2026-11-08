@@ -52,8 +52,13 @@ notebook/package output and gradient comparison. A pinned Ruff Pyflakes check
 runs separately. A `current CI gate` aggregates both. This is an **incomplete**
 CI foundation: the playbook's full lint/format, typing, broader notebook parity,
 package, dependency audit, integration, and documentation
-checks still need to be implemented. Branch protection is not yet configured,
-so this workflow alone does not enforce those checks before merging.
+checks still need to be implemented. GitHub branch protection on `main`
+requires pull requests, the `current CI gate` check, and resolved conversations;
+it applies to administrators and disallows force pushes and branch deletion.
+No human approval is required for this solo-owned repository. Automated-review
+freshness is a procedural requirement and is not currently branch-enforced.
+These protections enforce only the checks that currently exist, not full
+playbook compliance.
 
 For commands and their current limitations, see [COMMAND_GUIDE.md](COMMAND_GUIDE.md).
 Specs and implementation plans are local-only; public research and verification
