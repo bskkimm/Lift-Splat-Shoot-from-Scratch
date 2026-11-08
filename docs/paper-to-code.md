@@ -48,6 +48,16 @@ V1 EfficientNet-B0 weights, not the original repository's
 impact on LSS output have not been verified. `LSSSegmentation` uses this encoder;
 the older `LSS` scaffold does not.
 
+For an offline TorchVision initialization experiment,
+`lss.models.initialization.load_torchvision_b0_features` accepts a local
+TorchVision EfficientNet-B0 state dictionary, a caller-supplied full SHA-256 and
+a descriptive identifier. It verifies the bytes and feature tensor keys,
+shapes and dtypes before loading stages 0–7; the unused stage 8, classifier and
+LSS-specific fusion/depth layers are not loaded. The caller is responsible for
+documenting and verifying the weight source. The helper has synthetic fixture
+tests but is not yet wired into the CLI or validated with an official file.
+It does not convert an original LSS checkpoint.
+
 The standalone segmentation loss defaults to positive weight 1.0 as in the
 paper's object-segmentation description; 2.13 must be supplied explicitly for
 the reference training-script setting. IoU thresholds logits at zero; sum
