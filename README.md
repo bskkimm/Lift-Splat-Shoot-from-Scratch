@@ -49,8 +49,9 @@ environments still need to be pinned and verified as part of the rebuild.
 The current GitHub Actions workflow runs the synthetic pytest suite on Python
 3.10 and 3.11, including fresh-process notebook execution and a synthetic
 notebook/package output and gradient comparison. A pinned Ruff Pyflakes check
-runs separately. A `current CI gate` aggregates both. This is an **incomplete**
-CI foundation: the playbook's full lint/format, typing, broader notebook parity,
+and a narrowly scoped strict mypy check of the raw nuScenes index run separately.
+A `current CI gate` aggregates all three. This is an **incomplete**
+CI foundation: the playbook's full lint/format, broader typing, notebook parity,
 package, dependency audit, integration, and documentation
 checks still need to be implemented. GitHub branch protection on `main`
 requires pull requests, the `current CI gate` check, and resolved conversations;

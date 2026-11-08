@@ -1,14 +1,37 @@
 """Index key-frame cameras from the raw nuScenes metadata tables."""
 
+from typing import Mapping, TypedDict
 
-def index_camera_keyframes(sample_data, calibrated_sensors, sensors):
+
+class SampleDataRecord(TypedDict):
+    token: str
+    sample_token: str
+    is_key_frame: bool
+    calibrated_sensor_token: str
+    ego_pose_token: str
+
+
+class CalibrationRecord(TypedDict):
+    sensor_token: str
+
+
+class SensorRecord(TypedDict):
+    channel: str
+    modality: str
+
+
+def index_camera_keyframes(
+    sample_data: Mapping[str, SampleDataRecord],
+    calibrated_sensors: Mapping[str, CalibrationRecord],
+    sensors: Mapping[str, SensorRecord],
+) -> dict[str, dict[str, str]]:
     """Return ``sample_token -> channel -> sample_data_token`` for cameras.
 
     Tables are token-indexed dictionaries. Sweeps and non-camera sensors are
     intentionally excluded; multiple keyframes for one sample/channel are
     ambiguous and therefore rejected.
     """
-    result = {}
+    result: dict[str, dict[str, str]] = {}
     for item in sample_data.values():
         if not item["is_key_frame"]:
             continue
@@ -24,9 +47,13 @@ def index_camera_keyframes(sample_data, calibrated_sensors, sensors):
     return result
 
 
-def index_lidar_reference_poses(sample_data, calibrated_sensors, sensors):
+def index_lidar_reference_poses(
+    sample_data: Mapping[str, SampleDataRecord],
+    calibrated_sensors: Mapping[str, CalibrationRecord],
+    sensors: Mapping[str, SensorRecord],
+) -> dict[str, str]:
     """Return the ego-pose token for each sample's LIDAR_TOP keyframe."""
-    result = {}
+    result: dict[str, str] = {}
     for item in sample_data.values():
         if not item["is_key_frame"]:
             continue
