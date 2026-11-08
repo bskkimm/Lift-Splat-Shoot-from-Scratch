@@ -50,7 +50,8 @@ The current GitHub Actions workflow runs the synthetic pytest suite on Python
 3.10 and 3.11, including fresh-process notebook execution and a synthetic
 notebook/package output and gradient comparison. A pinned Ruff Pyflakes check
 and a narrowly scoped strict mypy check of the raw nuScenes index run separately.
-A `current CI gate` aggregates all three. This is an **incomplete**
+A pinned pre-commit job checks repository hygiene and clean notebook outputs.
+A `current CI gate` aggregates these checks. This is an **incomplete**
 CI foundation: the playbook's full lint/format, broader typing, notebook parity,
 package, dependency audit, integration, and documentation
 checks still need to be implemented. GitHub branch protection on `main`
