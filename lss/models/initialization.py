@@ -9,6 +9,21 @@ from pathlib import Path
 import torch
 
 
+def verify_backbone_weights(path, sha256, weights_id):
+    """Read and verify local bytes, returning them with caller-supplied provenance."""
+    if not isinstance(sha256, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", sha256):
+        raise ValueError("SHA-256 must contain exactly 64 hexadecimal characters")
+    if not isinstance(weights_id, str) or not weights_id.strip():
+        raise ValueError("weights_id must be a nonempty string")
+    path = Path(path).expanduser().resolve()
+    data = path.read_bytes()
+    actual = hashlib.sha256(data).hexdigest()
+    if not hmac.compare_digest(actual, sha256.lower()):
+        raise ValueError("SHA-256 mismatch for camera backbone weights")
+    return data, {"path": str(path), "sha256": actual, "weights_id": weights_id,
+                  "scope": "torchvision-efficientnet-b0-features-0-7"}
+
+
 def load_torchvision_b0_features(encoder, path, sha256, weights_id):
     """Load verified TorchVision EfficientNet-B0 feature stages 0–7 only.
 
@@ -19,15 +34,7 @@ def load_torchvision_b0_features(encoder, path, sha256, weights_id):
     depth and context parameters are not initialized by this helper. A digest
     confirms bytes, not the accuracy of the caller's provenance statement.
     """
-    if not isinstance(sha256, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", sha256):
-        raise ValueError("SHA-256 must contain exactly 64 hexadecimal characters")
-    if not isinstance(weights_id, str) or not weights_id.strip():
-        raise ValueError("weights_id must be a nonempty string")
-    path = Path(path).expanduser().resolve()
-    data = path.read_bytes()
-    actual = hashlib.sha256(data).hexdigest()
-    if not hmac.compare_digest(actual, sha256.lower()):
-        raise ValueError("SHA-256 mismatch for camera backbone weights")
+    data, provenance = verify_backbone_weights(path, sha256, weights_id)
     state = torch.load(io.BytesIO(data), map_location="cpu", weights_only=True)
     if not isinstance(state, dict):
         raise ValueError("feature checkpoint must be a state dictionary")
@@ -50,5 +57,4 @@ def load_torchvision_b0_features(encoder, path, sha256, weights_id):
         if not torch.is_tensor(candidate) or candidate.shape != value.shape or candidate.dtype != value.dtype:
             raise ValueError(f"feature checkpoint tensor shape or dtype mismatch: {key}")
     encoder.features.load_state_dict(selected, strict=True)
-    return {"path": str(path), "sha256": actual, "weights_id": weights_id,
-            "scope": "torchvision-efficientnet-b0-features-0-7"}
+    return provenance
