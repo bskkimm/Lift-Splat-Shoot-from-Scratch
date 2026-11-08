@@ -116,11 +116,11 @@ resize/crop/flip/rotate post-transform. The dataset and collator can propagate
 explicit per-camera augmentation parameters and post-transforms while keeping
 original intrinsics; the practical training recipe does not yet sample these
 parameters. An opt-in `ImageAugmentation` dataset policy samples training
-transforms from NumPy's RNG and uses a deterministic validation crop; the policy
-is tested with synthetic raw-table fixtures but is not wired into the CLI. An
+transforms from NumPy's RNG and uses a deterministic validation crop. An
 opt-in dataset camera subset can sample without replacement during training;
-validation retains all cameras. Its NumPy RNG behavior is unverified with
-multiple workers and is not wired into the CLI. The augmentation's
+validation retains all cameras. Both are wired into the CLI's separately named
+`reference-data` recipe and have synthetic train/resume/evaluation coverage.
+Their NumPy RNG behavior is unverified with multiple workers. The augmentation's
 continuous flip offset follows the reference convention and is not a claim of
 exact PIL pixel-center or real-data parity.
 
