@@ -19,6 +19,7 @@ from lss.data.nuscenes_dataset import NuScenesCameraDataset
 from lss.data.image_augmentation import ImageAugmentation
 from lss.data.recipes import dataset_options
 from lss.models.segmentation import LSSSegmentation
+from lss.models.initialization import load_torchvision_b0_features, verify_backbone_weights
 from lss.reproducibility import configure_cuda_workspace, seed_everything
 from lss.segmentation_engine import run_segmentation_epoch
 from lss.training_checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
@@ -55,6 +56,9 @@ def build_parser():
     parser.add_argument("--bottom-limits", type=float, nargs=2, default=None)
     parser.add_argument("--rotation-limits", type=float, nargs=2, default=None)
     parser.add_argument("--no-random-flip", action="store_true")
+    parser.add_argument("--backbone-weights", default=None)
+    parser.add_argument("--backbone-sha256", default=None)
+    parser.add_argument("--backbone-weights-id", default=None)
     return parser
 
 
@@ -92,6 +96,9 @@ def resolved_config(args, depth_bounds):
 def main():
     parser = build_parser()
     args = parser.parse_args()
+    backbone_args = (args.backbone_weights, args.backbone_sha256, args.backbone_weights_id)
+    if any(value is not None for value in backbone_args) and not all(value is not None for value in backbone_args):
+        parser.error("--backbone-weights, --backbone-sha256 and --backbone-weights-id must be provided together")
     reference_options = (args.camera_count, args.resize_limits, args.bottom_limits, args.rotation_limits)
     if args.recipe == "practical" and (any(value is not None for value in reference_options) or args.no_random_flip):
         parser.error("camera augmentation options require --recipe reference-data")
@@ -139,6 +146,15 @@ def main():
     np.random.seed(args.seed)
     model = LSSSegmentation(x_bounds=args.x_bound, y_bounds=args.y_bound, z_bounds=args.z_bound,
                             depth_bounds=depth_bounds, context_channels=args.context_channels, pretrained=False)
+    backbone_provenance = None
+    if args.backbone_weights is not None:
+        try:
+            if args.resume is None:
+                backbone_provenance = load_torchvision_b0_features(model.camera_encoder, *backbone_args)
+            else:
+                _, backbone_provenance = verify_backbone_weights(*backbone_args)
+        except (OSError, ValueError, RuntimeError) as exc:
+            parser.error(str(exc))
     if args.dry_run:
         print(f"model construction only; parameters={sum(p.numel() for p in model.parameters())}; dry_run=True")
         return
@@ -146,6 +162,8 @@ def main():
     device = torch.device(args.device)
     model.to(device)
     config = resolved_config(args, depth_bounds)
+    if backbone_provenance is not None:
+        config["backbone_initialization"] = backbone_provenance
     dataset_args = {"dataroot": args.dataroot, "version": args.version,
                     "bev_bounds": (args.x_bound, args.y_bound)}
     train_data = NuScenesCameraDataset(**dataset_args, split="train", **dataset_options(config, training=True))

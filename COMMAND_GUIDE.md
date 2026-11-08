@@ -60,6 +60,16 @@ The command has synthetic fixture coverage but has not been run on full nuScenes
 The current loader reads full metadata tables separately for train and validation,
 which can require substantial host memory; full-dataset sizing is unmeasured.
 
+To initialize the image backbone from a **local** TorchVision EfficientNet-B0
+state dictionary, supply all three flags: `--backbone-weights PATH`,
+`--backbone-sha256 FULL_SHA256`, and `--backbone-weights-id DESCRIPTION`. The
+file is checksum-verified before loading; its path, digest and identifier are
+recorded in the checkpoint. Resume requires the same arguments and verifies the
+file again. This initializes only feature stages 0–7, not the fusion, depth or
+BEV layers. No download is performed; the caller must establish the weight
+source. Original LSS checkpoint compatibility and official-weight parity are
+not established.
+
 `--recipe reference-data` enables reference-oriented image augmentation and
 five randomly selected training cameras by default; validation uses every
 available camera and a deterministic crop. It retains random TorchVision

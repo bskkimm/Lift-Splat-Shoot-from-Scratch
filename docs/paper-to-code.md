@@ -54,9 +54,11 @@ TorchVision EfficientNet-B0 state dictionary, a caller-supplied full SHA-256 and
 a descriptive identifier. It verifies the bytes and feature tensor keys,
 shapes and dtypes before loading stages 0–7; the unused stage 8, classifier and
 LSS-specific fusion/depth layers are not loaded. The caller is responsible for
-documenting and verifying the weight source. The helper has synthetic fixture
-tests but is not yet wired into the CLI or validated with an official file.
-It does not convert an original LSS checkpoint.
+documenting and verifying the weight source. The training CLI exposes this
+helper with an explicit local path, digest and identifier; checkpoint config
+records the provenance and resume requires the same verified file. It has
+synthetic fixture tests but has not been validated with an official file. It
+does not convert an original LSS checkpoint.
 
 The standalone segmentation loss defaults to positive weight 1.0 as in the
 paper's object-segmentation description; 2.13 must be supplied explicitly for
