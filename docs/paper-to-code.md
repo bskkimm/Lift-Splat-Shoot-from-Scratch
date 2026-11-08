@@ -115,9 +115,11 @@ mitigated configuration has passed repeated CI runs, but determinism across
 other hardware, thread counts, precision modes and data-loader workers is not
 established.
 
-The practical CLI constructs train and validation datasets independently; each
-currently loads complete metadata tables before filtering samples. Full-dataset
-memory use and throughput have not been measured.
+The practical CLI constructs train and validation datasets independently.
+The `sample_data.json` table is streamed and filtered to selected keyframes;
+other metadata tables are still loaded eagerly. A single validation-loader
+memory observation is documented in the real-data smoke report, but combined
+train/validation memory use and training throughput have not been measured.
 
 The reference `get_image_data` passes calibrated camera-to-ego transforms
 directly, while its segmentation targets use the LiDAR keyframe's ego pose.

@@ -9,6 +9,7 @@ from .transforms import normalize_images
 from .nuscenes_index import index_camera_keyframes, index_lidar_reference_poses
 from .bev_targets import rasterize_polygons, vehicle_bottom_polygon
 from .image_augmentation import augment_image
+from .metadata_stream import load_sample_data
 from torch.utils.data import Dataset
 
 
@@ -46,7 +47,10 @@ class NuScenesCameraDataset(Dataset):
                 selected_names = set(create_splits_scenes()[split_name])
                 samples = {token: sample for token, sample in samples.items()
                            if scenes[sample["scene_token"]] in selected_names}
-            with open(root / "sample_data.json") as handle: sample_data = {x["token"]: x for x in json.load(handle)}
+            raw_tokens = {token for token, sample in samples.items() if "data" not in sample}
+            explicit_tokens = {item for sample in samples.values() if "data" in sample
+                               for item in sample["data"].values()}
+            sample_data = load_sample_data(root / "sample_data.json", raw_tokens, explicit_tokens)
             pose_path = root / "ego_pose.json"; poses = {}
             if pose_path.exists():
                 with open(pose_path) as handle: poses = {x["token"]: x for x in json.load(handle)}
@@ -76,8 +80,10 @@ class NuScenesCameraDataset(Dataset):
             if any("data" not in sample for sample in samples.values()):
                 with open(root / "sensor.json") as handle:
                     sensors = {item["token"]: item for item in json.load(handle)}
-                camera_index = index_camera_keyframes(sample_data, calibrations, sensors)
-                reference_poses = index_lidar_reference_poses(sample_data, calibrations, sensors)
+                raw_data = {token: item for token, item in sample_data.items()
+                            if item.get("sample_token") in raw_tokens}
+                camera_index = index_camera_keyframes(raw_data, calibrations, sensors)
+                reference_poses = index_lidar_reference_poses(raw_data, calibrations, sensors)
             self.records = []
             for sample in samples.values():
                 paths = []
