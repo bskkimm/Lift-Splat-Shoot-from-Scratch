@@ -78,3 +78,28 @@ plus the then-uncommitted test included with this report. It took 47.03 seconds
 wall and reported 5,323,588 KiB maximum RSS. This single observation is not a
 performance benchmark. It does not establish parity across the full dataset,
 validate camera projection, prove checkpoint parity, or measure any model metric.
+
+## Independent one-sample camera-transform comparison
+
+On the same host and software environment, the first validation sample's six
+camera-to-reference-ego rotations and translations were compared with an
+independent NumPy/`pyquaternion` composition of the raw calibration, camera-time
+ego pose and LiDAR-time ego pose. Resized intrinsic matrices were also checked
+against the raw matrices and sample-data image dimensions. The test passed with
+absolute tolerances of `1e-5` for rotations and `1e-3` metres for translations,
+and `rtol=1e-6, atol=1e-5` for intrinsics.
+
+```bash
+ulimit -v 16777216
+/usr/bin/time -v conda run -n torch_env env \
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+  LSS_REAL_NUSCENES_ROOT=/path/to/nuscenes \
+  python -m pytest -q tests/test_real_nuscenes_camera_parity.py
+```
+
+The command used code at base `1a81ea436fc11541e07d2f6c8e92db88596dbf51`
+plus the then-uncommitted test included with this report. It took 44.68 seconds
+wall and reported 5,327,004 KiB maximum RSS. The composition validates the
+repository's timestamp-compensated convention for one sample; it does not
+prove numerical equivalence to the original LSS implementation, which uses
+camera calibrated-sensor transforms directly, or cover the full dataset.

@@ -129,6 +129,10 @@ The current raw-data loader additionally compensates for camera-to-LiDAR ego
 pose changes. This is a deliberate unvalidated deviation from the reference,
 not a demonstrated parity improvement; it needs a named recipe and numerical
 comparison before a faithful-configuration claim.
+One real validation sample's six timestamp-compensated transforms and resized
+intrinsics have been checked against independent raw-table NumPy/quaternion
+composition; see the [smoke report](analysis/real-nuscenes-loader-smoke.md).
+That check does not compare with the original implementation or full dataset.
 
 `lss/data/image_augmentation.py` implements the reference-style deterministic
 resize/crop/flip/rotate post-transform. The dataset and collator can propagate
