@@ -16,7 +16,8 @@ The tests use synthetic inputs and do not establish nuScenes or paper parity.
 An optional data-only validation-loader smoke test is documented in
 [`docs/analysis/real-nuscenes-loader-smoke.md`](docs/analysis/real-nuscenes-loader-smoke.md).
 It loads full metadata and has substantial memory requirements; it is not part
-of the default test run.
+of the default test run. The report also describes an independent one-sample
+nuScenes-devkit Box raster comparison; it is not a full-dataset parity test.
 The current notebook's cells also run in a fresh subprocess as part of the
 suite. For a standalone smoke check, run:
 

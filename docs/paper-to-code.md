@@ -78,8 +78,10 @@ its runtime/memory behavior remain unverified.
 The opt-in vehicle target rasterizer uses full three-dimensional annotation
 orientation, category prefix `vehicle`, the LiDAR reference ego pose, rounded
 grid coordinates and OpenCV polygon filling. Its grid order is `[1,X,Y]`. It
-has analytical and synthetic-fixture tests but has not been compared against
-reference masks on real nuScenes samples. OpenCV is a data preprocessing
+has analytical and synthetic-fixture tests, and one real validation sample
+matched an independently constructed nuScenes-devkit Box raster exactly; see
+the [smoke report](analysis/real-nuscenes-loader-smoke.md). It has not been
+validated across the full dataset. OpenCV is a data preprocessing
 dependency; it is not used by the learnable PyTorch model.
 The reference target rasterizer rounds polygon vertices while voxel pooling
 assigns points by integer binning; these conventions can differ near cell
