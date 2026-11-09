@@ -55,3 +55,26 @@ run. This single before/after observation is not a controlled throughput or
 memory benchmark: cache and other host load were not controlled. Remaining
 metadata tables are still loaded eagerly and separate train/validation dataset
 memory remains unmeasured.
+
+## Independent one-sample mask comparison
+
+On the same host and environment, an opt-in test compared the first validation
+sample's generated vehicle mask against a separately constructed mask using
+`nuscenes.utils.data_classes.Box`, `pyquaternion`, raw metadata and OpenCV
+polygon filling. The test required at least one vehicle and asserted exact
+pixel equality; it passed. It uses the same rounded-grid and OpenCV raster
+convention, so this is not an independent assessment of that convention itself.
+
+```bash
+ulimit -v 16777216
+/usr/bin/time -v conda run -n torch_env env \
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+  LSS_REAL_NUSCENES_ROOT=/path/to/nuscenes \
+  python -m pytest -q tests/test_real_nuscenes_mask_parity.py
+```
+
+The command used code at base `1871fe657e085adea8bf54fe95a9c351bfda8d94`
+plus the then-uncommitted test included with this report. It took 47.03 seconds
+wall and reported 5,323,588 KiB maximum RSS. This single observation is not a
+performance benchmark. It does not establish parity across the full dataset,
+validate camera projection, prove checkpoint parity, or measure any model metric.
