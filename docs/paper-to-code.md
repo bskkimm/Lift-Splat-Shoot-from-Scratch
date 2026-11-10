@@ -134,6 +134,23 @@ intrinsics have been checked against independent raw-table NumPy/quaternion
 composition; see the [smoke report](analysis/real-nuscenes-loader-smoke.md).
 That check does not compare with the original implementation or full dataset.
 
+The pinned reference's `NuscData.prepro` sorts the selected samples by
+`(scene_token, timestamp)`; our raw loader retains the order in `sample.json`.
+Consequently, a shared random seed does not by itself imply the same sampled
+sequence or batch composition. The reference training configuration lists its
+cameras as `FRONT_LEFT, FRONT, FRONT_RIGHT, BACK_LEFT, BACK, BACK_RIGHT`;
+our loader's order is `FRONT, FRONT_RIGHT, BACK_RIGHT, BACK, BACK_LEFT,
+FRONT_LEFT` (each name prefixed with `CAM_`). Both choose a training subset
+without replacement, but the same random indices need not select the same
+camera names. These are separately documented ordering differences, not
+evidence of a measured effect on metrics.
+
+The reference training loader also uses `drop_last=True` and defaults to ten
+workers initialized with NumPy seeds `13 + worker_id`. The current training
+CLI uses zero workers and leaves `drop_last` at its default of `False`. Its
+reproducible seed and checkpoint behavior therefore should not be described as
+identical to the reference's data-loading sequence.
+
 `lss/data/image_augmentation.py` implements the reference-style deterministic
 resize/crop/flip/rotate post-transform. The dataset and collator can propagate
 explicit per-camera augmentation parameters and post-transforms while keeping
