@@ -48,6 +48,22 @@ def test_evaluation_runs_checkpoint_on_validation_split(trained_fixture, tmp_pat
     assert metrics["metrics"] == training_metrics["validation"]
 
 
+def test_notebook_evaluates_mini_checkpoint_from_notebooks_directory(trained_fixture):
+    data, checkpoint, _ = trained_fixture
+    env = os.environ.copy()
+    env.update(OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", MPLBACKEND="Agg",
+               LSS_NOTEBOOK_EVALUATE="1", LSS_NOTEBOOK_DATAROOT=str(data),
+               LSS_NOTEBOOK_CHECKPOINT_PATH=str(checkpoint))
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "execute_notebook.py"),
+         str(ROOT / "notebooks" / "lss_e2e_walkthrough.ipynb")],
+        cwd=ROOT / "notebooks", env=env, capture_output=True, text=True, timeout=90,
+    )
+    assert result.returncode == 0, result.stderr
+    assert '"metric_name": "practical_bev_vehicle_iou"' in result.stdout
+    assert '"version": "v1.0-mini"' in result.stdout
+
+
 def test_evaluation_labels_requested_subset(trained_fixture):
     data, checkpoint, _ = trained_fixture
     result = run_evaluation(checkpoint, "--dataroot", str(data), "--max-samples", "1")
