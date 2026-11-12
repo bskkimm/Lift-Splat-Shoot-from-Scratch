@@ -1,0 +1,574 @@
+{
+  "format_version": 1,
+  "reference_inspiration": "PlanTF_from_Scratch@2e02a5c485ef2edd88555610143828a7a122c96f; original LSS artwork",
+  "visualization_standard": "paper-reimplementation-playbook@707c64b138d5e6c534af3d197fd4f278aab03d45",
+  "settings": "practical full-size segmentation shapes; numerical examples explicitly reduced/illustrative",
+  "environment": {
+    "matplotlib": "3.11.0",
+    "pillow": "12.0.0",
+    "numpy": "1.26.4",
+    "freetype": "2.14.3",
+    "font": "DejaVuSans.ttf",
+    "font_sha256": "3fdf69cabf06049ea70a00b5919340e2ce1e6d02b0cc3c4b44fb6801bd1e0d22",
+    "png_size": [
+      1050,
+      600
+    ]
+  },
+  "generators": {
+    "scripts/architecture/__init__.py": "7266e9c96224ee9a955e7ea92fd93b3126926721d9780b1f8c974e1453f1cd3f",
+    "scripts/architecture/canvas.py": "80251f848b850018613b90da55b61f69acc60ccc2e8690f8592ae33b17ca201c",
+    "scripts/architecture/decoder.py": "cfd28ccdbcbaa0586f6cfa1ec9aa264acc57758555f7a449b3be25667db86125",
+    "scripts/architecture/encoders.py": "a492b4d92ca2c556cb4a83b3ec0f931f2a847caef755b90c81042d6cded9347c",
+    "scripts/architecture/examples.py": "8c85c26bd06ea456cb2c6d8e8c6c8d66d27ea9e021a2a3fcc00a971c2e3f3bc7",
+    "scripts/architecture/geometry.py": "25f52a4b1cae9e4dccc7f9a1a35b6e20caa9655fd85b661ab0b5e5f8e0631bfe",
+    "scripts/architecture/inventory.py": "ecfd4ff9928ca6aa5f98e75a4c14526ca85af0c38e682a84158bab5b6e08824f",
+    "scripts/architecture/learning.py": "9415adc34be7d69b4b8551759e091e2777a2320f4d4fa5f2379e7a09f33341d7",
+    "scripts/architecture/render.py": "212ec7066a45070d98026ce62c1c94a893bc19bb39e2cedebd9b57ad95ea0194",
+    "scripts/illustrate_notebook.py": "71e207d10e111c6a5ae4cf6acd23ee81be033942b397f96e8f6483aa85819b4e"
+  },
+  "notebook_code_ast_sha256": "4b44edc04cc1b950154040acbe3832282a22cdf07b6b9435075a301b841e2ada",
+  "worked_examples": {
+    "lift": {
+      "depth": [
+        0.25,
+        0.75
+      ],
+      "context": [
+        2.0,
+        -1.0,
+        4.0
+      ],
+      "outer_product": [
+        [
+          0.5,
+          -0.25,
+          1.0
+        ],
+        [
+          1.5,
+          -0.75,
+          3.0
+        ]
+      ]
+    },
+    "geometry": {
+      "intrinsics": [
+        [
+          100.0,
+          0.0,
+          50.0
+        ],
+        [
+          0.0,
+          100.0,
+          40.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "pixel_depth": [
+        75.0,
+        40.0,
+        4.0
+      ],
+      "camera_xyz": [
+        1.0,
+        0.0,
+        4.0
+      ],
+      "ego_xyz": [
+        1.0,
+        3.0,
+        4.0
+      ]
+    },
+    "augmentation": {
+      "original_uv": [
+        50.0,
+        20.0
+      ],
+      "resize": 0.5,
+      "crop_xy": [
+        5.0,
+        2.0
+      ],
+      "flip_width": 100.0,
+      "augmented_uv": [
+        80.0,
+        8.0
+      ]
+    },
+    "pooling": {
+      "points": [
+        [
+          0.2,
+          0.2,
+          0.2
+        ],
+        [
+          0.8,
+          0.3,
+          0.2
+        ],
+        [
+          1.2,
+          1.2,
+          0.2
+        ],
+        [
+          -0.1,
+          0.2,
+          0.2
+        ],
+        [
+          2.0,
+          0.2,
+          0.2
+        ],
+        [
+          0.2,
+          0.2,
+          1.2
+        ]
+      ],
+      "features": [
+        [
+          2.0,
+          4.0
+        ],
+        [
+          3.0,
+          1.0
+        ],
+        [
+          7.0,
+          2.0
+        ],
+        [
+          99.0,
+          99.0
+        ],
+        [
+          99.0,
+          99.0
+        ],
+        [
+          5.0,
+          6.0
+        ]
+      ],
+      "valid": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        true
+      ],
+      "z_c_x_y": [
+        [
+          [
+            [
+              5.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.0
+            ]
+          ],
+          [
+            [
+              5.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.0
+            ]
+          ]
+        ],
+        [
+          [
+            [
+              5.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          [
+            [
+              6.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        ]
+      ]
+    },
+    "bce": {
+      "target": [
+        [
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0
+        ]
+      ],
+      "mean_loss": 0.6931471805599453,
+      "mean_logit_gradient": [
+        [
+          -0.125,
+          0.125
+        ],
+        [
+          0.125,
+          -0.125
+        ]
+      ]
+    },
+    "adam": {
+      "initial_logit": 0.0,
+      "gradient": -0.5,
+      "learning_rate": 0.1,
+      "first_moment": -0.05,
+      "second_moment": 0.00025,
+      "updated_logit": 0.09999999800000003,
+      "updated_loss": 0.6443966610236125
+    },
+    "iou": {
+      "logits": [
+        [
+          2.0,
+          -1.0,
+          0.2
+        ],
+        [
+          -2.0,
+          3.0,
+          -0.5
+        ]
+      ],
+      "target": [
+        [
+          1,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "intersection": 2,
+      "union": 4,
+      "iou": 0.5
+    },
+    "trajectory": {
+      "cost_map": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          2.0,
+          3.0
+        ]
+      ],
+      "cells": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "logits": [
+        -1.0,
+        -5.0
+      ],
+      "probabilities": [
+        0.9820137900379085,
+        0.017986209962091555
+      ]
+    }
+  },
+  "figures": [
+    {
+      "id": "pipeline-overview",
+      "anchor": "fig-pipeline-overview",
+      "position": "before",
+      "lesson_marker": "import math",
+      "neighbor_type": "code",
+      "title": "The complete practical LSS pipeline",
+      "alt": "The complete practical LSS pipeline. Six calibrated views become depth-weighted features, then a common BEV grid and vehicle logits. The experimental cost-map branch uses a separate model with the same architecture, not shared trained segmentation weights.",
+      "caption": "Six calibrated views become depth-weighted features, then a common BEV grid and vehicle logits. The experimental cost-map branch uses a separate model with the same architecture, not shared trained segmentation weights.",
+      "png": "pipeline-overview.png",
+      "svg": "pipeline-overview.svg",
+      "png_sha256": "a6da6aecc37de22c70bb8db10848f36e9dc9a54bf15e87a37a417a3329e05e25",
+      "svg_sha256": "f1fa1b890e3abfb11acc9ffd3e55e0eaae7cc2faa195ff3eeb6443712b4ce8e2",
+      "sources": {
+        "lss/models/segmentation.py": "950f91fd10fe1e56f3dee5d30a876ac6368c99a16713cacbf0fc6ca9275166d9",
+        "lss/models/planner.py": "5233fcd5f2604603e00fa0e7e3314bb3cd4001f083b11d939be20e3f569ea481"
+      }
+    },
+    {
+      "id": "sample-preparation",
+      "anchor": "fig-sample-preparation",
+      "position": "before",
+      "lesson_marker": "## 1. Camera encoder and lift",
+      "neighbor_type": "markdown",
+      "title": "Separate camera inputs, geometry and vehicle-mask supervision",
+      "alt": "Separate camera inputs, geometry and vehicle-mask supervision. Camera normalization and calibration feed the model; the rasterized vehicle target feeds only the objective. Direct resize changes intrinsic rows, whereas augmentation keeps original intrinsics and records its image post-transform. The worked RGB value is illustrative.",
+      "caption": "Camera normalization and calibration feed the model; the rasterized vehicle target feeds only the objective. Direct resize changes intrinsic rows, whereas augmentation keeps original intrinsics and records its image post-transform. The worked RGB value is illustrative.",
+      "png": "sample-preparation.png",
+      "svg": "sample-preparation.svg",
+      "png_sha256": "51c8f5dba502b6c2edaf90c9bf5f493ca2e29c7cdbf848d0681e291b003ab55f",
+      "svg_sha256": "b5132ef0fb061b3be155986219adf94cfc908a7968db59ecf300dee78bde21f4",
+      "sources": {
+        "lss/data/nuscenes_dataset.py": "12fad70c0ce5b1cd216f427bf845cd725bed3de30096bb08a9379617efc6ad27",
+        "lss/data/transforms.py": "37a49d5eb1b0eba388f30db33534977d51bf2ba846d5ed1a0e89be7d4937f9c4",
+        "lss/data/bev_targets.py": "2d911f59c215355b6a8e6e724938712cf1fe784e60e69d465ad30415682404cd"
+      }
+    },
+    {
+      "id": "camera-encoder",
+      "anchor": "fig-camera-encoder",
+      "position": "before",
+      "lesson_marker": "class CameraEncoder",
+      "neighbor_type": "code",
+      "title": "Shared EfficientNet feature scales and the depth/context projection",
+      "alt": "Shared EfficientNet feature scales and the depth/context projection. At 128×352 resolution, the 112-channel stride-16 skip is concatenated with an upsampled 320-channel feature. Fusion produces 512 channels; projection yields 41 depth logits plus 64 context channels. These are full practical dimensions, not the smaller CPU probe.",
+      "caption": "At 128×352 resolution, the 112-channel stride-16 skip is concatenated with an upsampled 320-channel feature. Fusion produces 512 channels; projection yields 41 depth logits plus 64 context channels. These are full practical dimensions, not the smaller CPU probe.",
+      "png": "camera-encoder.png",
+      "svg": "camera-encoder.svg",
+      "png_sha256": "96440c7f366750c345f366da055cdb4298efbbaae0bb8bbd3c7dc1b158e0ec15",
+      "svg_sha256": "e3507b2622b1aefbdebf9e01eb1f5f9a4e31f5909c962db0a63db92752c28d7d",
+      "sources": {
+        "lss/models/camera_encoder.py": "607d0115b9130b1bf1d4311e99e18aea359dddff0b654ccfeb7d20dc7a7ef9f7"
+      }
+    },
+    {
+      "id": "depth-context-lift",
+      "anchor": "fig-depth-context-lift",
+      "position": "after",
+      "lesson_marker": "camera_probe = CameraEncoder",
+      "neighbor_type": "code",
+      "title": "A worked depth-probability and context outer product",
+      "alt": "A worked depth-probability and context outer product. At one illustrative pixel, probabilities [0.25,0.75] multiply context [2,−1,4]. The resulting two rows retain all three context channels, and gradients reach both branches. The full lifted tensor is [B,N,D,h,w,C].",
+      "caption": "At one illustrative pixel, probabilities [0.25,0.75] multiply context [2,−1,4]. The resulting two rows retain all three context channels, and gradients reach both branches. The full lifted tensor is [B,N,D,h,w,C].",
+      "png": "depth-context-lift.png",
+      "svg": "depth-context-lift.svg",
+      "png_sha256": "46ba11608ca9e466f9badd5220be04439bfd8001dfd30b693275c4a5f91694d2",
+      "svg_sha256": "cfaca929594d407d96f6c405c4dd63a5b9a779b66b02aa736d80e16721429459",
+      "sources": {
+        "lss/models/segmentation.py": "950f91fd10fe1e56f3dee5d30a876ac6368c99a16713cacbf0fc6ca9275166d9",
+        "lss/models/camera_encoder.py": "607d0115b9130b1bf1d4311e99e18aea359dddff0b654ccfeb7d20dc7a7ef9f7"
+      }
+    },
+    {
+      "id": "frustum-geometry",
+      "anchor": "fig-frustum-geometry",
+      "position": "before",
+      "lesson_marker": "def make_frustum",
+      "neighbor_type": "code",
+      "title": "Frustum pixels unproject to camera coordinates and then ego coordinates",
+      "alt": "Frustum pixels unproject to camera coordinates and then ego coordinates. With the supplied toy intrinsics, pixel-depth (75,40,4) gives camera XYZ (1,0,4) metres. A 90-degree z rotation and translation (1,2,0) give ego XYZ (1,3,4). Ray planes are schematic, and full depth-bin endpoints are labeled separately.",
+      "caption": "With the supplied toy intrinsics, pixel-depth (75,40,4) gives camera XYZ (1,0,4) metres. A 90-degree z rotation and translation (1,2,0) give ego XYZ (1,3,4). Ray planes are schematic, and full depth-bin endpoints are labeled separately.",
+      "png": "frustum-geometry.png",
+      "svg": "frustum-geometry.svg",
+      "png_sha256": "9d74a31bec19803c7ddc49081ae79d17af9d0a1bff4237655cb6fd8380efa16e",
+      "svg_sha256": "ae185cbfc8424215e37c6e92fa7c16d3563bd1cbb7ea7d79592c08f6486d7f02",
+      "sources": {
+        "lss/geometry.py": "2b6f81ed35731493c0a2f06682a4239d094ec395ac3781d2287f3e01499ddcab"
+      }
+    },
+    {
+      "id": "augmentation-frames",
+      "anchor": "fig-augmentation-frames",
+      "position": "before",
+      "lesson_marker": "def camera_to_ego",
+      "neighbor_type": "code",
+      "title": "Reverse the image post-transform before composing sensor and ego poses",
+      "alt": "Reverse the image post-transform before composing sensor and ego poses. The continuous toy resize/crop/flip maps (50,20) to (80,8) and is undone before intrinsic unprojection. The camera-to-reference-ego chain includes the camera-time and LiDAR-time ego poses, a documented difference from the pinned original LSS source.",
+      "caption": "The continuous toy resize/crop/flip maps (50,20) to (80,8) and is undone before intrinsic unprojection. The camera-to-reference-ego chain includes the camera-time and LiDAR-time ego poses, a documented difference from the pinned original LSS source.",
+      "png": "augmentation-frames.png",
+      "svg": "augmentation-frames.svg",
+      "png_sha256": "57a95585c30d1bd4d356da3f31542613e437b49cabc8c14b649ef17ce124dc87",
+      "svg_sha256": "0443649cb20901db8d3511f81f153f190ffa83d2e966e71f2af19156c9ce745a",
+      "sources": {
+        "lss/geometry.py": "2b6f81ed35731493c0a2f06682a4239d094ec395ac3781d2287f3e01499ddcab",
+        "lss/data/image_augmentation.py": "afc89daa7c1839600b43ecaa197d241145946de2b97e5045b60056532ffe4cd5",
+        "lss/data/nuscenes_dataset.py": "12fad70c0ce5b1cd216f427bf845cd725bed3de30096bb08a9379617efc6ad27"
+      }
+    },
+    {
+      "id": "voxel-pooling",
+      "anchor": "fig-voxel-pooling",
+      "position": "before",
+      "lesson_marker": "class VoxelPool",
+      "neighbor_type": "code",
+      "title": "Half-open voxel masking, floor indices and z-major channel sums",
+      "alt": "Half-open voxel masking, floor indices and z-major channel sums. Two in-bounds points in cell (0,0,0) add [2,4]+[3,1]=[5,5]. Points below the lower bound or at the upper bound are rejected. A separate z=1.2 point demonstrates the output's z-major channel order; discrete indices do not carry geometry gradients.",
+      "caption": "Two in-bounds points in cell (0,0,0) add [2,4]+[3,1]=[5,5]. Points below the lower bound or at the upper bound are rejected. A separate z=1.2 point demonstrates the output's z-major channel order; discrete indices do not carry geometry gradients.",
+      "png": "voxel-pooling.png",
+      "svg": "voxel-pooling.svg",
+      "png_sha256": "2fa6054ab963eb6ff7404ecbb7d4fd3bb4636401e4cf118ac8269f3d50b93764",
+      "svg_sha256": "a5641d6d9f585188f8397965fea7b6947445b40da002b53e0061b76ad535b3f6",
+      "sources": {
+        "lss/models/voxel_pool.py": "32fb9d90ba7fb82792f5846350504a25c4287c7603556fc3ec9e03c0dddd6830"
+      }
+    },
+    {
+      "id": "bev-decoder",
+      "anchor": "fig-bev-decoder",
+      "position": "before",
+      "lesson_marker": "class BEVEncoder",
+      "neighbor_type": "code",
+      "title": "BEV ResNet blocks, long skip, fusion and output head",
+      "alt": "BEV ResNet blocks, long skip, fusion and output head. The full 200×200 BEV grid becomes 100×100, 50×50 and 25×25 feature grids. The 64-channel skip concatenates with 256 upsampled channels; fusion and a final upsample return raw logits at the original resolution. There is no stem max-pool or internal sigmoid.",
+      "caption": "The full 200×200 BEV grid becomes 100×100, 50×50 and 25×25 feature grids. The 64-channel skip concatenates with 256 upsampled channels; fusion and a final upsample return raw logits at the original resolution. There is no stem max-pool or internal sigmoid.",
+      "png": "bev-decoder.png",
+      "svg": "bev-decoder.svg",
+      "png_sha256": "ea81b43cbec20f5fd905c42dc96af5bf1219e3f5ad2e02085c77badaf12fe1eb",
+      "svg_sha256": "560fda4be40a3598f94496b499728beff6062747d0915a257253f21a2f4a8a22",
+      "sources": {
+        "lss/models/bev_encoder.py": "9e9371df236308aba479df06c1764957cb355f293eccc4f9c317a9da94eb43dc"
+      }
+    },
+    {
+      "id": "model-assembly",
+      "anchor": "fig-model-assembly",
+      "position": "before",
+      "lesson_marker": "class LSSSegmentation",
+      "neighbor_type": "code",
+      "title": "A complete six-camera full-resolution tensor trace",
+      "alt": "A complete six-camera full-resolution tensor trace. The value stream [1,6,41,8,22,64] and coordinate stream [1,6,41,8,22,3] share sample axes before voxel reduction. One height bin gives [1,64,200,200], decoded to [1,1,200,200]. This is a shape illustration, not full-resolution parity evidence.",
+      "caption": "The value stream [1,6,41,8,22,64] and coordinate stream [1,6,41,8,22,3] share sample axes before voxel reduction. One height bin gives [1,64,200,200], decoded to [1,1,200,200]. This is a shape illustration, not full-resolution parity evidence.",
+      "png": "model-assembly.png",
+      "svg": "model-assembly.svg",
+      "png_sha256": "f80212158f9c5fe441935760a3f956028226d02f94d91392c0023adabde5898a",
+      "svg_sha256": "cdcd6c944faba235c74176ce1690a6dd8936cb85266de356de4cd565429a88d6",
+      "sources": {
+        "lss/models/segmentation.py": "950f91fd10fe1e56f3dee5d30a876ac6368c99a16713cacbf0fc6ca9275166d9",
+        "lss/models/voxel_pool.py": "32fb9d90ba7fb82792f5846350504a25c4287c7603556fc3ec9e03c0dddd6830"
+      }
+    },
+    {
+      "id": "segmentation-loss",
+      "anchor": "fig-segmentation-loss",
+      "position": "before",
+      "lesson_marker": "loss = F.binary_cross_entropy_with_logits",
+      "neighbor_type": "code",
+      "title": "A worked BCE loss and its mean-reduced logit gradients",
+      "alt": "A worked BCE loss and its mean-reduced logit gradients. For four zero logits with unit positive weight, the mean BCE is log(2). Two positive targets have gradient −0.125 and two negatives +0.125. Positive-weight and reduction choices matter; no trained loss is reported by this illustration.",
+      "caption": "For four zero logits with unit positive weight, the mean BCE is log(2). Two positive targets have gradient −0.125 and two negatives +0.125. Positive-weight and reduction choices matter; no trained loss is reported by this illustration.",
+      "png": "segmentation-loss.png",
+      "svg": "segmentation-loss.svg",
+      "png_sha256": "779395e2165750d11fc113fc169811a34381976fea1a0e0dfcd9a726ef5554f8",
+      "svg_sha256": "575de18edd3e64673213b2e3ca4e8c8bad669d42e0132ddfd1e05ecc124a5761",
+      "sources": {
+        "lss/losses.py": "b3b4bf2cd69ce0da1f0ea811050df29de6ef6f2b5b310e9649546750a3172474"
+      }
+    },
+    {
+      "id": "learning-step",
+      "anchor": "fig-learning-step",
+      "position": "before",
+      "lesson_marker": "loss.backward()",
+      "neighbor_type": "code",
+      "title": "Feature-path backpropagation and a hand-checkable first Adam step",
+      "alt": "Feature-path backpropagation and a hand-checkable first Adam step. The illustrative positive-label scalar logit has gradient −0.5. Adam with lr=0.1 changes it from 0 to approximately 0.1 and gives loss 0.6444. This scalar example is distinct from the actual lr=0.001 model update executed below.",
+      "caption": "The illustrative positive-label scalar logit has gradient −0.5. Adam with lr=0.1 changes it from 0 to approximately 0.1 and gives loss 0.6444. This scalar example is distinct from the actual lr=0.001 model update executed below.",
+      "png": "learning-step.png",
+      "svg": "learning-step.svg",
+      "png_sha256": "681636b96766daf990ef861128dc320c4786efa5d59c4d4decd365fc297709e0",
+      "svg_sha256": "cf362b1fcc261caca8e2575953bf259d26708e290655712dfbac7205833fae87",
+      "sources": {
+        "lss/segmentation_engine.py": "2416955f3cd5cf1f6777b6e570b870fe5bc8676ec840d3c96484a2df9daf4271"
+      }
+    },
+    {
+      "id": "decoding-iou",
+      "anchor": "fig-decoding-iou",
+      "position": "before",
+      "lesson_marker": "import matplotlib.pyplot as plt",
+      "neighbor_type": "code",
+      "title": "Decode binary occupancy and aggregate intersection/union",
+      "alt": "Decode binary occupancy and aggregate intersection/union. The illustrative prediction and target each have three occupied cells, with two shared cells. Their union is four and IoU is 0.5. Full validation sums counts over batches before dividing and reports undefined IoU for an empty aggregate union.",
+      "caption": "The illustrative prediction and target each have three occupied cells, with two shared cells. Their union is four and IoU is 0.5. Full validation sums counts over batches before dividing and reports undefined IoU for an empty aggregate union.",
+      "png": "decoding-iou.png",
+      "svg": "decoding-iou.svg",
+      "png_sha256": "461f3a12ad490905b48a091c3b760402031221a43b5dbd6d6676bea88b5d0a9c",
+      "svg_sha256": "5e74496860ac2e418acf9d04f8c6bd17c82cca8531ae19dd00a084be2f47818c",
+      "sources": {
+        "lss/metrics.py": "41965216ba029e4dc92972b21316bea2736f33974ed678bc8c7bfed9573981b1",
+        "lss/segmentation_engine.py": "2416955f3cd5cf1f6777b6e570b870fe5bc8676ec840d3c96484a2df9daf4271"
+      }
+    },
+    {
+      "id": "trajectory-scoring",
+      "anchor": "fig-trajectory-scoring",
+      "position": "before",
+      "lesson_marker": "def metric_trajectory_cells",
+      "neighbor_type": "code",
+      "title": "Experimental template paths become negative cost sums and probabilities",
+      "alt": "Experimental template paths become negative cost sums and probabilities. Two toy trajectories accumulate costs 1 and 5, producing logits −1 and −5 and probabilities about 98.2% and 1.8%. Every point must lie inside the same grid; this example is not a trained or evaluated planning result.",
+      "caption": "Two toy trajectories accumulate costs 1 and 5, producing logits −1 and −5 and probabilities about 98.2% and 1.8%. Every point must lie inside the same grid; this example is not a trained or evaluated planning result.",
+      "png": "trajectory-scoring.png",
+      "svg": "trajectory-scoring.svg",
+      "png_sha256": "63cffe9c4b5d1d3c34326c8c305ba0ac4e8001a20876593bd30d28166114ef88",
+      "svg_sha256": "4fba7de746503e10449b71001c91e41c3a7fc4033eee9c85ad868f270936527c",
+      "sources": {
+        "lss/models/trajectory.py": "5d700fe3c6f1fae3f314a927de7faeb1d74aa4d3ee3f46b00d1dffa10f223b16",
+        "lss/models/planner.py": "5233fcd5f2604603e00fa0e7e3314bb3cd4001f083b11d939be20e3f569ea481"
+      }
+    },
+    {
+      "id": "checkpoint-evaluation",
+      "anchor": "fig-checkpoint-evaluation",
+      "position": "before",
+      "lesson_marker": "import os",
+      "neighbor_type": "code",
+      "title": "Explicit real-data, checkpoint and practical-evaluation workflows",
+      "alt": "Explicit real-data, checkpoint and practical-evaluation workflows. Opt-in paths validate local assets and checkpoint format. Package evaluation reconstructs its model and preprocessing from saved configuration and uses the checkpoint's dataset version. The notebook weight-loading demo is a separate operation; no original-checkpoint compatibility is implied.",
+      "caption": "Opt-in paths validate local assets and checkpoint format. Package evaluation reconstructs its model and preprocessing from saved configuration and uses the checkpoint's dataset version. The notebook weight-loading demo is a separate operation; no original-checkpoint compatibility is implied.",
+      "png": "checkpoint-evaluation.png",
+      "svg": "checkpoint-evaluation.svg",
+      "png_sha256": "9882b7ed9bac7ab9d89447d6ca3fa1c2dba3d807470b2a26c1d7e840f62b8f3d",
+      "svg_sha256": "efd9f73d1cbb8b548da09fa94a9769cd6dddb27234524db1c3cbb79ceea2e246",
+      "sources": {
+        "eval.py": "29dcdd83fb7a001f07631d044087c91843cf31ce01425e4eca907e10c06a8e1c",
+        "lss/training_checkpoint.py": "05a9077f7a317a649dcc3f0f40c3ff2bad390e4135a12fea9cccc5f897c8cc97",
+        "lss/data/recipes.py": "b360ee114824b21d31d6ff909a8ad7f133907b39ae5ccd6cfe599b1fd1fd7243"
+      }
+    }
+  ]
+}

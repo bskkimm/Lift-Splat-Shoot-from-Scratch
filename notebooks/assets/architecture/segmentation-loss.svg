@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="1008pt" height="576pt" viewBox="0 0 1008 576" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 576
+L 1008 576
+L 1008 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 34.56 106.56
+L 280.8 106.56
+Q 290.88 106.56 290.88 116.64
+L 290.88 486
+Q 290.88 496.08 280.8 496.08
+L 34.56 496.08
+Q 24.48 496.08 24.48 486
+L 24.48 116.64
+Q 24.48 106.56 34.56 106.56
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #ffffff; stroke: #cbd6e2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 92.88 203.04
+L 154.8 203.04
+L 154.8 254.88
+L 92.88 254.88
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fff4d9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 154.8 203.04
+L 216.72 203.04
+L 216.72 254.88
+L 154.8 254.88
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fff4d9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 92.88 254.88
+L 154.8 254.88
+L 154.8 306.72
+L 92.88 306.72
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fff4d9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 154.8 254.88
+L 216.72 254.88
+L 216.72 306.72
+L 154.8 306.72
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fff4d9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 322.56 106.56
+L 663.84 106.56
+Q 673.92 106.56 673.92 116.64
+L 673.92 486
+Q 673.92 496.08 663.84 496.08
+L 322.56 496.08
+Q 312.48 496.08 312.48 486
+L 312.48 116.64
+Q 312.48 106.56 322.56 106.56
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #ffffff; stroke: #cbd6e2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 349.92 361.44
+L 636.48 361.44
+Q 643.68 361.44 643.68 368.64
+L 643.68 449.28
+Q 643.68 456.48 636.48 456.48
+L 349.92 456.48
+Q 342.72 456.48 342.72 449.28
+L 342.72 368.64
+Q 342.72 361.44 349.92 361.44
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #e6f5f3; stroke: #087f83; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 705.6 106.56
+L 973.44 106.56
+Q 983.52 106.56 983.52 116.64
+L 983.52 486
+Q 983.52 496.08 973.44 496.08
+L 705.6 496.08
+Q 695.52 496.08 695.52 486
+L 695.52 116.64
+Q 695.52 106.56 705.6 106.56
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #ffffff; stroke: #cbd6e2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 752.4 203.04
+L 836.64 203.04
+L 836.64 254.88
+L 752.4 254.88
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fcecef; stroke: #c44b5a; stroke-width: 2.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 836.64 203.04
+L 920.88 203.04
+L 920.88 254.88
+L 836.64 254.88
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fcecef; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 752.4 254.88
+L 836.64 254.88
+L 836.64 306.72
+L 752.4 306.72
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fcecef; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 836.64 254.88
+L 920.88 254.88
+L 920.88 306.72
+L 836.64 306.72
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #fcecef; stroke: #c44b5a; stroke-width: 2.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 24.48 80.64
+L 983.52 80.64
+" clip-path="url(#pb80ef675bd)" style="fill: none; stroke: #cbd6e2; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 24.48 527.04
+L 983.52 527.04
+" clip-path="url(#pb80ef675bd)" style="fill: none; stroke: #cbd6e2; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 26px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #087f83" x="24.48" y="39.703594" transform="rotate(-0 24.48 39.703594)">10</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 25px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #162c43" x="67.68" y="37.040781" transform="rotate(-0 67.68 37.040781)">Supervise the BEV logits directly</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="24.48" y="66.059062" transform="rotate(-0 24.48 66.059062)">Binary cross entropy couples each vehicle-occupancy label to one raw output logit.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52677c" x="983.52" y="554.803828" transform="rotate(-0 983.52 554.803828)">PRACTICAL LSS</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #a56a08" x="38.88" y="133.056562" transform="rotate(-0 38.88 133.056562)">A  /  Binary labels</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="38.88" y="153.623125" transform="rotate(-0 38.88 153.623125)">Toy 2 × 2 grid; positive weight = 1</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52677c" x="84.24" y="234.055781" transform="rotate(-0 84.24 234.055781)">x0</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="123.84" y="234.7925" transform="rotate(-0 123.84 234.7925)">1</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="185.76" y="234.78375" transform="rotate(-0 185.76 234.78375)">0</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52677c" x="84.24" y="285.903437" transform="rotate(-0 84.24 285.903437)">x1</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="123.84" y="286.62375" transform="rotate(-0 123.84 286.62375)">0</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="185.76" y="286.6325" transform="rotate(-0 185.76 286.6325)">1</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52677c" x="123.84" y="192.379531" transform="rotate(-0 123.84 192.379531)">y0</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52677c" x="185.76" y="192.287656" transform="rotate(-0 185.76 192.287656)">y1</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 25px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a56a08" x="157.68" y="371.840781" transform="rotate(-0 157.68 371.840781)">y ∈ {0,1}</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="157.68" y="420.575" transform="rotate(-0 157.68 420.575)">All four cells are supervised.</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #087f83" x="326.88" y="133.056562" transform="rotate(-0 326.88 133.056562)">B  /  Stable logit-space objective</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="326.88" y="153.623125" transform="rotate(-0 326.88 153.623125)">Worked case: z=0 gives probability 0.5</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 23px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #087f83" x="493.2" y="211.456719" transform="rotate(-0 493.2 211.456719)">ℓ(z,y) = softplus(z) − y·z</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 22px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="493.2" y="259.510625" transform="rotate(-0 493.2 259.510625)">ℓ(0,y) = log(2) ≈ 0.6931</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="493.2" y="309.234141" transform="rotate(-0 493.2 309.234141)">L = mean over B, K, X and Y</text>
+   </g>
+   <g id="text_22">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #087f83" x="493.2" y="384.784531" transform="rotate(-0 493.2 384.784531)">BCEWithLogits(logits, target)</text>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; fill: #162c43" transform="translate(407.228906 417.746562)">No sigmoid before BCE</text>
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; fill: #162c43" transform="translate(417.765234 440.949687)">mean loss ≈ 0.6931</text>
+   </g>
+   <g id="text_24">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c44b5a" x="709.92" y="133.056562" transform="rotate(-0 709.92 133.056562)">C  /  Logit gradients</text>
+   </g>
+   <g id="text_25">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="709.92" y="153.623125" transform="rotate(-0 709.92 153.623125)">∂L/∂z = (sigmoid(z) − y) / 4</text>
+   </g>
+   <g id="text_26">
+    <text style="font-weight: 700; font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="794.52" y="234.78375" transform="rotate(-0 794.52 234.78375)">-0.125</text>
+   </g>
+   <g id="text_27">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="878.76" y="234.78375" transform="rotate(-0 878.76 234.78375)">0.125</text>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="794.52" y="286.62375" transform="rotate(-0 794.52 286.62375)">0.125</text>
+   </g>
+   <g id="text_29">
+    <text style="font-weight: 700; font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="878.76" y="286.62375" transform="rotate(-0 878.76 286.62375)">-0.125</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c44b5a" x="839.52" y="370.450938" transform="rotate(-0 839.52 370.450938)">negative → increase logit</text>
+   </g>
+   <g id="text_31">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c44b5a" x="839.52" y="406.450938" transform="rotate(-0 839.52 406.450938)">positive → decrease logit</text>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="839.52" y="448.392187" transform="rotate(-0 839.52 448.392187)">Gradients include mean reduction.</text>
+   </g>
+   <g id="text_33">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="24.48" y="554.11125" transform="rotate(-0 24.48 554.11125)">Notebook uses positive weight 1.0; the pinned reference training script uses 2.13. This diagram reports no trained loss.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pb80ef675bd">
+   <rect x="0" y="0" width="1008" height="576"/>
+  </clipPath>
+ </defs>
+</svg>
