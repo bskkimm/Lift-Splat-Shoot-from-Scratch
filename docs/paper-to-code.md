@@ -8,6 +8,10 @@
   at `2903467c91ee9c12f0917a12c22ab1f04e607ae0`](https://github.com/nv-tlabs/lift-splat-shoot/tree/2903467c91ee9c12f0917a12c22ab1f04e607ae0).
 - Reimplementation process: paper-reimplementation playbook revision
   `813ff24b93727ea11c34478fc4c1fc9bbe30ad96`.
+- Illustrated-notebook extension deliberately adopted at playbook revision
+  `707c64b138d5e6c534af3d197fd4f278aab03d45`; a self-contained
+  [figure inventory and generation guide](../notebooks/assets/architecture/README.md)
+  is included here so public checks need no private-repository access.
 
 **Status: scaffold, not reproduced.** The mapping below distinguishes existing
 code from desired behavior. None of the paper metrics, reference checkpoint
@@ -24,6 +28,13 @@ parity, or full training have been verified here.
 | §3.3, eq. 2; §5.6 | Score trajectory templates against a cost map and evaluate template rankings. | `lss/models/trajectory.py` implements indexed cost summation, nearest-template selection and classification loss. `lss/models/planner.py` composes a BEV cost-map model with metric-to-grid conversion and template scoring; synthetic backward tests cover the assembled path. It is not wired into a planning dataset or training CLI. | Template generation, masking policy, planning training/evaluation and real-data protocol tests. |
 | §5 | Train on the paper recipe and report the correct benchmark and split. | `train.py` connects the segmentation model, named splits, BEV targets, Adam, epoch runner and epoch-boundary checkpointing in a practical FP32 single-process recipe. `eval.py` loads compatible practical checkpoints and reports separately labeled validation IoU. Synthetic CLI tests cover optimization, checkpoint evaluation and interrupted/resumed equivalence with one CPU thread and zero workers. The recipe enables deterministic algorithms and uses direct resize, random initialization, and no paper augmentation/camera dropout. | Reference recipe/weight parity, real-data validation, multiworker/distributed/GPU recovery, official evaluation and measured results. |
 | Teaching resource | Standalone architecture definitions and probes consistent with production. | `notebooks/lss_e2e_walkthrough.ipynb` independently defines the practical segmentation model and experimental planner, illustrates a synthetic optimizer step and BEV visualization, and provides opt-in real-data, practical-checkpoint, package-parity and evaluation paths. Fresh-process tests check the model inventory and matched-weight synthetic segmentation and planner outputs and gradients. Python socket connections are disabled during smoke execution, not by an OS sandbox. | Full-resolution and reference-checkpoint parity, faithful recipe coverage, and validated real-data planning. |
+
+The notebook embeds fourteen original architecture/workflow illustrations as
+offline Markdown attachments. They include worked depth/context multiplication,
+projection, augmentation inversion, masked z-aware sums, BCE/Adam and IoU/template
+examples. Source/asset hashes and exact placement are checked; editable SVGs and
+rendering code are retained. These explanatory examples are not measured model
+results or evidence of reference checkpoint parity.
 
 ## Paper settings and reference implementation differences
 

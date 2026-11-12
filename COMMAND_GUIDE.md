@@ -30,7 +30,17 @@ not an operating-system sandbox. Run only trusted notebooks. The current
 notebook locally defines the practical segmentation model and runs a synthetic
 optimizer step. Its package parity tests compare evaluation outputs and gradients,
 plus training loss, gradients and post-update state with matched weights and RNG.
-Real-data and pretrained checkpoint demonstrations remain future work.
+The notebook includes opt-in real-data, practical-checkpoint, package-parity and
+evaluation examples. Original-checkpoint compatibility remains unverified.
+
+Its fourteen architecture illustrations are local Markdown attachments and
+render without a network connection, including in a copied notebook. Editable
+SVGs, source/asset provenance, the exact placement inventory and regeneration
+commands are in the [architecture asset guide](notebooks/assets/architecture/README.md).
+
+```bash
+python3 scripts/illustrate_notebook.py --check
+```
 
 ## Model construction smoke check
 
