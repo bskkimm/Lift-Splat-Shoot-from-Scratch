@@ -56,6 +56,8 @@ def generate(directory, notebook_path):
         "reference_inspiration": "PlanTF_from_Scratch@2e02a5c485ef2edd88555610143828a7a122c96f; original LSS artwork",
         "visualization_standard": "paper-reimplementation-playbook@707c64b138d5e6c534af3d197fd4f278aab03d45",
         "settings": "practical full-size segmentation shapes; numerical examples explicitly reduced/illustrative",
+        "visual_design": "v2: original street/vehicle illustrations, spatial feature volumes and geometric evidence routing",
+        "png_palette": "eight fixed semantic colors plus sixteen adaptive colors; no dithering",
         "environment": {"matplotlib": matplotlib.__version__, "pillow": PIL.__version__,
                         "numpy": np.__version__, "freetype": ft2font.__freetype_version__,
                         "font": font.name, "font_sha256": sha256(font), "png_size": [1050, 600]},

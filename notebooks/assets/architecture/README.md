@@ -11,6 +11,31 @@ depths `[4,45)` at 1 m spacing, 64 context channels and a 200 × 200 BEV grid.
 Reduced values, camera scenes and masks are explicitly illustrative. The
 trajectory model is experimental and separate from the segmentation model.
 
+## Illustrated spatial design
+
+The pipeline and architecture lessons use original spatial artwork rather than
+box-only flowcharts: a six-camera ego rig, miniature street scenes, highlighted
+image sites, layered camera frusta, textured feature cuboids, voxel pillars and
+a multiscale encoder/decoder with explicit skip routes. The assembly figure
+separates feature values from calibrated coordinates before showing their merge.
+The planning illustration draws candidate paths on the cost field itself.
+
+Read the visual grammar as follows:
+
+- Cuboid faces represent image/BEV sites; extrusion suggests feature channels.
+  Shape labels are authoritative; drawn thickness is not proportional to C.
+- Frustum planes show a subset of depth samples. The red ray traces one selected
+  image site, and voxel figures locate the actual checked toy XYZ points.
+- Street scenes, camera fields of view and feature textures are schematic. They
+  are neither real nuScenes images/calibrations nor measured neural activations.
+- Blue/purple distinguish image and lifted evidence, teal marks geometric
+  accumulation/BEV features, gold marks the prediction/target field, and red
+  highlights selected sites or rejected points. PNG encoding reserves these
+  semantic colors so thin overlays survive compression.
+- The augmentation picture shows a genuine viewport crop and horizontal mirror
+  of the same vector street, while its coordinate example uses continuous image
+  coordinates (not an assertion about PIL pixel-center behavior).
+
 ## Inventory and placement
 
 Each image is attached at a stable `fig-<id>` Markdown cell. The adjacent code or
@@ -66,8 +91,10 @@ For a style contact sheet, choose an output path outside this source directory:
 python scripts/illustrate_notebook.py --contact-sheet /tmp/lss-architecture.png
 ```
 
-The drawings use `scripts/architecture/`: a shared vector canvas plus camera,
-geometry, decoder and learning lessons. Arithmetic comes from `examples.py`;
+The drawings use `scripts/architecture/`: `illustration.py` supplies reusable
+street, vehicle, feature-volume, frustum and BEV artwork; `canvas.py` supplies
+typography and annotations. Camera, geometry, decoder and learning lessons compose
+these pieces. Arithmetic comes from `examples.py`;
 tests compare it with analytical literals and the package's geometry, pooling,
 BCE, Adam, IoU and trajectory operators. The renderer rejects text outside the
 canvas, overflowing card labels and overlapping card title/body text. Every
@@ -90,7 +117,7 @@ scientific correctness or catch all possible overlaps.
   the recorded rendering environment matches. Reading existing PNG attachments
   does not require this exact environment.
 
-The pre-commit size limit is preserved. Raster previews use an optimized palette;
+The pre-commit size limit is preserved. Raster previews use a semantic/adaptive palette;
 SVGs retain vector detail for zooming. These diagrams do not provide new evidence
 of full-resolution reference parity, official checkpoint compatibility, trained
 vehicle IoU or real-data planning quality.
