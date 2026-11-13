@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib.patches import Rectangle
 
 from .canvas import Canvas, color
+from .illustration import ground_grid
 
 
 def segmentation_loss(data):
@@ -77,26 +78,45 @@ def decoding(data):
 
 def trajectory(data):
     d = data["trajectory"]
-    c = Canvas(13, "Shoot: compare paths by accumulated cost", "The planning primitive predicts a separate cost map; every template point must lie inside the grid.", "EXPERIMENTAL PLANNING")
-    c.panel(34, 148, 414, 541, "A  /  One toy cost map", "Rows=x; columns=y; no interpolation", "purple")
-    c.matrix(144, 301, d["cost_map"], (100, 95), "purple", rows=["x0", "x1"], cols=["y0", "y1"])
-    c.arrow((194, 345), (294, 345), tone="blue")
-    c.arrow((194, 442), (294, 442), tone="red")
-    c.text(241, 544, "A: (0,0) → (0,1)", 19, "blue", True, "center")
-    c.text(241, 602, "B: (1,0) → (1,1)", 19, "red", True, "center")
-    c.panel(478, 148, 410, 541, "B  /  Negative summed cost", "logit[k] = −Σₜ cost[cell(k,t)]", "teal")
-    c.card(507, 288, 352, 107, "Candidate A", "−(0 + 1) = −1", "blue", 19)
-    c.card(507, 429, 352, 107, "Candidate B", "−(2 + 3) = −5", "red", 19)
-    c.text(683, 614, "Repeated cells contribute repeatedly.", 15, ha="center")
-    c.panel(918, 148, 448, 541, "C  /  Normalize over templates", "p(k) = softmax(logits)[k]", "purple")
+    c = Canvas(13, "Shoot: read candidate paths from a cost field",
+               "Each path samples the same predicted cost map; accumulated cost becomes a trajectory-selection logit.",
+               "EXPERIMENTAL PLANNING")
+    c.text(34, 176, "01 / SPATIAL COST FIELD", 18, "purple", True)
+    point = ground_grid(c, 60, 491, 270, 175, np.array(d["cost_map"]) / 3, "purple")
+    for u in range(2):
+        for v in range(2):
+            c.text(*point((u + .5) / 2, (v + .5) / 2), f"{d['cost_map'][u][v]:g}", 24,
+                   "ink", True, "center", zorder=6)
+    for u, tone, label in ((.25, "blue", "A"), (.75, "red", "B")):
+        points = [point(u, v) for v in (.25, .75)]
+        c.arrow(points[0] + [0, 23], points[1] + [0, 23], tone=tone, zorder=8)
+        c.text(*(points[0] + [-18, 45]), label, 18, tone, True, "center")
+    c.text(272, 559, "A: (0,0) → (0,1)", 18, "blue", True, "center")
+    c.text(272, 606, "B: (1,0) → (1,1)", 18, "red", True, "center")
+    c.text(272, 677, "points are sampled; no interpolation", 14, "muted", ha="center")
+
+    c.text(568, 176, "02 / ACCUMULATE", 18, "teal", True)
+    for index, (costs, tone, label) in enumerate((((0, 1), "blue", "A"), ((2, 3), "red", "B"))):
+        y = 311 + index * 177
+        c.text(575, y - 43, f"{label}: cost {costs[0]} + {costs[1]}", 18, tone, True)
+        offset = 0
+        for cost in costs:
+            if cost:
+                c.ax.add_patch(Rectangle((575 + offset, y), cost * 48, 43, facecolor=color(tone),
+                                         edgecolor="white", lw=1.3))
+                offset += cost * 48
+        c.text(575, y + 80, f"logit = −{sum(costs)}", 20, tone, True)
+    c.text(729, 680, "Repeated cells contribute repeatedly.", 13, "muted", ha="center")
+
+    c.text(1000, 176, "03 / NORMALIZE", 18, "purple", True)
+    c.text(1150, 246, "softmax(−1, −5)", 18, "purple", True, "center")
     for i, (p, tone, label) in enumerate(zip(d["probabilities"], ("blue", "red"), ("A", "B"))):
-        y = 305 + i * 135
-        c.text(959, y + 20, label, 20, tone, True)
-        c.ax.add_patch(Rectangle((996, y), 282, 43, facecolor=color("pale_gray"), edgecolor="none"))
-        c.ax.add_patch(Rectangle((996, y), 282 * p, 43, facecolor=color(tone), edgecolor="none"))
-        c.text(996, y + 72, f"p({label}) ≈ {100 * p:.1f}%", 19, tone, True)
-    c.text(1142, 616, "Lower accumulated cost is preferred.", 16, ha="center")
-    c.note("Schematic costs and paths. No planning dataset, full training or validated planning metric is implied.")
+        y = 320 + i * 168
+        c.ax.add_patch(Rectangle((1002, y), 301, 47, facecolor=color("pale_gray"), edgecolor="none"))
+        c.ax.add_patch(Rectangle((1002, y), 301 * p, 47, facecolor=color(tone), edgecolor="none"))
+        c.text(1002, y + 86, f"p({label}) ≈ {100 * p:.1f}%", 21, tone, True)
+    c.text(1155, 675, "lower cost → higher probability", 15, "purple", ha="center")
+    c.note("Exact toy costs and scores; parallel-projected grid. This separate planning primitive is not a trained planning result.")
     return c
 
 

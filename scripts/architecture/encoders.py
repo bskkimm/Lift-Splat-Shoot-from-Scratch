@@ -1,124 +1,161 @@
-"""Observe and lift: original visual explanations for camera features."""
+"""Observe and lift: spatially illustrated camera and feature computation."""
 
-from matplotlib.patches import Rectangle
+import numpy as np
+from matplotlib.patches import Circle, Rectangle
 
 from .canvas import Canvas, color
+from .illustration import (frustum_volume, ground_grid, occupancy,
+                           road_image, surround_scene, texture, volume)
 
 
 def overview(data):
-    c = Canvas(1, "Lift, Splat, Shoot", "From six calibrated views to one ego-frame grid — follow the colored evidence.")
-    for x, title, body, tone in [(34, "01  OBSERVE", "Shared image features", "blue"),
-                                  (375, "02  LIFT", "A distribution along each ray", "purple"),
-                                  (716, "03  SPLAT", "Sum evidence in metric cells", "teal"),
-                                  (1057, "04  PREDICT", "Decode a top-down field", "gold")]:
-        c.panel(x, 142, 309, 400, title, body, tone)
-    for i, label in enumerate(("front left", "front", "front right", "back left", "back", "back right")):
-        c.camera(58 + (i % 2) * 136, 235 + (i // 2) * 86, 112, 58, label)
-    c.arrow((190, 510), (423, 510), "shared encoder", "blue")
-    c.stack(411, 237, 110, 78, "purple", label="context c")
-    c.text(612, 235, "toy D=3", 12, "purple", ha="center")
-    for i, (height, value) in enumerate(((28, ".10"), (63, ".25"), (112, ".65"))):
-        x = 566 + i * 33
-        c.ax.add_patch(Rectangle((x, 371 - height), 23, height, facecolor=color("purple"), edgecolor="white"))
-        c.text(x + 12, 392, value, 12, "purple", ha="center")
-    c.text(540, 430, "p(depth) × context", 17, "purple", ha="center")
-    c.text(540, 469, "[N, 41, 8, 22, 64]", 14, ha="center")
-    c.plane(750, 454, 168, 99)
-    for offset, tone in ((0, "blue"), (50, "purple"), (100, "teal")):
-        apex = (770 + offset, 250)
-        for endpoint in ((805, 415), (920, 425), (956, 356)):
-            c.path([apex, endpoint], tone, width=1.1)
-        c.ax.scatter(*apex, color=color(tone), s=35, zorder=5)
-    c.text(868, 491, "[64, 200, 200]", 15, "teal", ha="center")
-    c.arrow((683, 355), (738, 355), tone="purple")
-    c.arrow((1025, 355), (1074, 355))
-    values = [[-2, -2, -2, -2], [-2, 2, 2, -2], [-2, 2, -2, -2], [-2, -2, -2, -2]]
-    c.matrix(1105, 248, values, (52, 42), "gold", highlight=((1, 1), (1, 2), (2, 1)))
-    c.text(1212, 457, "vehicle logits", 18, "gold", bold=True, ha="center")
-    c.text(1212, 493, "[1, 200, 200]", 15, ha="center")
-    c.card(34, 575, 810, 116, "Primary path: BEV vehicle segmentation",
-           "BCE supervision → gradients through decoder,\npooled features and image encoder", "teal", 18)
-    c.card(884, 575, 482, 116, "Separate cost-map model",
-           "same architecture; trajectory costs\nnot shared segmentation weights", "purple", 17)
-    c.note("Practical full-size example: B=1, N=6; 41 depths (4 ≤ d < 45 m). Spatial artwork is schematic.")
+    c = Canvas(1, "Lift, Splat, Shoot — an illustrated pipeline",
+               "Follow one visual signal from surrounding cameras through 3-D evidence into a top-down prediction.")
+    for x, title, tone in ((34, "01 / OBSERVE", "blue"), (374, "02 / LIFT", "purple"),
+                           (720, "03 / SPLAT", "teal"), (1030, "04 / PREDICT", "gold")):
+        c.text(x, 164, title, 18, tone, True)
+    surround_scene(c, 164, 330, 86)
+    c.text(164, 451, "ego + six camera directions", 13, "blue", ha="center")
+    for i in range(6):
+        road_image(c, 42 + (i % 3) * 89, 481 + (i // 3) * 66, 74, 47, i)
+    c.text(164, 623, "six RGB views · shared encoder", 14, "blue", ha="center")
+    c.arrow((301, 350), (357, 350), tone="blue")
+
+    frustum_volume(c, (390, 405), (204, -65), width=124, height=184, layers=4)
+    c.text(568, 239, "categorical depth planes", 14, "purple", ha="center")
+    volume(c, 384, 510, 92, 65, 21, "blue", texture(4, 6), (2, 3))
+    for i, p in enumerate(data["lift"]["depth"]):
+        c.ax.add_patch(Rectangle((536 + i * 52, 581 - p * 100), 32, p * 100,
+                                 facecolor=color("purple"), edgecolor="white", zorder=4))
+        c.text(552 + i * 52, 600, f"{p:g}", 12, "purple", ha="center")
+    c.text(580, 481, "toy p(d)", 12, "purple", ha="center")
+    c.text(452, 604, "context c", 13, "blue", ha="center")
+    c.text(529, 649, "p(d) ⊗ c → [N,D,h,w,C]", 16, "purple", True, "center")
+    c.arrow((669, 350), (715, 350), tone="purple")
+
+    point = ground_grid(c, 728, 485, 142, 100, texture(5, 5, .8), pillars=45)
+    target = point(.46, .5, 27)
+    for i, tone in enumerate(("blue", "purple", "teal")):
+        origin = (748 + i * 68, 278 + 12 * (i % 2))
+        c.ax.add_patch(Circle(origin, 5, facecolor=color(tone), edgecolor="white", zorder=7))
+        c.arrow(origin, target, tone=tone)
+    c.ax.add_patch(Circle(target, 6, facecolor=color("red"), edgecolor="white", zorder=8))
+    c.text(830, 553, "same cell → sum", 17, "teal", True, "center")
+    c.text(830, 593, "[64,200,200]", 15, "teal", ha="center")
+    c.arrow((952, 355), (1008, 355))
+
+    for x, y, w, h, d in ((1030, 300, 48, 108, 18), (1112, 329, 35, 72, 24),
+                            (1190, 304, 54, 106, 18)):
+        volume(c, x, y, w, h, d, "teal", texture(6, 4))
+    c.arrow((1098, 351), (1110, 351))
+    c.arrow((1173, 351), (1188, 351))
+    c.text(1164, 246, "BEV decoder", 17, "teal", True, "center")
+    ground_grid(c, 1091, 555, 173, 83, occupancy(), "gold")
+    c.arrow((1230, 421), (1230, 470), tone="gold")
+    c.text(1203, 597, "vehicle logit field", 16, "gold", True, "center")
+    c.text(1203, 632, "[1,200,200]", 14, "gold", ha="center")
+    c.path([(35, 695), (1365, 695)], "line", width=.8)
+    c.text(34, 710, "Separate experimental model: same architecture → cost map → trajectory-template scores", 14, "purple")
+    c.note("Original schematic art and toy feature fields; full practical dimensions: six 128×352 views, D=41, C=64.")
     return c
 
 
 def sample(data):
-    c = Canvas(2, "Prepare views, geometry and supervision", "The camera branch and annotation branch meet in the same reference ego frame.")
-    c.panel(34, 142, 408, 548, "A  /  RGB views", "Six named cameras; one shared encoder", "blue")
-    for i in range(6):
-        c.camera(60 + (i % 2) * 182, 246 + (i // 2) * 112, 146, 76)
-    c.text(238, 620, "[N, 3, 128, 352]", 19, "blue", True, "center")
-    c.panel(474, 142, 414, 548, "B  /  Consistent geometry", "Choose a named preprocessing recipe", "teal")
-    c.card(500, 236, 362, 106, "Practical: direct resize", "Resize also scales K", "blue")
-    c.card(500, 375, 362, 128, "Reference-data recipe",
-           "Resize/crop/flip/rotate\nkeep K; record post-transform", "purple", 17)
-    c.text(681, 552, "RGB in [0,1] → (RGB − mean) / std", 16, ha="center")
-    c.text(681, 597, "R channel: (0.5 − 0.485) / 0.229", 15, "muted", ha="center")
-    c.text(681, 634, "= 0.0655   (illustrative pixel)", 17, "teal", True, "center")
-    c.panel(920, 142, 446, 548, "C  /  Vehicle occupancy target", "Global 3-D boxes → LiDAR-reference ego", "gold")
-    c.matrix(1016, 275, [[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]],
-             (68, 56), "gold", rows=["x0", "x1", "x2", "x3"], cols=["y0", "y1", "y2", "y3"])
-    c.text(1143, 541, "bottom polygons → round → fill", 16, "gold", ha="center")
-    c.text(1143, 590, "target [1, 200, 200] ∈ {0,1}", 17, ha="center")
-    c.text(1143, 632, "Not an input to the forward pass", 15, "red", ha="center")
-    c.note("Data preparation is infrastructure; the standalone default below uses a seeded, explicitly synthetic sample.")
+    c = Canvas(2, "Build a consistent multi-camera sample",
+               "Visual observations and vehicle annotations take separate routes into a common reference ego frame.")
+    c.text(34, 170, "OBSERVATIONS", 18, "blue", True)
+    for i, name in enumerate(("front", "front right", "back right", "back", "back left", "front left")):
+        road_image(c, 40 + (i % 3) * 176, 235 + (i // 3) * 141, 147, 100, i, name)
+    surround_scene(c, 282, 607, 56)
+    c.text(282, 700, "[N,3,128,352]", 16, "blue", True, "center")
+
+    c.text(614, 170, "PIXELS + CALIBRATION", 18, "teal", True)
+    road_image(c, 627, 253, 153, 97, 2)
+    c.ax.add_patch(Rectangle((690, 301), 20, 17, facecolor="none", edgecolor=color("red"), lw=2, zorder=9))
+    c.arrow((700, 358), (700, 412), tone="teal")
+    volume(c, 635, 438, 125, 86, 24, "blue", texture(4, 6))
+    c.text(715, 562, "resize also scales K", 15, "teal", ha="center")
+    c.text(715, 606, "augmentation instead records", 13, "muted", ha="center")
+    c.text(715, 636, "post-rotation + translation", 14, "purple", ha="center")
+    c.text(715, 688, "R: (0.5 − .485)/.229 = .0655", 14, "teal", ha="center")
+
+    c.text(965, 170, "SUPERVISION ONLY", 18, "gold", True)
+    values = occupancy()
+    ground_grid(c, 978, 426, 210, 142, values, "gold", pillars=27)
+    c.text(1162, 473, "vehicle box footprints", 17, "gold", True, "center")
+    c.arrow((1162, 498), (1162, 540), tone="gold")
+    ground_grid(c, 1015, 664, 166, 83, (values > 0).astype(float), "gold")
+    c.text(1162, 699, "binary target [1,200,200]", 16, "gold", True, "center")
+    c.note("Scenes and footprints are illustrative. Real annotations use global 3-D boxes and the LiDAR-reference ego pose.")
     return c
 
 
 def camera_encoder(data):
-    c = Canvas(3, "One encoder, two spatial scales", "Flatten B × N only for image processing; every camera uses the same weights.")
-    c.card(34, 164, 244, 100, "Images", "[BN, 3, 128, 352]", "blue")
-    c.arrow((278, 213), (350, 213), tone="blue")
-    c.card(350, 164, 292, 100, "EfficientNet 0–5", "stride 16; [BN,112,8,22]", "blue", 17)
-    c.arrow((642, 213), (721, 213), tone="blue")
-    c.card(721, 164, 292, 100, "Stages 6–7", "stride 32; [BN,320,4,11]", "purple")
-    c.arrow((1013, 213), (1090, 213), tone="purple")
-    c.card(1090, 164, 276, 100, "Bilinear upsample", "[BN,320,8,22]", "purple", 17)
-    c.stack(381, 338, 129, 92, "blue", label="112-channel skip")
-    c.stack(763, 338, 129, 92, "purple", label="320-channel feature")
-    c.arrow((498, 264), (449, 330), "skip", "blue")
-    c.path([(1226, 264), (1226, 390), (930, 390)], "purple")
-    c.arrow((929, 390), (914, 390), tone="purple")
-    c.arrow((526, 387), (604, 387), tone="blue")
-    c.arrow((756, 387), (708, 387), tone="purple")
-    c.card(584, 344, 144, 88, "CONCAT", "112 + 320", "teal", 17)
-    c.arrow((656, 432), (656, 515), "432 channels")
-    c.card(390, 515, 532, 94, "Two 3×3 Conv + BN + ReLU blocks", "432 → 512 → 512; preserve 8 × 22", "teal", 18)
-    c.arrow((922, 562), (972, 562), "1×1", "teal")
-    c.path([(974, 527), (974, 641)], "teal")
-    c.arrow((974, 527), (1000, 527))
-    c.arrow((974, 641), (1000, 641))
-    c.card(1000, 482, 366, 90, "Depth logits: 41", "softmax over depth → p(d)", "purple")
-    c.card(1000, 596, 366, 90, "Context features: 64", "no softmax over context", "blue")
-    c.text(34, 651, "Projection: 512 → 105 = 41 + 64", 18, "teal", True)
-    c.note("Full-size shapes shown. Random initialization by default; opt-in TorchVision weights are not official LSS weights.")
+    c = Canvas(3, "The camera encoder as a feature pyramid",
+               "Image sites contract while channel depth grows; a fine-scale skip recovers spatial detail.")
+    road_image(c, 34, 269, 154, 111, 0)
+    c.text(111, 415, "RGB image", 16, "blue", True, "center")
+    c.text(111, 454, "128 × 352", 14, "blue", ha="center")
+    c.arrow((192, 327), (247, 327), tone="blue")
+    volume(c, 253, 263, 79, 134, 17, "blue", texture(8, 5))
+    volume(c, 410, 288, 73, 106, 30, "blue", texture(7, 5, .4), (3, 3))
+    volume(c, 592, 324, 48, 70, 48, "purple", texture(5, 4, .8))
+    volume(c, 756, 288, 73, 106, 48, "purple", texture(7, 5, .8))
+    for start, end in (((350, 340), (405, 340)), ((520, 350), (586, 350)), ((690, 354), (750, 354))):
+        c.arrow(start, end, tone="purple")
+    for x, name, shape in ((294, "early stages", ""), (454, "stage-5 skip", "112 × 8 × 22"),
+                            (642, "stages 6–7", "320 × 4 × 11"), (811, "upsample", "320 × 8 × 22")):
+        c.text(x, 443, name, 14, "blue" if x < 500 else "purple", True, "center")
+        if shape:
+            c.text(x, 481, shape, 13, ha="center")
+    c.path([(453, 398), (453, 565), (922, 565), (922, 358)], "blue", width=2.4)
+    c.text(688, 596, "112-channel long skip", 16, "blue", True, "center")
+    c.ax.add_patch(Circle((920, 350), 16, facecolor="white", edgecolor=color("teal"), lw=1.8, zorder=7))
+    c.text(920, 350, "∥", 17, "teal", True, "center", zorder=8)
+    c.arrow((879, 350), (901, 350), tone="purple")
+    c.arrow((938, 350), (965, 350))
+    volume(c, 971, 286, 72, 120, 47, "teal", texture(7, 5))
+    c.text(1031, 462, "fusion", 16, "teal", True, "center")
+    c.text(1031, 501, "432 → 512 → 512", 13, ha="center")
+    c.arrow((1095, 345), (1147, 345), "1×1")
+    c.path([(1149, 278), (1149, 523)], "teal")
+    volume(c, 1202, 233, 98, 75, 20, "purple", texture(4, 6))
+    volume(c, 1202, 487, 98, 75, 30, "blue", texture(4, 6))
+    c.arrow((1150, 271), (1198, 271), tone="purple")
+    c.arrow((1150, 523), (1198, 523), tone="blue")
+    c.text(1253, 354, "41 depth bins", 16, "purple", True, "center")
+    c.text(1253, 390, "depth softmax", 13, "purple", ha="center")
+    c.text(1253, 611, "64 context channels", 15, "blue", True, "center")
+    c.text(676, 673, "∥ = channel concatenation    ·    textured cuboids = illustrative feature tensors", 16, "teal", ha="center")
+    c.note("Full practical dimensions, excluding BN/ReLU details shown in code. Feature textures and cuboid thickness are schematic.")
     return c
 
 
 def lift(data):
     d = data["lift"]
-    c = Canvas(4, "Lift: multiply a distribution by a feature", "One pixel becomes several depth-weighted feature vectors, not one chosen depth.")
-    c.panel(34, 150, 306, 540, "A  /  Depth probabilities", "Toy D=2; probabilities sum to 1", "purple")
+    c = Canvas(4, "Lift the same image evidence along a ray",
+               "A feature vector is distributed across depth planes; the latent depth probabilities control its strength.")
+    road_image(c, 43, 236, 278, 180, 1)
+    c.ax.add_patch(Circle((229, 349), 8, facecolor="none", edgecolor=color("red"), lw=2.4, zorder=9))
+    c.text(182, 466, "one selected image site", 17, "blue", True, "center")
+    c.arrow((229, 421), (229, 510), tone="red")
+    volume(c, 100, 556, 160, 70, 24, "blue", np.array([[.5, .1, 1.]]))
+    c.text(194, 670, "context c = [2,−1,4]", 17, "blue", True, "center")
+
+    c.text(489, 213, "toy D=2", 16, "purple", True, "center")
     for i, p in enumerate(d["depth"]):
-        x = 104 + 106 * i
-        c.ax.add_patch(Rectangle((x, 480 - p * 280), 60, p * 280,
-                                facecolor=color("purple"), edgecolor="white"))
-        c.text(x + 30, 515, f"d{i}", 16, "purple", ha="center")
-        c.text(x + 30, 480 - p * 280 - 24, f"{p:.2f}", 19, "purple", True, "center")
-    c.text(187, 598, "p(d) = softmax(depth logits)", 15, ha="center")
-    c.panel(372, 150, 365, 540, "B  /  Context at that pixel", "Toy C=3; values may be negative", "blue")
-    c.matrix(432, 326, [d["context"]], (80, 68), "blue", cols=["c0", "c1", "c2"])
-    c.text(555, 477, "c = [2, −1, 4]", 22, "blue", True, "center")
-    c.text(555, 560, "No direct depth labels are needed.", 15, ha="center", fit_width=320)
-    c.text(555, 596, "Segmentation supervises the lift.", 15, ha="center", fit_width=320)
-    c.text(755, 367, "⊗", 32, "teal", ha="center")
-    c.panel(786, 150, 580, 540, "C  /  Lifted outer product", "Each row retains the entire context vector", "teal")
-    c.matrix(934, 307, d["outer_product"], (112, 72), "teal", rows=["d0 × c", "d1 × c"],
-             cols=["c0", "c1", "c2"], highlight=[(0, 0), (1, 0)])
-    c.text(1076, 520, "0.25 × 2 = 0.5      0.75 × 2 = 1.5", 17, "teal", True, "center")
-    c.text(1076, 580, "[B,N,D,h,w,C]", 23, "teal", True, "center")
-    c.text(1076, 622, "Full example: [1,6,41,8,22,64]", 17, ha="center")
-    c.note("Illustrative values. Gradients reach both the softmax depth probabilities and the context channels.")
+        x = 414 + i * 103
+        c.ax.add_patch(Rectangle((x, 464 - p * 220), 60, p * 220,
+                                 facecolor=color("purple"), edgecolor="white", zorder=4))
+        c.text(x + 30, 505, f"p(d{i})\n{p:g}", 14, "purple", True, "center")
+    c.text(490, 580, "p(d) ⊗ c", 27, "purple", True, "center")
+    c.arrow((604, 354), (701, 354), tone="purple")
+
+    frustum_volume(c, (735, 380), (365, -50), width=167, height=205, layers=2)
+    c.text(1096, 207, "depth-weighted 3-D evidence", 18, "purple", True, "center")
+    c.text(1110, 462, "retain every context channel", 16, "teal", True, "center")
+    c.matrix(958, 546, d["outer_product"], (104, 54), "teal",
+             rows=["d0 × c", "d1 × c"], cols=["c0", "c1", "c2"], highlight=[(0, 0), (1, 0)])
+    c.text(1100, 692, "0.25 × 2 = 0.5;  0.75 × 2 = 1.5", 16, "teal", True, "center")
+    c.note("Illustrative textures; the numerical table is exact. Full lifted shape: [B,N,D,h,w,C]; depth needs no direct labels.")
     return c

@@ -3,6 +3,8 @@
   "reference_inspiration": "PlanTF_from_Scratch@2e02a5c485ef2edd88555610143828a7a122c96f; original LSS artwork",
   "visualization_standard": "paper-reimplementation-playbook@707c64b138d5e6c534af3d197fd4f278aab03d45",
   "settings": "practical full-size segmentation shapes; numerical examples explicitly reduced/illustrative",
+  "visual_design": "v2: original street/vehicle illustrations, spatial feature volumes and geometric evidence routing",
+  "png_palette": "eight fixed semantic colors plus sixteen adaptive colors; no dithering",
   "environment": {
     "matplotlib": "3.11.0",
     "pillow": "12.0.0",
@@ -17,14 +19,15 @@
   },
   "generators": {
     "scripts/architecture/__init__.py": "7266e9c96224ee9a955e7ea92fd93b3126926721d9780b1f8c974e1453f1cd3f",
-    "scripts/architecture/canvas.py": "80251f848b850018613b90da55b61f69acc60ccc2e8690f8592ae33b17ca201c",
-    "scripts/architecture/decoder.py": "cfd28ccdbcbaa0586f6cfa1ec9aa264acc57758555f7a449b3be25667db86125",
-    "scripts/architecture/encoders.py": "a492b4d92ca2c556cb4a83b3ec0f931f2a847caef755b90c81042d6cded9347c",
-    "scripts/architecture/examples.py": "8c85c26bd06ea456cb2c6d8e8c6c8d66d27ea9e021a2a3fcc00a971c2e3f3bc7",
-    "scripts/architecture/geometry.py": "25f52a4b1cae9e4dccc7f9a1a35b6e20caa9655fd85b661ab0b5e5f8e0631bfe",
-    "scripts/architecture/inventory.py": "ecfd4ff9928ca6aa5f98e75a4c14526ca85af0c38e682a84158bab5b6e08824f",
-    "scripts/architecture/learning.py": "9415adc34be7d69b4b8551759e091e2777a2320f4d4fa5f2379e7a09f33341d7",
-    "scripts/architecture/render.py": "212ec7066a45070d98026ce62c1c94a893bc19bb39e2cedebd9b57ad95ea0194",
+    "scripts/architecture/canvas.py": "7944194f411fcdc7a92eab6f30e19d3b0b39f5962c710980db40912cfabed484",
+    "scripts/architecture/decoder.py": "e6eb12771cd91af1b8da5a39b5fe3d7905f6a100c6e3aa9c67b39e8b30d08a43",
+    "scripts/architecture/encoders.py": "4048cc8ee6771bd9840cf15e776735dd2a020e982d6b816d199644547be2ae95",
+    "scripts/architecture/examples.py": "c01dd7f421248684f934bf02501ca8ba1041e921e37a98f9e42bd6febcfa8011",
+    "scripts/architecture/geometry.py": "011c3a8bfc36be74cefcc2ff350e45d9a8af068e0bcfba6810fa174f8f5ab82e",
+    "scripts/architecture/illustration.py": "d8302aac2ca4a5effbd0379141d60b20e6acee74a021918c3c988716c51e6606",
+    "scripts/architecture/inventory.py": "7eb2c3d8c4770db381684383871f2bcc22cd84fb79fa83d3b00cccfbea7e6715",
+    "scripts/architecture/learning.py": "9daf511782c2f3183e307f40e81c7dd640e1b8887a91e2999cf7857da8d48a4c",
+    "scripts/architecture/render.py": "4ff31a91c6a5d19240bbfdfb4440abd64a978134890f7b6b5d7f883a18b4c018",
     "scripts/illustrate_notebook.py": "71e207d10e111c6a5ae4cf6acd23ee81be033942b397f96e8f6483aa85819b4e"
   },
   "notebook_code_ast_sha256": "4b44edc04cc1b950154040acbe3832282a22cdf07b6b9435075a301b841e2ada",
@@ -100,6 +103,20 @@
       "augmented_uv": [
         80.0,
         8.0
+      ],
+      "original_wh": [
+        400,
+        160
+      ],
+      "resized_wh": [
+        200,
+        80
+      ],
+      "crop_box": [
+        5,
+        2,
+        105,
+        62
       ]
     },
     "pooling": {
@@ -328,12 +345,12 @@
       "lesson_marker": "import math",
       "neighbor_type": "code",
       "title": "The complete practical LSS pipeline",
-      "alt": "The complete practical LSS pipeline. Six calibrated views become depth-weighted features, then a common BEV grid and vehicle logits. The experimental cost-map branch uses a separate model with the same architecture, not shared trained segmentation weights.",
-      "caption": "Six calibrated views become depth-weighted features, then a common BEV grid and vehicle logits. The experimental cost-map branch uses a separate model with the same architecture, not shared trained segmentation weights.",
+      "alt": "The complete practical LSS pipeline. A schematic six-camera rig and illustrated street views become depth-plane evidence, pooled voxel features and a vehicle-logit field. Textured volumes are illustrative, not measured activations. The experimental cost-map branch uses a separate model with the same architecture, not shared trained segmentation weights.",
+      "caption": "A schematic six-camera rig and illustrated street views become depth-plane evidence, pooled voxel features and a vehicle-logit field. Textured volumes are illustrative, not measured activations. The experimental cost-map branch uses a separate model with the same architecture, not shared trained segmentation weights.",
       "png": "pipeline-overview.png",
       "svg": "pipeline-overview.svg",
-      "png_sha256": "a6da6aecc37de22c70bb8db10848f36e9dc9a54bf15e87a37a417a3329e05e25",
-      "svg_sha256": "f1fa1b890e3abfb11acc9ffd3e55e0eaae7cc2faa195ff3eeb6443712b4ce8e2",
+      "png_sha256": "48d3a9096b1cfefd8cb9a7414c2ed4216206026eb097e9b48911dc44299e4223",
+      "svg_sha256": "90da73a897a7469cba1c6195ed73006c9e80b0a118ebf4ff6065cd513e56c843",
       "sources": {
         "lss/models/segmentation.py": "950f91fd10fe1e56f3dee5d30a876ac6368c99a16713cacbf0fc6ca9275166d9",
         "lss/models/planner.py": "5233fcd5f2604603e00fa0e7e3314bb3cd4001f083b11d939be20e3f569ea481"
@@ -350,8 +367,8 @@
       "caption": "Camera normalization and calibration feed the model; the rasterized vehicle target feeds only the objective. Direct resize changes intrinsic rows, whereas augmentation keeps original intrinsics and records its image post-transform. The worked RGB value is illustrative.",
       "png": "sample-preparation.png",
       "svg": "sample-preparation.svg",
-      "png_sha256": "51c8f5dba502b6c2edaf90c9bf5f493ca2e29c7cdbf848d0681e291b003ab55f",
-      "svg_sha256": "b5132ef0fb061b3be155986219adf94cfc908a7968db59ecf300dee78bde21f4",
+      "png_sha256": "262b001b15f979ca46750ef1ebb364892f4d1c1b5792fa9c00c409d7b11ae1b8",
+      "svg_sha256": "74180a93c54613cf9fe5d068613c88e36b17f29d1609790e50c54c1c61ddf82b",
       "sources": {
         "lss/data/nuscenes_dataset.py": "12fad70c0ce5b1cd216f427bf845cd725bed3de30096bb08a9379617efc6ad27",
         "lss/data/transforms.py": "37a49d5eb1b0eba388f30db33534977d51bf2ba846d5ed1a0e89be7d4937f9c4",
@@ -365,12 +382,12 @@
       "lesson_marker": "class CameraEncoder",
       "neighbor_type": "code",
       "title": "Shared EfficientNet feature scales and the depth/context projection",
-      "alt": "Shared EfficientNet feature scales and the depth/context projection. At 128×352 resolution, the 112-channel stride-16 skip is concatenated with an upsampled 320-channel feature. Fusion produces 512 channels; projection yields 41 depth logits plus 64 context channels. These are full practical dimensions, not the smaller CPU probe.",
-      "caption": "At 128×352 resolution, the 112-channel stride-16 skip is concatenated with an upsampled 320-channel feature. Fusion produces 512 channels; projection yields 41 depth logits plus 64 context channels. These are full practical dimensions, not the smaller CPU probe.",
+      "alt": "Shared EfficientNet feature scales and the depth/context projection. At 128×352 resolution, the illustrated feature pyramid retains a 112-channel stride-16 skip and concatenates it with an upsampled 320-channel feature. Fusion produces 512 channels; projection yields 41 depth logits plus 64 context channels. Cuboid textures and thickness are schematic; shape labels are full practical dimensions.",
+      "caption": "At 128×352 resolution, the illustrated feature pyramid retains a 112-channel stride-16 skip and concatenates it with an upsampled 320-channel feature. Fusion produces 512 channels; projection yields 41 depth logits plus 64 context channels. Cuboid textures and thickness are schematic; shape labels are full practical dimensions.",
       "png": "camera-encoder.png",
       "svg": "camera-encoder.svg",
-      "png_sha256": "96440c7f366750c345f366da055cdb4298efbbaae0bb8bbd3c7dc1b158e0ec15",
-      "svg_sha256": "e3507b2622b1aefbdebf9e01eb1f5f9a4e31f5909c962db0a63db92752c28d7d",
+      "png_sha256": "bc84f3e60740717a4741cd48cb9f4bbc6b7b5b4eb0d47935e7e25f3b198d0ef1",
+      "svg_sha256": "2832bcb38a9b38fd752be460b12723dbb948651ccbde66d64c6e05f1e5973288",
       "sources": {
         "lss/models/camera_encoder.py": "607d0115b9130b1bf1d4311e99e18aea359dddff0b654ccfeb7d20dc7a7ef9f7"
       }
@@ -386,8 +403,8 @@
       "caption": "At one illustrative pixel, probabilities [0.25,0.75] multiply context [2,−1,4]. The resulting two rows retain all three context channels, and gradients reach both branches. The full lifted tensor is [B,N,D,h,w,C].",
       "png": "depth-context-lift.png",
       "svg": "depth-context-lift.svg",
-      "png_sha256": "46ba11608ca9e466f9badd5220be04439bfd8001dfd30b693275c4a5f91694d2",
-      "svg_sha256": "cfaca929594d407d96f6c405c4dd63a5b9a779b66b02aa736d80e16721429459",
+      "png_sha256": "b4877fd9505372588f76605a04954ca9e678ea626984cd75832b713bb83e2607",
+      "svg_sha256": "c9c942ff73438eb7cf2cfd2eafd41b5adae2b285c8e9cd1ca0d61aee92e52b4f",
       "sources": {
         "lss/models/segmentation.py": "950f91fd10fe1e56f3dee5d30a876ac6368c99a16713cacbf0fc6ca9275166d9",
         "lss/models/camera_encoder.py": "607d0115b9130b1bf1d4311e99e18aea359dddff0b654ccfeb7d20dc7a7ef9f7"
@@ -404,8 +421,8 @@
       "caption": "With the supplied toy intrinsics, pixel-depth (75,40,4) gives camera XYZ (1,0,4) metres. A 90-degree z rotation and translation (1,2,0) give ego XYZ (1,3,4). Ray planes are schematic, and full depth-bin endpoints are labeled separately.",
       "png": "frustum-geometry.png",
       "svg": "frustum-geometry.svg",
-      "png_sha256": "9d74a31bec19803c7ddc49081ae79d17af9d0a1bff4237655cb6fd8380efa16e",
-      "svg_sha256": "ae185cbfc8424215e37c6e92fa7c16d3563bd1cbb7ea7d79592c08f6486d7f02",
+      "png_sha256": "db7468c8c9dab8d9b0ed05ffcd83338c788c45a96819a3bb9bdd253fee8d218c",
+      "svg_sha256": "dc67915173af8a9f19f06821130d04b2e8dab41461b023ac96d4d870b6e1fedf",
       "sources": {
         "lss/geometry.py": "2b6f81ed35731493c0a2f06682a4239d094ec395ac3781d2287f3e01499ddcab"
       }
@@ -417,12 +434,12 @@
       "lesson_marker": "def camera_to_ego",
       "neighbor_type": "code",
       "title": "Reverse the image post-transform before composing sensor and ego poses",
-      "alt": "Reverse the image post-transform before composing sensor and ego poses. The continuous toy resize/crop/flip maps (50,20) to (80,8) and is undone before intrinsic unprojection. The camera-to-reference-ego chain includes the camera-time and LiDAR-time ego poses, a documented difference from the pinned original LSS source.",
-      "caption": "The continuous toy resize/crop/flip maps (50,20) to (80,8) and is undone before intrinsic unprojection. The camera-to-reference-ego chain includes the camera-time and LiDAR-time ego poses, a documented difference from the pinned original LSS source.",
+      "alt": "Reverse the image post-transform before composing sensor and ego poses. The illustrated 400×160 toy scene resizes to 200×80, crops to 100×60 and flips horizontally: pixel (50,20) becomes (80,8). This continuous coordinate transform is undone before unprojection. A separate ego-motion illustration shows the camera-time and LiDAR-time pose composition, a documented difference from the original LSS source.",
+      "caption": "The illustrated 400×160 toy scene resizes to 200×80, crops to 100×60 and flips horizontally: pixel (50,20) becomes (80,8). This continuous coordinate transform is undone before unprojection. A separate ego-motion illustration shows the camera-time and LiDAR-time pose composition, a documented difference from the original LSS source.",
       "png": "augmentation-frames.png",
       "svg": "augmentation-frames.svg",
-      "png_sha256": "57a95585c30d1bd4d356da3f31542613e437b49cabc8c14b649ef17ce124dc87",
-      "svg_sha256": "0443649cb20901db8d3511f81f153f190ffa83d2e966e71f2af19156c9ce745a",
+      "png_sha256": "470423edd5643c8558e17684c9e265f69b5703fdd738a7920b9eb2449888a298",
+      "svg_sha256": "ae60fbbdc2491f71325ce4be238bb53ee2ab8d1ed407485a58b3e8fcddef54d0",
       "sources": {
         "lss/geometry.py": "2b6f81ed35731493c0a2f06682a4239d094ec395ac3781d2287f3e01499ddcab",
         "lss/data/image_augmentation.py": "afc89daa7c1839600b43ecaa197d241145946de2b97e5045b60056532ffe4cd5",
@@ -436,12 +453,12 @@
       "lesson_marker": "class VoxelPool",
       "neighbor_type": "code",
       "title": "Half-open voxel masking, floor indices and z-major channel sums",
-      "alt": "Half-open voxel masking, floor indices and z-major channel sums. Two in-bounds points in cell (0,0,0) add [2,4]+[3,1]=[5,5]. Points below the lower bound or at the upper bound are rejected. A separate z=1.2 point demonstrates the output's z-major channel order; discrete indices do not carry geometry gradients.",
-      "caption": "Two in-bounds points in cell (0,0,0) add [2,4]+[3,1]=[5,5]. Points below the lower bound or at the upper bound are rejected. A separate z=1.2 point demonstrates the output's z-major channel order; discrete indices do not carry geometry gradients.",
+      "alt": "Half-open voxel masking, floor indices and z-major channel sums. The parallel-projected 3-D lattice locates the actual toy points. A and B in cell (0,0,0) add [2,4]+[3,1]=[5,5]; points below the lower bound or at the upper bound are rejected. F at z=1.2 contributes to the second height bin. The four tilted grids show z-major channels, and discrete indices do not carry geometry gradients.",
+      "caption": "The parallel-projected 3-D lattice locates the actual toy points. A and B in cell (0,0,0) add [2,4]+[3,1]=[5,5]; points below the lower bound or at the upper bound are rejected. F at z=1.2 contributes to the second height bin. The four tilted grids show z-major channels, and discrete indices do not carry geometry gradients.",
       "png": "voxel-pooling.png",
       "svg": "voxel-pooling.svg",
-      "png_sha256": "2fa6054ab963eb6ff7404ecbb7d4fd3bb4636401e4cf118ac8269f3d50b93764",
-      "svg_sha256": "a5641d6d9f585188f8397965fea7b6947445b40da002b53e0061b76ad535b3f6",
+      "png_sha256": "30a38e773bf515826cc65385e678775df8070854635f82f8276d959f8138bbcc",
+      "svg_sha256": "f98e801c651f2bd444d75a72f9e5e4fb38cd0511525551b3a6902128912175b6",
       "sources": {
         "lss/models/voxel_pool.py": "32fb9d90ba7fb82792f5846350504a25c4287c7603556fc3ec9e03c0dddd6830"
       }
@@ -457,8 +474,8 @@
       "caption": "The full 200×200 BEV grid becomes 100×100, 50×50 and 25×25 feature grids. The 64-channel skip concatenates with 256 upsampled channels; fusion and a final upsample return raw logits at the original resolution. There is no stem max-pool or internal sigmoid.",
       "png": "bev-decoder.png",
       "svg": "bev-decoder.svg",
-      "png_sha256": "ea81b43cbec20f5fd905c42dc96af5bf1219e3f5ad2e02085c77badaf12fe1eb",
-      "svg_sha256": "560fda4be40a3598f94496b499728beff6062747d0915a257253f21a2f4a8a22",
+      "png_sha256": "1db226a5fa040c0f62395292dca944af305708bbb0345bc4e77ad602b7dce415",
+      "svg_sha256": "71c9090a1897b9c3bde4aa3a13fbb9eeb368fac45e803ddbf215b375cdb99760",
       "sources": {
         "lss/models/bev_encoder.py": "9e9371df236308aba479df06c1764957cb355f293eccc4f9c317a9da94eb43dc"
       }
@@ -474,8 +491,8 @@
       "caption": "The value stream [1,6,41,8,22,64] and coordinate stream [1,6,41,8,22,3] share sample axes before voxel reduction. One height bin gives [1,64,200,200], decoded to [1,1,200,200]. This is a shape illustration, not full-resolution parity evidence.",
       "png": "model-assembly.png",
       "svg": "model-assembly.svg",
-      "png_sha256": "f80212158f9c5fe441935760a3f956028226d02f94d91392c0023adabde5898a",
-      "svg_sha256": "cdcd6c944faba235c74176ce1690a6dd8936cb85266de356de4cd565429a88d6",
+      "png_sha256": "3af2a62343378d88616319f6e9a366f407d3efc624964d0c2aaa4b444fae1789",
+      "svg_sha256": "91af7ff870ccfda842c7fbb258ffe5328175d68ccabdc21161087b2983a2e290",
       "sources": {
         "lss/models/segmentation.py": "950f91fd10fe1e56f3dee5d30a876ac6368c99a16713cacbf0fc6ca9275166d9",
         "lss/models/voxel_pool.py": "32fb9d90ba7fb82792f5846350504a25c4287c7603556fc3ec9e03c0dddd6830"
@@ -492,7 +509,7 @@
       "caption": "For four zero logits with unit positive weight, the mean BCE is log(2). Two positive targets have gradient −0.125 and two negatives +0.125. Positive-weight and reduction choices matter; no trained loss is reported by this illustration.",
       "png": "segmentation-loss.png",
       "svg": "segmentation-loss.svg",
-      "png_sha256": "779395e2165750d11fc113fc169811a34381976fea1a0e0dfcd9a726ef5554f8",
+      "png_sha256": "bfebf79927f7baa8149a8ce61c123c4b0968f3186678c77d26fb638925f320f5",
       "svg_sha256": "575de18edd3e64673213b2e3ca4e8c8bad669d42e0132ddfd1e05ecc124a5761",
       "sources": {
         "lss/losses.py": "b3b4bf2cd69ce0da1f0ea811050df29de6ef6f2b5b310e9649546750a3172474"
@@ -509,7 +526,7 @@
       "caption": "The illustrative positive-label scalar logit has gradient −0.5. Adam with lr=0.1 changes it from 0 to approximately 0.1 and gives loss 0.6444. This scalar example is distinct from the actual lr=0.001 model update executed below.",
       "png": "learning-step.png",
       "svg": "learning-step.svg",
-      "png_sha256": "681636b96766daf990ef861128dc320c4786efa5d59c4d4decd365fc297709e0",
+      "png_sha256": "6af28b958a0b7999957f0bc97432c1964f6497cb0a9807c10ecfc95125b601b4",
       "svg_sha256": "cf362b1fcc261caca8e2575953bf259d26708e290655712dfbac7205833fae87",
       "sources": {
         "lss/segmentation_engine.py": "2416955f3cd5cf1f6777b6e570b870fe5bc8676ec840d3c96484a2df9daf4271"
@@ -526,7 +543,7 @@
       "caption": "The illustrative prediction and target each have three occupied cells, with two shared cells. Their union is four and IoU is 0.5. Full validation sums counts over batches before dividing and reports undefined IoU for an empty aggregate union.",
       "png": "decoding-iou.png",
       "svg": "decoding-iou.svg",
-      "png_sha256": "461f3a12ad490905b48a091c3b760402031221a43b5dbd6d6676bea88b5d0a9c",
+      "png_sha256": "a7abd4548e091e35c720917f5c18873c2ae9c951755eb33732bc9cc3cc644f51",
       "svg_sha256": "5e74496860ac2e418acf9d04f8c6bd17c82cca8531ae19dd00a084be2f47818c",
       "sources": {
         "lss/metrics.py": "41965216ba029e4dc92972b21316bea2736f33974ed678bc8c7bfed9573981b1",
@@ -544,8 +561,8 @@
       "caption": "Two toy trajectories accumulate costs 1 and 5, producing logits −1 and −5 and probabilities about 98.2% and 1.8%. Every point must lie inside the same grid; this example is not a trained or evaluated planning result.",
       "png": "trajectory-scoring.png",
       "svg": "trajectory-scoring.svg",
-      "png_sha256": "63cffe9c4b5d1d3c34326c8c305ba0ac4e8001a20876593bd30d28166114ef88",
-      "svg_sha256": "4fba7de746503e10449b71001c91e41c3a7fc4033eee9c85ad868f270936527c",
+      "png_sha256": "175c9086baf4370a6405d2b45cbe8e1485b5a54df3f51fa9d47dea4905906227",
+      "svg_sha256": "9e008759e4d701d5fc65756528521f4a802785f324c64f508a1cc3b618c1eb79",
       "sources": {
         "lss/models/trajectory.py": "5d700fe3c6f1fae3f314a927de7faeb1d74aa4d3ee3f46b00d1dffa10f223b16",
         "lss/models/planner.py": "5233fcd5f2604603e00fa0e7e3314bb3cd4001f083b11d939be20e3f569ea481"
@@ -562,7 +579,7 @@
       "caption": "Opt-in paths validate local assets and checkpoint format. Package evaluation reconstructs its model and preprocessing from saved configuration and uses the checkpoint's dataset version. The notebook weight-loading demo is a separate operation; no original-checkpoint compatibility is implied.",
       "png": "checkpoint-evaluation.png",
       "svg": "checkpoint-evaluation.svg",
-      "png_sha256": "9882b7ed9bac7ab9d89447d6ca3fa1c2dba3d807470b2a26c1d7e840f62b8f3d",
+      "png_sha256": "92aaeadc4e91cee9f8e72b240abe0a2d0b32f09eef73b3aae1c10417c90316f2",
       "svg_sha256": "efd9f73d1cbb8b548da09fa94a9769cd6dddb27234524db1c3cbb79ceea2e246",
       "sources": {
         "eval.py": "29dcdd83fb7a001f07631d044087c91843cf31ce01425e4eca907e10c06a8e1c",

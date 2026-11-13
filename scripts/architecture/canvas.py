@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from matplotlib.colors import to_rgb
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Polygon, Rectangle
 import numpy as np
 from PIL import Image
@@ -106,11 +107,11 @@ class Canvas:
             labels.append(body_label)
         self.card_labels.append((labels, (x, y, x + w, y + h)))
 
-    def arrow(self, start, end, label="", tone="teal", curve=0, dashed=False):
+    def arrow(self, start, end, label="", tone="teal", curve=0, dashed=False, zorder=1):
         self.ax.add_patch(FancyArrowPatch(start, end, arrowstyle="-|>", mutation_scale=15,
                                          linewidth=1.8, color=color(tone),
                                          connectionstyle=f"arc3,rad={curve}",
-                                         linestyle="--" if dashed else "-", shrinkA=4, shrinkB=4))
+                                         linestyle="--" if dashed else "-", shrinkA=4, shrinkB=4, zorder=zorder))
         if label:
             self.text((start[0] + end[0]) / 2, (start[1] + end[1]) / 2 - 17,
                       label, 13, tone, ha="center")
@@ -198,5 +199,14 @@ class Canvas:
         buffer = BytesIO()
         self.figure.savefig(buffer, format="png", dpi=75, facecolor="white", metadata={"Software": "LSS architecture drawings"})
         with Image.open(buffer) as image:
-            image.convert("RGB").quantize(colors=24, dither=Image.Dither.NONE).save(directory / f"{slug}.png", optimize=True)
+            rgb = image.convert("RGB")
+            adaptive = rgb.quantize(colors=16, dither=Image.Dither.NONE).getpalette()[:48]
+            # Reserve semantic colors so thin red rays and gold labels survive
+            # compression instead of being merged into a dominant purple/gray.
+            anchors = [round(channel * 255) for name in ("ink", "blue", "teal", "purple", "gold", "red", "white", "muted")
+                       for channel in to_rgb(color(name))]
+            palette = Image.new("P", (1, 1))
+            entries = anchors + adaptive
+            palette.putpalette(entries + entries[-3:] * (256 - len(entries) // 3))
+            rgb.quantize(palette=palette, dither=Image.Dither.NONE).save(directory / f"{slug}.png", optimize=True)
         plt.close(self.figure)

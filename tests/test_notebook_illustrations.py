@@ -168,3 +168,24 @@ def test_loss_update_metric_and_trajectory_examples_match_package():
                                torch.tensor(trajectory["cells"])[None])
     torch.testing.assert_close(scores[0], torch.tensor([-1., -5.]))
     torch.testing.assert_close(scores.softmax(dim=1)[0], torch.tensor(trajectory["probabilities"]))
+
+
+def test_illustrated_camera_flip_mirrors_the_picture():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scripts.architecture.canvas import Canvas
+    from scripts.architecture.illustration import road_image
+
+    canvas = Canvas(1, "Flip verification", "Two instances of the same original street illustration")
+    try:
+        road_image(canvas, 100, 240, 300, 180)
+        road_image(canvas, 700, 240, 300, 180, mirror=True)
+        canvas.figure.canvas.draw()
+        pixels = np.asarray(canvas.figure.canvas.buffer_rgba())[:, :, :3].astype(float)
+        original = pixels[242:418, 102:398]
+        mirrored = pixels[242:418, 702:998]
+        # Renderer edge antialiasing can differ by a pixel, but the scene itself
+        # must be reflected, not left unchanged or transformed off the canvas.
+        assert np.abs(original[:, ::-1] - mirrored).mean() < 3
+    finally:
+        plt.close(canvas.figure)

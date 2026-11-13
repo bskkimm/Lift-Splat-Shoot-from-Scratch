@@ -29,151 +29,58 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 34.56 106.56
-L 312.48 106.56
-Q 322.56 106.56 322.56 116.64
-L 322.56 486
-Q 322.56 496.08 312.48 496.08
-L 34.56 496.08
-Q 24.48 496.08 24.48 486
-L 24.48 116.64
-Q 24.48 106.56 34.56 106.56
+    <path d="M 414 223.92
+L 448.56 223.92
+L 448.56 254.88
+L 414 254.88
 z
-" clip-path="url(#pb80ef675bd)" style="fill: #ffffff; stroke: #cbd6e2; stroke-linejoin: miter"/>
+" clip-path="url(#pb80ef675bd)" style="fill: #2266ae; stroke: #ffffff; stroke-width: 1.3; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
-    <path d="M 103.68 216.72
-L 175.68 216.72
-L 175.68 285.12
-L 103.68 285.12
+    <path d="M 414 351.36
+L 483.12 351.36
+L 483.12 382.32
+L 414 382.32
 z
-" clip-path="url(#pb80ef675bd)" style="fill: #f0eaf9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+" clip-path="url(#pb80ef675bd)" style="fill: #c44b5a; stroke: #ffffff; stroke-width: 1.3; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
-    <path d="M 175.68 216.72
-L 247.68 216.72
-L 247.68 285.12
-L 175.68 285.12
+    <path d="M 483.12 351.36
+L 586.8 351.36
+L 586.8 382.32
+L 483.12 382.32
 z
-" clip-path="url(#pb80ef675bd)" style="fill: #f0eaf9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
+" clip-path="url(#pb80ef675bd)" style="fill: #c44b5a; stroke: #ffffff; stroke-width: 1.3; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
-    <path d="M 103.68 285.12
-L 175.68 285.12
-L 175.68 353.52
-L 103.68 353.52
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #f0eaf9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
-   </g>
-   <g id="patch_6">
-    <path d="M 175.68 285.12
-L 247.68 285.12
-L 247.68 353.52
-L 175.68 353.52
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #f0eaf9; stroke: #ffffff; stroke-width: 1.5; stroke-linejoin: miter"/>
-   </g>
-   <g id="patch_7">
-    <path d="M 143.683418 248.4
-Q 175.683396 248.4 205.670914 248.4
-" clip-path="url(#pb80ef675bd)" style="fill: none; stroke: #2266ae; stroke-width: 1.8; stroke-linecap: round"/>
-    <path d="M 199.670914 245.4
-L 205.670914 248.4
-L 199.670914 251.4
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #2266ae; stroke: #2266ae; stroke-width: 1.8; stroke-linecap: round"/>
-   </g>
-   <g id="patch_8">
-    <path d="M 143.683418 318.24
-Q 175.683396 318.24 205.670914 318.24
-" clip-path="url(#pb80ef675bd)" style="fill: none; stroke: #c44b5a; stroke-width: 1.8; stroke-linecap: round"/>
-    <path d="M 199.670914 315.24
-L 205.670914 318.24
-L 199.670914 321.24
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #c44b5a; stroke: #c44b5a; stroke-width: 1.8; stroke-linecap: round"/>
-   </g>
-   <g id="patch_9">
-    <path d="M 354.24 106.56
-L 629.28 106.56
-Q 639.36 106.56 639.36 116.64
-L 639.36 486
-Q 639.36 496.08 629.28 496.08
-L 354.24 496.08
-Q 344.16 496.08 344.16 486
-L 344.16 116.64
-Q 344.16 106.56 354.24 106.56
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #ffffff; stroke: #cbd6e2; stroke-linejoin: miter"/>
-   </g>
-   <g id="patch_10">
-    <path d="M 372.24 207.36
-L 611.28 207.36
-Q 618.48 207.36 618.48 214.56
-L 618.48 277.2
-Q 618.48 284.4 611.28 284.4
-L 372.24 284.4
-Q 365.04 284.4 365.04 277.2
-L 365.04 214.56
-Q 365.04 207.36 372.24 207.36
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #e9f2fc; stroke: #2266ae; stroke-width: 1.2; stroke-linejoin: miter"/>
-   </g>
-   <g id="patch_11">
-    <path d="M 372.24 308.88
-L 611.28 308.88
-Q 618.48 308.88 618.48 316.08
-L 618.48 378.72
-Q 618.48 385.92 611.28 385.92
-L 372.24 385.92
-Q 365.04 385.92 365.04 378.72
-L 365.04 316.08
-Q 365.04 308.88 372.24 308.88
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #fcecef; stroke: #c44b5a; stroke-width: 1.2; stroke-linejoin: miter"/>
-   </g>
-   <g id="patch_12">
-    <path d="M 671.04 106.56
-L 973.44 106.56
-Q 983.52 106.56 983.52 116.64
-L 983.52 486
-Q 983.52 496.08 973.44 496.08
-L 671.04 496.08
-Q 660.96 496.08 660.96 486
-L 660.96 116.64
-Q 660.96 106.56 671.04 106.56
-z
-" clip-path="url(#pb80ef675bd)" style="fill: #ffffff; stroke: #cbd6e2; stroke-linejoin: miter"/>
-   </g>
-   <g id="patch_13">
-    <path d="M 717.12 219.6
-L 920.16 219.6
-L 920.16 250.56
-L 717.12 250.56
+    <path d="M 721.44 230.4
+L 938.16 230.4
+L 938.16 264.24
+L 721.44 264.24
 z
 " clip-path="url(#pb80ef675bd)" style="fill: #edf1f5"/>
    </g>
-   <g id="patch_14">
-    <path d="M 717.12 219.6
-L 916.50808 219.6
-L 916.50808 250.56
-L 717.12 250.56
+   <g id="patch_6">
+    <path d="M 721.44 230.4
+L 934.262029 230.4
+L 934.262029 264.24
+L 721.44 264.24
 z
 " clip-path="url(#pb80ef675bd)" style="fill: #2266ae"/>
    </g>
-   <g id="patch_15">
-    <path d="M 717.12 316.8
-L 920.16 316.8
-L 920.16 347.76
-L 717.12 347.76
+   <g id="patch_7">
+    <path d="M 721.44 351.36
+L 938.16 351.36
+L 938.16 385.2
+L 721.44 385.2
 z
 " clip-path="url(#pb80ef675bd)" style="fill: #edf1f5"/>
    </g>
-   <g id="patch_16">
-    <path d="M 717.12 316.8
-L 720.77192 316.8
-L 720.77192 347.76
-L 717.12 347.76
+   <g id="patch_8">
+    <path d="M 721.44 351.36
+L 725.337971 351.36
+L 725.337971 385.2
+L 721.44 385.2
 z
 " clip-path="url(#pb80ef675bd)" style="fill: #c44b5a"/>
    </g>
@@ -181,6 +88,38 @@ z
     <path d="M 24.48 80.64
 L 983.52 80.64
 " clip-path="url(#pb80ef675bd)" style="fill: none; stroke: #cbd6e2; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 86.94 290.52
+L 184.14 290.52
+L 227.88 227.52
+L 130.68 227.52
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #d9cfe7; stroke: #7750a9; stroke-width: 0.8"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 184.14 290.52
+L 281.34 290.52
+L 325.08 227.52
+L 227.88 227.52
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #997cbe; stroke: #7750a9; stroke-width: 0.8"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 43.2 353.52
+L 140.4 353.52
+L 184.14 290.52
+L 86.94 290.52
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #faf8fc; stroke: #7750a9; stroke-width: 0.8"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 140.4 353.52
+L 237.6 353.52
+L 281.34 290.52
+L 184.14 290.52
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #b9a5d3; stroke: #7750a9; stroke-width: 0.8"/>
    </g>
    <g id="line2d_2">
     <path d="M 24.48 527.04
@@ -191,94 +130,99 @@ L 983.52 527.04
     <text style="font-weight: 700; font-size: 26px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #087f83" x="24.48" y="39.703594" transform="rotate(-0 24.48 39.703594)">13</text>
    </g>
    <g id="text_2">
-    <text style="font-weight: 700; font-size: 25px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #162c43" x="67.68" y="37.040781" transform="rotate(-0 67.68 37.040781)">Shoot: compare paths by accumulated cost</text>
+    <text style="font-weight: 700; font-size: 25px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #162c43" x="67.68" y="37.138438" transform="rotate(-0 67.68 37.138438)">Shoot: read candidate paths from a cost field</text>
    </g>
    <g id="text_3">
-    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="24.48" y="66.059062" transform="rotate(-0 24.48 66.059062)">The planning primitive predicts a separate cost map; every template point must lie inside the grid.</text>
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="24.48" y="66.059062" transform="rotate(-0 24.48 66.059062)">Each path samples the same predicted cost map; accumulated cost becomes a trajectory-selection logit.</text>
    </g>
    <g id="text_4">
     <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52677c" x="983.52" y="554.803828" transform="rotate(-0 983.52 554.803828)">EXPERIMENTAL PLANNING</text>
    </g>
    <g id="text_5">
-    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7750a9" x="38.88" y="132.897656" transform="rotate(-0 38.88 132.897656)">A  /  One toy cost map</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7750a9" x="24.48" y="132.564375" transform="rotate(-0 24.48 132.564375)">01 / SPATIAL COST FIELD</text>
    </g>
    <g id="text_6">
-    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="38.88" y="153.623125" transform="rotate(-0 38.88 153.623125)">Rows=x; columns=y; no interpolation</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #2266ae" x="100.71" y="360.981562" transform="rotate(-0 100.71 360.981562)">A</text>
    </g>
    <g id="text_7">
-    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52677c" x="95.04" y="256.015781" transform="rotate(-0 95.04 256.015781)">x0</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c44b5a" x="197.91" y="360.981562" transform="rotate(-0 197.91 360.981562)">B</text>
    </g>
    <g id="text_8">
-    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="139.68" y="256.74375" transform="rotate(-0 139.68 256.74375)">0</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #2266ae" x="195.84" y="408.030469" transform="rotate(-0 195.84 408.030469)">A: (0,0) → (0,1)</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="211.68" y="256.7525" transform="rotate(-0 211.68 256.7525)">1</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c44b5a" x="195.84" y="441.870469" transform="rotate(-0 195.84 441.870469)">B: (1,0) → (1,1)</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52677c" x="95.04" y="324.423437" transform="rotate(-0 95.04 324.423437)">x1</text>
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52677c" x="195.84" y="491.303125" transform="rotate(-0 195.84 491.303125)">points are sampled; no interpolation</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="139.68" y="325.2575" transform="rotate(-0 139.68 325.2575)">2</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #087f83" x="408.96" y="132.564375" transform="rotate(-0 408.96 132.564375)">02 / ACCUMULATE</text>
    </g>
    <g id="text_12">
-    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="211.68" y="325.14375" transform="rotate(-0 211.68 325.14375)">3</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #2266ae" x="414" y="199.511719" transform="rotate(-0 414 199.511719)">A: cost 0 + 1</text>
    </g>
    <g id="text_13">
-    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52677c" x="139.68" y="206.059531" transform="rotate(-0 139.68 206.059531)">y0</text>
+    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #2266ae" x="414" y="286.960625" transform="rotate(-0 414 286.960625)">logit = −1</text>
    </g>
    <g id="text_14">
-    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52677c" x="211.68" y="205.967656" transform="rotate(-0 211.68 205.967656)">y1</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c44b5a" x="414" y="326.951719" transform="rotate(-0 414 326.951719)">B: cost 2 + 3</text>
    </g>
    <g id="text_15">
-    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #2266ae" x="173.52" y="397.538828" transform="rotate(-0 173.52 397.538828)">A: (0,0) → (0,1)</text>
+    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c44b5a" x="414" y="414.400625" transform="rotate(-0 414 414.400625)">logit = −5</text>
    </g>
    <g id="text_16">
-    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c44b5a" x="173.52" y="439.298828" transform="rotate(-0 173.52 439.298828)">B: (1,0) → (1,1)</text>
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52677c" x="524.88" y="493.187187" transform="rotate(-0 524.88 493.187187)">Repeated cells contribute repeatedly.</text>
    </g>
    <g id="text_17">
-    <text style="font-weight: 700; font-size: 17.164948px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #087f83" x="358.56" y="132.829402" transform="rotate(-0 358.56 132.829402)">B  /  Negative summed cost</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7750a9" x="720" y="132.564375" transform="rotate(-0 720 132.564375)">03 / NORMALIZE</text>
    </g>
    <g id="text_18">
-    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="358.56" y="153.623125" transform="rotate(-0 358.56 153.623125)">logit[k] = −Σₜ cost[cell(k,t)]</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #7750a9" x="828" y="182.680313" transform="rotate(-0 828 182.680313)">softmax(−1, −5)</text>
    </g>
    <g id="text_19">
-    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #2266ae" x="491.76" y="233.978437" transform="rotate(-0 491.76 233.978437)">Candidate A</text>
+    <text style="font-weight: 700; font-size: 21px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #2266ae" x="721.44" y="298.103203" transform="rotate(-0 721.44 298.103203)">p(A) ≈ 98.2%</text>
    </g>
    <g id="text_20">
-    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="491.76" y="267.236563" transform="rotate(-0 491.76 267.236563)">−(0 + 1) = −1</text>
+    <text style="font-weight: 700; font-size: 21px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c44b5a" x="721.44" y="419.063203" transform="rotate(-0 721.44 419.063203)">p(B) ≈ 1.8%</text>
    </g>
    <g id="text_21">
-    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #c44b5a" x="491.76" y="335.498438" transform="rotate(-0 491.76 335.498438)">Candidate B</text>
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #7750a9" x="831.6" y="490.139063" transform="rotate(-0 831.6 490.139063)">lower cost → higher probability</text>
    </g>
    <g id="text_22">
-    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="491.76" y="368.756562" transform="rotate(-0 491.76 368.756562)">−(2 + 3) = −5</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="24.48" y="554.11125" transform="rotate(-0 24.48 554.11125)">Exact toy costs and scores; parallel-projected grid. This separate planning primitive is not a trained planning result.</text>
    </g>
    <g id="text_23">
-    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="491.76" y="446.219062" transform="rotate(-0 491.76 446.219062)">Repeated cells contribute repeatedly.</text>
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="113.67" y="330.755625" transform="rotate(-0 113.67 330.755625)">0</text>
    </g>
    <g id="text_24">
-    <text style="font-weight: 700; font-size: 17.118881px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #7750a9" x="675.36" y="132.883741" transform="rotate(-0 675.36 132.883741)">C  /  Normalize over templates</text>
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="157.41" y="267.76875" transform="rotate(-0 157.41 267.76875)">1</text>
    </g>
    <g id="text_25">
-    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="675.36" y="153.623125" transform="rotate(-0 675.36 153.623125)">p(k) = softmax(logits)[k]</text>
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="210.87" y="330.92625" transform="rotate(-0 210.87 330.92625)">2</text>
    </g>
    <g id="text_26">
-    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #2266ae" x="690.48" y="241.290625" transform="rotate(-0 690.48 241.290625)">A</text>
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="254.61" y="267.755625" transform="rotate(-0 254.61 267.755625)">3</text>
    </g>
-   <g id="text_27">
-    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #2266ae" x="717.12" y="276.672422" transform="rotate(-0 717.12 276.672422)">p(A) ≈ 98.2%</text>
+   <g id="patch_13">
+    <path d="M 115.952574 335.292341
+Q 135.54136 307.078041 153.982423 280.51684
+" clip-path="url(#pb80ef675bd)" style="fill: none; stroke: #2266ae; stroke-width: 1.8; stroke-linecap: round"/>
+    <path d="M 148.096283 283.734502
+L 153.982423 280.51684
+L 153.024869 287.156349
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #2266ae; stroke: #2266ae; stroke-width: 1.8; stroke-linecap: round"/>
    </g>
-   <g id="text_28">
-    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c44b5a" x="690.48" y="338.490625" transform="rotate(-0 690.48 338.490625)">B</text>
-   </g>
-   <g id="text_29">
-    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #c44b5a" x="717.12" y="373.872422" transform="rotate(-0 717.12 373.872422)">p(B) ≈ 1.8%</text>
-   </g>
-   <g id="text_30">
-    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #162c43" x="822.24" y="447.935" transform="rotate(-0 822.24 447.935)">Lower accumulated cost is preferred.</text>
-   </g>
-   <g id="text_31">
-    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52677c" x="24.48" y="554.11125" transform="rotate(-0 24.48 554.11125)">Schematic costs and paths. No planning dataset, full training or validated planning metric is implied.</text>
+   <g id="patch_14">
+    <path d="M 213.152574 335.292341
+Q 232.74136 307.078041 251.182423 280.51684
+" clip-path="url(#pb80ef675bd)" style="fill: none; stroke: #c44b5a; stroke-width: 1.8; stroke-linecap: round"/>
+    <path d="M 245.296283 283.734502
+L 251.182423 280.51684
+L 250.224869 287.156349
+z
+" clip-path="url(#pb80ef675bd)" style="fill: #c44b5a; stroke: #c44b5a; stroke-width: 1.8; stroke-linecap: round"/>
    </g>
   </g>
  </g>
